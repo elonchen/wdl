@@ -1,0 +1,180 @@
+{template 'header'}
+<!--仿微社区上传图片-->
+        <link rel="stylesheet" href="{MODULE_URL}template/imgupload/css/comm.css">
+        <script type="text/javascript" src="{MODULE_URL}template/imgupload/js/global.js">
+        </script>
+        <script type="text/javascript" src="{MODULE_URL}template/imgupload/js/gps.js">
+        </script>
+        <script type="text/javascript" src="{MODULE_URL}template/imgupload/js/seajs-0.1.5.js">
+        </script>
+        <script type="text/javascript" src="{MODULE_URL}template/imgupload/js/newthread.js">
+        </script>
+        <script type="text/javascript" charset="utf-8" src="{MODULE_URL}template/imgupload/js/jpegmeta.js">
+        </script>
+        <script type="text/javascript" charset="utf-8" src="{MODULE_URL}template/imgupload/js/jpeg.encoder.basic.js">
+        </script>
+        <script type="text/javascript" charset="utf-8" src="{MODULE_URL}template/imgupload/js/image_compress.js">
+        </script>
+        
+<!--仿微社区上传图片-->
+<!--仿微社区上传图片-->
+        <script type="text/javascript">
+            var myurl="{php echo $this->createMobileUrl('imgupload')}";
+        </script>
+<!--仿微社区上传图片-->
+
+<style>
+.list{}
+.list li a{display:block; height:80px; padding:5px; border-bottom:1px #EEE solid; color:#333; overflow:hidden; text-decoration:none !important; position:relative;}
+.list li a .thumb{width:80px; height:60px;}
+.list li a .title{font-size:16px;}
+.list li a .createtime{font-size:12px; color:#999; position:absolute; bottom:0;}
+.head{height:40px; line-height:40px;  background:#0bca9f; margin-bottom:5px; padding:0 5px; color:#FFF;}
+.head .bn{display:inline-block; height:30px; line-height:30px; padding:0 10px; margin-top:4px; font-size:20px; border:1px #0bca9f solid; background:#0bca9f; color:#FFF; text-decoration:none;}
+.head .bn.pull-right{position:absolute; right:5px; top:0;}
+.head .title{font-size:14pt;display:block;padding-left:10px;font-weight:bolder;margin-right:49px;text-align:center;height:40px;line-height:40px;text-overflow:ellipsis;white-space:nowrap;overflow: hidden;}
+.head .order{background:#F9F9F9; position:absolute; z-index:9999; right:0;}
+.head .order li > a{display:block; padding:0 10px; min-width:100px; height:35px; line-height:35px; font-size:16px; color:#333; text-decoration:none; border-top:1px #EEE solid;}
+.head .order li.icon-caret-up{font-size:20px;color:#F9F9F9;position:absolute;top:-11px;right:16px;}
+</style>
+<!-- <script type="text/javascript" src="./source/modules/xfmarket/template/mobile/js/zxxFile.js"></script> -->
+<div class="head">
+  <a href="{php echo $this->createMobileUrl('list')}" class="bn pull-left"><i class="fa fa-home"></i></a>
+  <span class="title">发布二手商品</span>
+  <a href="{php echo $this->createMobileUrl('mygoods')}" class="bn pull-right"><i class="fa fa-user"></i></a>
+
+</div>
+<div class="main">
+	<form action="" method="post"    enctype="multipart/form-data" onsubmit="return checkInfo(this);" name="newthread" id="newthread" class="form-horizontal">
+		<input type="hidden" name="id"  value="{$good['id']}" />
+		<div class="panel panel-default">
+		  <div class="panel-body">
+		  
+		    <div class="form-group">
+			    <label for="title" class="col-sm-2 control-label">标题:</label>
+			    <div class="col-sm-10">
+			      <input type="text" name="title" id='title' value="{$good['title']}" placeHolder="请输入标题" class="form-control" />
+			    </div>
+			</div>
+			<div class="form-group">
+			    <label for="title" class="col-sm-2 control-label">请选择成色:</label>
+			    <div class="col-sm-10">
+			      <select name='rolex' class="form-control">
+							<option value='0'>请选择成色</option>
+							<option value='1' {if $good['rolex'] == 1}selected{/if}>9.9成新</option>
+							<option value='2' {if $good['rolex'] == 2}selected{/if}>9.5成新</option>
+							<option value='3' {if $good['rolex'] == 3}selected{/if}>9成新</option>
+							<option value='4' {if $good['rolex'] == 4}selected{/if}>8成新</option>
+							<option value='5' {if $good['rolex'] == 5}selected{/if}>7成新</option>
+							<option value='6' {if $good['rolex'] == 6}selected{/if}>6成新</option>
+			      </select>
+			    </div>
+			</div>
+			<div class="form-group">
+			    <label for="title" class="col-sm-2 control-label">请选择分类:</label>
+			    <div class="col-sm-10">
+			        <select name='pcate' class="form-control">
+						<option value='0'>请选择分类</option>
+						{loop $categorys $category}
+							<option value="{$category['id']}" {if $good['pcate'] == $category['id']}selected{/if}>{$category['name']}</option>
+						{/loop}
+					</select>
+			    </div>
+			</div>
+			<div class="form-group">
+			    <label for="title" class="col-sm-2 control-label">定价:</label>
+			    <div class="col-sm-10">
+			        <input type="text" name="price" class="form-control" value="{$good['price']}" placeHolder="定价¥"/>
+			    </div>
+			</div>
+			<div class="form-group">
+			    <label for="title" class="col-sm-2 control-label">联系人:</label>
+			    <div class="col-sm-10">
+			       <input type="text" name="realname" class="form-control" value="{$good['realname']}" placeHolder="请输入联系人"/>
+			    </div>
+			</div>
+			<div class="form-group">
+			    <label for="title" class="col-sm-2 control-label">性别:</label>
+			    <div class="col-sm-10">
+			       <label class="radio-inline"><input type="radio" name="sex" value="0" {if $good['sex'] == 0} checked="true" {/if}>先生</label>&nbsp;&nbsp;
+                	<label class="radio-inline"><input type="radio" name="sex" value="1" {if $good['sex'] == 1} checked="true" {/if}>女士</label>&nbsp;&nbsp;
+			    </div>
+			</div>
+			<div class="form-group">
+			    <label for="title" class="col-sm-2 control-label">联系手机:</label>
+			    <div class="col-sm-10">
+			       <input type="text" name="mobile" class="form-control" value="{$good['mobile']}" placeHolder="联系手机"/>
+			    </div>
+			</div>
+			<div class="form-group">
+			    <label for="title" class="col-sm-2 control-label">描述:</label>
+			    <div class="col-sm-10">
+			       <textarea name='description' rows="3" placeHolder="添加描述" class="form-control"></textarea>
+			    </div>
+			</div>
+			<div class="form-group">
+			    <label for="title" class="col-sm-2 control-label">图片(最多可上传3张图片)</label>
+			    <div class="col-sm-10">
+			    	<div class="tipLayer">
+                            <div class="photoList">
+                                <ul>
+                                    <li class="on" id="addPic">
+                                        <input type="file" class="on needsclick" style="z-index:200;opacity:0;filter:alpha(opacity=0);-ms-filter:'alpha(opacity=0)';" id="uploadFile" accept="image/*" single>
+                                    </li>
+                                </ul>
+                            </div>
+                    </div>
+			    </div>
+			</div>
+			<div class="form-group">
+			    <label for="title" class="col-sm-2 control-label"></label>
+			    <div class="col-sm-10">
+			      <input name="submit" type="submit" value="立即发布" class="btn btn-info span3" />
+					<input type="hidden" name="token" value="{$_W['token']}" />
+			    </div>
+			</div>
+		  </div>
+		</div>
+		
+	</form>
+</div>
+<script type="text/javascript">
+<!--
+	function checkInfo(form) {
+		
+		var mobile = form['mobile'].value;
+		if (!mobile) {
+			alert('请输入您的手机号码！');
+			return false;
+		}
+		if (mobile.search(/^([0-9]{11})?$/) == -1) {
+			alert('请输入正确的手机号码！');
+			return false;
+		}
+		
+		if (!form['title'].value) {
+			alert('请输入商品标题。');
+			return false;
+		}
+		if (!form['rolex'].value && form['rolex'].value==0) {
+			alert('请选择成色。');
+			return false;
+		}
+		if (!form['pcate'].value && form['pcate'].value==0) {
+			alert('请选择分类。');
+			return false;
+		}
+		if (!form['price'].value) {
+			alert(' 请输入价格。');
+			return false;
+		}
+		if (!form['realname'].value) {
+			alert(' 请输入姓名。');
+			return false;
+		}
+	}
+//-->
+</script>
+		
+</body>
+</html>

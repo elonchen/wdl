@@ -86,36 +86,38 @@
 		<span name="submit" id="submit" class="pull-right btn btn-primary" onclick="$('#form1').submit();">保存</span>
 </div>
 <script>
-	$('.recharge').click(function(){
-		var uid = parseInt($(this).attr('id'));
-		$.get("{php echo url('mc/creditmanage/modal')}&uid=" + uid, function(data){
-			if(data == 'dataerr') {
-				util.message('未找到指定会员', '', 'error');
-			} else {
-				var obj = util.dialog('会员积分操作', data, $('#footer').html());
-			}
-			obj.modal('show');
+	require(['jquery', 'util'], function($, u){
+		$('.recharge').click(function(){
+			var uid = parseInt($(this).attr('id'));
+			$.get("{php echo url('mc/creditmanage/modal')}&uid=" + uid, function(data){
+				if(data == 'dataerr') {
+					u.message('未找到指定会员', '', 'error');
+				} else {
+					var obj = u.dialog('会员积分操作', data, $('#footer').html());
+				}
+				obj.modal('show');
+			});
+		})
+		$('#keyword').focus().select().change(function(){
+			$('#form').submit();
 		});
-	})
-	$('#keyword').focus().select().change(function(){
-		$('#form').submit();
-	});
-	var status = "{$status}";
-	if(status == 1) {
-		var uid = "{$uid}";
-		$.get("{php echo url('mc/creditmanage/modal')}&uid=" + uid, function(data){
-			if(data == 'dataerr') {
-				util.message('未找到指定会员', '', 'error');
-			} else {
-				var obj = util.dialog('会员积分操作', data, $('#footer').html());
-			}
-			obj.modal('show');
+		var status = "{$status}";
+		if(status == 1) {
+			var uid = "{$uid}";
+			$.get("{php echo url('mc/creditmanage/modal')}&uid=" + uid, function(data){
+				if(data == 'dataerr') {
+					u.message('未找到指定会员', '', 'error');
+				} else {
+					var obj = u.dialog('会员积分操作', data, $('#footer').html());
+				}
+				obj.modal('show');
+			});
+		}
+		$('.btn').hover(function(){
+			$(this).tooltip('show');
+		},function(){
+			$(this).tooltip('hide');
 		});
-	}
-	$('.btn').hover(function(){
-		$(this).tooltip('show');
-	},function(){
-		$(this).tooltip('hide');
 	});
 </script>
 {/if}

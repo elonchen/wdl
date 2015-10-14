@@ -202,7 +202,7 @@
 						<div class="form-group">
 							<label class="col-xs-12 col-sm-3 col-md-2 control-label">Oauth 2.0</label>
 							<div class="col-sm-9 col-xs-12">
-								<p class="form-control-static">在微信公众号请求用户网页授权之前，开发者需要先到公众平台网站的【开发者中心】<b>网页服务</b>中配置授权回调域名。<a href="http://www.wdlcms.com/manual/dev:v0.6:qa:mobile_redirect_url_error" target="_black">查看详情</a></p>
+								<p class="form-control-static">在微信公众号请求用户网页授权之前，开发者需要先到公众平台网站的【开发者中心】<b>网页服务</b>中配置授权回调域名。<a href="http://www.wdlcms.com/wiki/" target="_black">查看详情</a></p>
 							</div>
 						</div>
 					</div>
@@ -213,7 +213,7 @@
 					<div class="form-group">
 						<label class="col-xs-12 col-sm-3 col-md-2 control-label">接口地址</label>
 						<div class="col-sm-9 col-xs-12">
-							<input type="text" class="form-control" value="{$_W['siteroot']}api.php?id={$account['acid']}" readonly="readonly" autocomplete="off"/>
+							<input type="text" class="form-control" value="{$_W['siteroot']}api.php?id={$account['acid']}" readonly autocomplete="off"/>
 							<div class="help-block">设置“公众平台接口”配置信息中的接口地址</div>
 						</div>
 					</div>
@@ -221,7 +221,7 @@
 						<label class="col-xs-12 col-sm-3 col-md-2 control-label" style="color:red">Token</label>
 						<div class="col-sm-9 col-xs-12">
 							<div class="input-group">
-								<input type="text" name="wetoken" class="form-control" value="{$account['token']}" readonly="readonly" />
+								<input type="text" name="wetoken" class="form-control" value="{$account['token']}" readonly />
 								<span class="input-group-addon" style="cursor:pointer" onclick="tokenGen();">生成新的</span>
 							</div>
 							<div class="help-block">与公众平台接入设置值一致，必须为英文或者数字，长度为3到32个字符. 请妥善保管, Token 泄露将可能被窃取或篡改平台的操作数据.</div>

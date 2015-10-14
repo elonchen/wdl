@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?> 
+<?xml version="1.0" encoding="utf-8"?> 
  <address>
  <province name="北京市">
  <city name="北京辖区">
@@ -2516,7 +2516,40 @@
   <county name="英德市" /> 
   <county name="连州市" /> 
   </city>
-  <city name="东莞市" /> 
+  <city name="东莞市" >
+  <county name="莞城"/>
+  <county name="南城"/>
+  <county name="东城"/>
+  <county name="塘厦"/>
+  <county name="虎门"/>
+  <county name="长安"/>
+  <county name="常平"/>
+  <county name="万江"/>
+  <county name="茶山"/>
+  <county name="大朗"/>
+  <county name="大岭山"/>
+  <county name="道滘"/>
+  <county name="东坑"/>
+  <county name="凤岗"/>
+  <county name="高埗"/>
+  <county name="横沥"/>
+  <county name="洪梅"/>
+  <county name="厚街"/>
+  <county name="黄江"/>
+  <county name="寮步"/>
+  <county name="麻涌"/>
+  <county name="企石"/>
+  <county name="桥头"/>
+  <county name="清溪"/>
+  <county name="沙田镇虎门港"/>
+  <county name="石碣"/>
+  <county name="石龙"/>
+  <county name="石排"/>
+  <county name="望牛墩"/>
+  <county name="谢岗"/>
+  <county name="樟木头"/>
+  <county name="中堂"/>
+  </city>
   <city name="中山市" /> 
  <city name="潮州市">
   <county name="市辖区" /> 
@@ -2743,15 +2776,15 @@
   <county name="渝北区" /> 
   <county name="巴南区" /> 
   <county name="黔江区" /> 
-  <county name="长寿区" /> 
+  <county name="长寿区" />
+  <county name="璧山区" />
   </city>
  <city name="重庆辖县">
   <county name="綦江县" /> 
   <county name="潼南县" /> 
   <county name="铜梁县" /> 
   <county name="大足县" /> 
-  <county name="荣昌县" /> 
-  <county name="璧山县" /> 
+  <county name="荣昌县" />
   <county name="梁平县" /> 
   <county name="城口县" /> 
   <county name="丰都县" /> 
@@ -2772,7 +2805,7 @@
   <county name="江津市" /> 
   <county name="合川市" /> 
   <county name="永川市" /> 
-  <county name="南川市" /> 
+  <county name="南川市" />
   </city>
   </province>
  <province name="四川省">

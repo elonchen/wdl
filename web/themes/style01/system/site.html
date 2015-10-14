@@ -153,11 +153,10 @@
 		</div>
 	</form>
 	<script type="text/javascript">
-		require(['jquery', 'util'],function($, u){
 			$("#form1").submit(function() {
 				if ($("input[name='status']:checked").val() == 1) {
 					if ($("textarea[name='reason']").val() == '') {
-						u.message('请填写站点关闭原因');
+						util.message('请填写站点关闭原因');
 						return false;
 					}
 				}
@@ -171,7 +170,6 @@
 					$(".reason").hide();
 				}
 			});
-		});
 	</script>
 </div>
 {template 'common/footer-gw'}

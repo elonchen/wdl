@@ -6,39 +6,13 @@
 defined('IN_IA') or exit('Access Denied');
 load()->model('mc');
 
-if (!isset($_GPC['i'])) {
-	header('location: ../web/index.php?c=user&a=login&');
-	exit;
-}
-
 $_W['uniacid'] = intval($_GPC['i']);
 if(empty($_W['uniacid'])) {
 	$_W['uniacid'] = intval($_GPC['weid']);
 }
 $_W['uniaccount'] = uni_fetch($_W['uniacid']);
-
 if(empty($_W['uniaccount'])) {
 	exit('指定主公众号不存在。');
-}
-
-$_W['os'] = 'unknown';
-if(strexists(strtolower($_SERVER['HTTP_USER_AGENT']), 'iphone')) {
-	$_W['os'] = 'iphone';
-} elseif(strexists(strtolower($_SERVER['HTTP_USER_AGENT']), 'mac')) {
-	$_W['os'] = 'mac';
-} elseif(strexists(strtolower($_SERVER['HTTP_USER_AGENT']), 'android')) {
-	$_W['os'] = 'android';
-} elseif(strexists(strtolower($_SERVER['HTTP_USER_AGENT']), 'windows')) {
-	$_W['os'] = 'windows';
-}
-
-$_W['container'] = 'browser';
-if(strexists(strtolower($_SERVER['HTTP_USER_AGENT']), 'micromessenger')) {
-	$_W['container'] = 'wechat';
-} elseif(strexists(strtolower($_SERVER['HTTP_USER_AGENT']), 'yixin')) {
-	$_W['container'] = 'yixin';
-} elseif(!strexists(strtolower($_SERVER['HTTP_USER_AGENT']), 'mobile')) {
-	$_W['container'] = 'web';
 }
 
 $_W['session_id'] = '';
@@ -68,7 +42,6 @@ if (empty($_W['acid']) && !empty($_SESSION['acid'])) {
 }
 if (!empty($_W['acid'])) {
 	$_W['account'] = account_fetch($_W['acid']);
-			
 	if (empty($_W['account']) || intval($_W['account']['uniacid']) != intval($_W['uniacid'])) {
 		$_W['acid'] = 0;
 		$_W['account'] = null;
@@ -120,7 +93,6 @@ if (empty($_W['openid']) && !empty($_SESSION['oauth_openid'])) {
 		'follow' => 0
 	);
 }
-
 $oauth_acc = $_W['account'];
 if (intval($oauth_acc['level']) != 4) {
 	$setting = uni_setting($_W['uniacid'], array('oauth'));
@@ -132,13 +104,13 @@ if (intval($oauth_acc['level']) != 4) {
 }
 if(!empty($oauth_acc) && intval($oauth_acc['level']) == 4) { 	$_W['oauth_account'] = $oauth_acc;
 }
-unset($oauth_acc);
-
+$_W['token'] = token();
 if (($_W['container'] == 'wechat' && !empty($_W['oauth_account']) && !$_GPC['logout'] && empty($_W['openid']) && ($controller != 'auth' || ($controller == 'auth' && !in_array($action, array('forward', 'oauth'))))) ||
 	($_W['container'] == 'wechat' && !empty($_W['oauth_account']) && (intval($_W['account']['level']) < 4) && !$_GPC['logout'] && empty($_SESSION['oauth_openid']) && ($controller != 'auth'))) {
 	$state = 'we7sid-'.$_W['session_id'];
-	$_SESSION['dest_url'] = base64_encode($_SERVER['QUERY_STRING']);
-	
+	if (empty($_SESSION['dest_url'])) {
+		$_SESSION['dest_url'] = base64_encode($_SERVER['QUERY_STRING']);
+	}
 	$url = "{$_W['siteroot']}app/index.php?i={$_W['uniacid']}&j={$_W['acid']}&c=auth&a=oauth&scope=snsapi_base";
 	$callback = urlencode($url);
 	
@@ -151,28 +123,29 @@ $_W['account']['groupid'] = $_W['uniaccount']['groupid'];
 $_W['account']['qrcode'] = "{$_W['attachurl']}qrcode_{$_W['acid']}.jpg?time={$_W['timestamp']}";
 $_W['account']['avatar'] = "{$_W['attachurl']}headimg_{$_W['acid']}.jpg?time={$_W['timestamp']}";
 
-$jsauth_acc = $_W['account'];
-if ($jsauth_acc['level'] < 3) {
-	load()->model('account');
-	$unisetting = uni_setting();
-	$acid = intval($unisetting['jsauth_acid']);
-	if(!empty($acid) && $acid != $_W['acid']){
-		$account = account_fetch($acid);
-		if(!empty($account)){
-			$jsauth_acc = $account;
+if ($_W['container'] == 'wechat') {
+	$jsauth_acc = $_W['account'];
+	if ($jsauth_acc['level'] < 3) {
+		load()->model('account');
+		$unisetting = uni_setting();
+		$acid = intval($unisetting['jsauth_acid']);
+		if(!empty($acid) && $acid != $_W['acid']){
+			$account = account_fetch($acid);
+			if(!empty($account)){
+				$jsauth_acc = $account;
+			}
+			unset($account);
 		}
-		unset($account);
+		unset($acid, $unisetting);
 	}
-	unset($acid, $unisetting);
+	
+	load()->classs('weixin.account');
+	$accObj = WeiXinAccount::create($jsauth_acc);
+	$_W['account']['jssdkconfig'] = $accObj->getJssdkConfig();
+	$_W['account']['jsauth_acid'] = $jsauth_acc['acid'];
+	
+	unset($jsauth_acc, $accObj);
 }
-
-load()->classs('weixin.account');
-$accObj = WeiXinAccount::create($jsauth_acc);
-$_W['account']['jssdkconfig'] = $accObj->getJssdkConfig();
-$_W['account']['jsauth_acid'] = $jsauth_acc['acid'];
-
-unset($jsauth_acc, $accObj);
-
 $_W['card_permission'] = 0;
 if($_W['acid'] && $_W['account']['level'] >= 3 && $_W['container'] == 'wechat') {
 	$_W['card_permission'] = 1;

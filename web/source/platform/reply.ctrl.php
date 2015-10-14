@@ -1,6 +1,6 @@
 <?php
 /**
- * [WEIZAN System] Copyright (c) 2014 WDLCMS.COM
+ * [WEIZAN System] Copyright (c) 2014 wdlcms.com
  * WEIZAN is NOT a free software, it under the license terms, visited http://www.wdlcms.com/ for more details.
  */
 
@@ -30,7 +30,7 @@ if(!in_array($m, $sysmods)) {
 	}
 $_W['page']['title'] = $module['title'];
 load()->model('extension');
-if (ext_module_checkupdate($module)) {
+if (ext_module_checkupdate($module['name'])) {
 	message('系统检测到该模块有更新，请点击“<a href="'.url('extension/module/upgrade', array('m' => $m)).'">更新模块</a>”后继续使用！', '', 'error');
 }
 

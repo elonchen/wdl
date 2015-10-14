@@ -1,6 +1,6 @@
 <?php
 /**
- * [Weizan System] Copyright (c) 2014 wdlcms.com
+ * [Weizan System] Copyright (c) 2014 wdlcms.COM
  * Weizan is NOT a free software, it under the license terms, visited http://www.wdlcms.com/ for more details.
  */
 defined('IN_IA') or exit('Access Denied');
@@ -23,19 +23,19 @@ if($do == 'post') {
 	$id = intval($_GPC['id']); 
 	$goods = activity_exchange_info($id, $_W['uniacid']);
 	if(empty($goods)){
-		message('没有指定的礼品兑换.');
+		message(error(-1, '没有指定的礼品兑换'), '', 'ajax');
 	}
 	$credit = mc_credit_fetch($_W['member']['uid'], array($goods['credittype']));
 	if ($credit[$goods['credittype']] < $goods['credit']) {
-		message('您的' . $creditnames[$goods['credittype']] . '数量不够,无法兑换.');
+		message(error(-1, "您的 {$creditnames[$token['credittype']]} 数量不够,无法兑换."), '', 'ajax');
 	}
 	
 	$ret = activity_goods_grant($_W['member']['uid'], $id, 'system', '用户使用' . $goods['credit'] . $creditnames[$goods['credittype']] . '兑换');
 	if(is_error($ret)) {
-		message($ret['message']);
+		message($ret, '', 'ajax');
 	}
 	mc_credit_update($_W['member']['uid'], $goods['credittype'], -1 * $goods['credit'], array($_W['member']['uid'], '礼品兑换:' . $goods['title'] . ' 消耗 ' . $creditnames[$goods['credittype']] . ':' . $goods['credit']));
-	message("兑换成功,您消费了 {$goods['credit']} {$creditnames[$goods['credittype']]},现在去完善订单信息", url('activity/goods/deliver', array('tid' => $ret)));
+	message(error($ret, "兑换成功,您消费了 {$goods['credit']} {$creditnames[$goods['credittype']]},现在去完善订单信息"), '', 'ajax');
 }
 if($do == 'deliver') {
 	load()->func('tpl');

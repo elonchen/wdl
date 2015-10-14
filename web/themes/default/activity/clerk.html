@@ -31,17 +31,20 @@
 					<tr>
 						<td></td>
 						<td colspan="2">
-							<a href="javascript:;" onclick="addItem()"><i class="icon-plus-sign-alt"></i> 添加</a>
+							<a href="javascript:;" onclick="addItem()"><i class="fa fa-plus-circle"></i> 添加店员</a>
 						</td>
 					</tr>
 					</tbody>
 				</table>
 			</div>
 		</div>
-		<div>
+		<div class="form-group">
+			<div class="col-sm-9 col-xs-12">
 			<input name="token" type="hidden" value="{$_W['token']}" />
 			<input type="submit" class="btn btn-primary col-lg-1" name="submit" value="提交" />
+			</div>
 		</div>
+		{$pager}
 	</form>
 </div>
 <script type="text/javascript">
@@ -52,7 +55,7 @@
 					'<td></td>' +
 					'<td><input type="text" name="title-new[]" class="form-control title-new" style="width:250px" value="" /></td>' +
 					'<td><input type="text" name="password-new[]" class="form-control password-new" style="width:250px;display:inline" value="" />' +
-					'<a href="javascript:;"  style="padding-left:20px;"onclick="deleteItem(this);"><i class=""></i>删除</a>' +
+					'<a href="javascript:;"  style="padding-left:20px;"onclick="deleteItem(this);"><i class="fa fa-times-circle"></i> 删除</a>' +
 					'</td>' +
 				'</tr>';
 		$('#list').append(html);
@@ -69,7 +72,7 @@ require(['jquery', 'util'], function($, u){
 		var tit;
 		var bool=true;
 		
-		$(".password-new").each(function(index){
+		$(":text[name^=password]").each(function(index){
 			value=$(this).val().trim();
 			if(value==""){
 				u.message('密码不能为空.', '', 'error');
@@ -82,7 +85,7 @@ require(['jquery', 'util'], function($, u){
 						bool = false;
 					}		
 				}
-				colarr[index+1]=value;	
+				colarr[index+1]=value;
 			}	
 		})
 		
@@ -99,7 +102,7 @@ require(['jquery', 'util'], function($, u){
 						bool = false;
 					}		
 				}
-				titlearr[index+1]=title;	
+				titlearr[index+1]=title;
 			}	
 		})
 		if(!bool) return false;

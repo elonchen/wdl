@@ -430,8 +430,15 @@ if($do == 'discount') {
 		$post['status'] = 1;
 		$module = trim($post['module-select']);
 		unset($post['module-select'],$post['discount'],$post['time_type'],$post['limit'],$post['deadline'], $post['time_limit[start]'],$post['time_limit[end]'],$post['color-value'], $post['token'], $post['is_location'], $post['location-select']);
-		pdo_insert('coupon', $post);
-		$cid = pdo_insertid();
+		$is_ok = pdo_fetchcolumn('SELECT id FROM ' . tablename('coupon') . ' WHERE acid = :acid AND card_id = :card_id', array(':acid' => $acid, ':card_id' => $post['card_id']));
+		if(empty($is_ok)) {
+			pdo_insert('coupon', $post);
+			$cid = pdo_insertid();
+		} else {
+			$cid = $is_ok;
+			unset($post['status']);
+			pdo_update('coupon', $post, array('acid' => $acid, 'id' => $is_ok));
+		}
 		if(!empty($module)) {
 			$arr = explode('@', $module);
 			foreach($arr as $li) {
@@ -513,8 +520,15 @@ if($do == 'cash') {
 		$post['status'] = 1;
 		$module = trim($post['module-select']);
 		unset($post['module-select'],$post['least_cost'],$post['reduce_cost'],$post['time_type'],$post['limit'],$post['deadline'], $post['time_limit[start]'],$post['time_limit[end]'],$post['color-value'], $post['token'], $post['is_location'], $post['location-select']);
-		pdo_insert('coupon', $post);
-		$cid = pdo_insertid();
+		$is_ok = pdo_fetchcolumn('SELECT id FROM ' . tablename('coupon') . ' WHERE acid = :acid AND card_id = :card_id', array(':acid' => $acid, ':card_id' => $post['card_id']));
+		if(empty($is_ok)) {
+			pdo_insert('coupon', $post);
+			$cid = pdo_insertid();
+		} else {
+			$cid = $is_ok;
+			unset($post['status']);
+			pdo_update('coupon', $post, array('acid' => $acid, 'id' => $is_ok));
+		}
 		if(!empty($module)) {
 			$arr = explode('@', $module);
 			foreach($arr as $li) {
@@ -594,7 +608,13 @@ if($do == 'gift') {
 		empty($post['code_type']) && $post['code_type'] = 1;
 		$post['status'] = 1;
 		unset($post['gift'],$post['time_type'],$post['limit'],$post['deadline'], $post['time_limit[start]'],$post['time_limit[end]'],$post['color-value'], $post['token'], $post['is_location'], $post['location-select']);
-		pdo_insert('coupon', $post);
+		$is_ok = pdo_fetchcolumn('SELECT id FROM ' . tablename('coupon') . ' WHERE acid = :acid AND card_id = :card_id', array(':acid' => $acid, ':card_id' => $post['card_id']));
+		if(empty($is_ok)) {
+			pdo_insert('coupon', $post);
+		} else {
+			unset($post['status']);
+			pdo_update('coupon', $post, array('acid' => $acid, 'id' => $is_ok));
+		}
 		exit(json_encode($out));
 	}
 }
@@ -660,7 +680,13 @@ if($do == 'groupon') {
 		empty($post['code_type']) && $post['code_type'] = 1;
 		$post['status'] = 1;
 		unset($post['deal_detail'],$post['time_type'],$post['limit'],$post['deadline'], $post['time_limit[start]'],$post['time_limit[end]'],$post['color-value'], $post['token'], $post['is_location'], $post['location-select']);
-		pdo_insert('coupon', $post);
+		$is_ok = pdo_fetchcolumn('SELECT id FROM ' . tablename('coupon') . ' WHERE acid = :acid AND card_id = :card_id', array(':acid' => $acid, ':card_id' => $post['card_id']));
+		if(empty($is_ok)) {
+			pdo_insert('coupon', $post);
+		} else {
+			unset($post['status']);
+			pdo_update('coupon', $post, array('acid' => $acid, 'id' => $is_ok));
+		}
 		exit(json_encode($out));
 	}
 }
@@ -726,7 +752,13 @@ if($do == 'general_coupon') {
 		empty($post['code_type']) && $post['code_type'] = 1;
 		$post['status'] = 1;
 		unset($post['default_detail'],$post['time_type'],$post['limit'],$post['deadline'], $post['time_limit[start]'],$post['time_limit[end]'],$post['color-value'], $post['token'], $post['is_location'], $post['location-select']);
-		pdo_insert('coupon', $post);
+		$is_ok = pdo_fetchcolumn('SELECT id FROM ' . tablename('coupon') . ' WHERE acid = :acid AND card_id = :card_id', array(':acid' => $acid, ':card_id' => $post['card_id']));
+		if(empty($is_ok)) {
+			pdo_insert('coupon', $post);
+		} else {
+			unset($post['status']);
+			pdo_update('coupon', $post, array('acid' => $acid, 'id' => $is_ok));
+		}
 		exit(json_encode($out));
 	}
 }

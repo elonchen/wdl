@@ -1,0 +1,53 @@
+{template 'common/header'}
+<link type="text/css" rel="stylesheet" href="./../app/resource/common/common.css">
+	 <form action="" method="post" class="form-horizontal form" >
+       <h4>{$title}</h4>
+        <input type="text" id="keyword" name="keyword" value="{$keyword}" class="input-small-z" placeholder="请输入关键词" data-rule-required="true">
+        <select name="type" class="input-small">
+            <option {if $type=='realname' || empty($type)}selected="selected"{/if} value="realname">真实姓名</option>
+        </select>
+        <input type="hidden" name="token" value="{$_W['token']}" />
+        <input name="submit" type="submit" class="btn" value="查询">
+</form>
+        <p></p><p></p>
+<div class="main">
+	  
+     		<div style="padding:15px;">
+        <table class="table table-hover">
+            <thead>
+            	<tr>
+					<th class="row-hover span2">姓名<i></i></th>
+					<th class="row-hover span2">年龄<i></i></th>
+					<th class="row-hover span2" >地址</th>
+						<th class="row-hover span2" >主诉</th>
+											<th class="row-hover span2" >病种</th>
+						<th class="row-hover span2" >剩余积分</th>
+				</tr>
+            </thead>
+            <tbody id="level-list">
+            {loop $members $member}
+            <tr>
+                <td>{$member['realname']}</td>
+                    <td>{$member['age']}</td>
+                             <td>{$member['address']}</td>
+                                      <td>{$member['zhusu']}</td>
+                        <td>
+                        	{loop explode(",",$member['bingzhong']) $field} 
+                        	{$field}<br/>
+                        		{/loop}</td>
+                            <td>{$member['credit1']}</td>
+                
+                <td>
+             <!--       <a class="btn" href="{php echo create_url('site/module', array('do' => 'ChangeCredit1', 'name' => 'bb_ask', 'from_user' => $members['from_user']))}">修改积分</a>-->
+                  </td>
+            </tr>
+            {/loop}
+            </tbody>
+            <tfoot>
+        
+            </tfoot>
+        </table>    </div>
+        {$pager}
+</div>
+
+{template 'common/footer'}

@@ -1,6 +1,6 @@
 <?php
 /**
- * [WEIZAN System] Copyright (c) 2014 wdlcms.com
+ * [WEIZAN System] Copyright (c) 2014 wdlcms.COM
  * WEIZAN is NOT a free software, it under the license terms, visited http://www.wdlcms.com/ for more details.
  */
 define('IN_SYS', true);
@@ -17,7 +17,8 @@ $acl = array(
 	'account' => array(
 		'default' => 'welcome',
 		'direct' => array(
-			'welcome'
+			'welcome',
+			'auth'
 		),
 		'founder' => array(
 			'batch',

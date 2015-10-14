@@ -36,14 +36,14 @@
 			<div class="panel-body">
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">名称</label>
-					<div class="col-sm-9">
+					<div class="col-sm-9 col-xs-12">
 						<input disabled type="text" name="name" value="{$account['name']}" class="form-control" autocomplete="off">
 						<span class="help-block">名称为了方便标识此公众号的作用及身份。可以为商户、组织或是公司的名称。</span>
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">描述</label>
-					<div class="col-sm-9">
+					<div class="col-sm-9 col-xs-12">
 						<textarea disabled style="height: 80px;" class="form-control" name="description">{$account['description']}</textarea>
 						<span class="help-block">用于说明此公众号的功能及用途。</span>
 					</div>
@@ -51,14 +51,14 @@
 				
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">引导关注素材</label>
-					<div class="col-sm-9">
+					<div class="col-sm-9 col-xs-12">
 						<input disabled type="text" name="bootstrap" value="{$bootstrap}" class="form-control" autocomplete="off">
 						<span class="help-block">建议设置一条引导关注的素材,为空则跳转回测试起始界面。例:<a>点击查看</a></span>
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">当前服务套餐</label>
-					<div class="col-sm-9">
+					<div class="col-sm-9 col-xs-12">
 						<select disabled name="groupid" class="form-control">
 							<option value="0" {if $account['groupid'] == 0} selected{/if} >基础服务</option>
 							{if $_W['isfounder']}
@@ -73,7 +73,7 @@
 				</div>
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">服务过期时间</label>
-					<div class="col-sm-9 disabled">
+					<div class="col-sm-9 col-xs-12 disabled">
 						<label for="p_radio_1" class="radio-inline "><input type="radio" name="isexpire" id="p_radio_1" value="1" disabled {if $groupdata['isexpire'] == '1'}checked{/if}/> 是</label>
 						<label for="p_radio_2" class="radio-inline "><input type="radio" name="isexpire" id="p_radio_2" value="0" disabled {if $groupdata['isexpire'] == '0'}checked{/if}/> 否</label>
 						<span class="help-block"></span>
@@ -82,7 +82,7 @@
 				<div id="expirepanel" style="display:none">
 					<div class="form-group">
 						<label class="col-xs-12 col-sm-3 col-md-2 control-label">过期时间</label>
-						<div class="col-sm-9">
+						<div class="col-sm-9 col-xs-12">
 							{php echo tpl_form_field_date('endtime', date('Y-m-d H:i',$groupdata['endtime']), true)}
 							<span class="help-block">用户的使用时间过期时,只能使用'基础服务'服务套餐的功能。</span>
 						</div>
@@ -90,7 +90,7 @@
 					{if $groupdata['oldgroupid'] !== ''}
 						<div class="form-group">
 							<label class="col-xs-12 col-sm-3 col-md-2 control-label">过期前服务套餐</label>
-							<div class="col-sm-9">
+							<div class="col-sm-9 col-xs-12">
 								{if $groupdata['oldgroupid'] == 0}
 									<input type="text" value="基础服务" readonly class="form-control">
 								{elseif $groupdata['oldgroupid'] == -1}
@@ -110,14 +110,14 @@
 				</div>
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">短信剩余条数</label>
-					<div class="col-sm-9">
+					<div class="col-sm-9 col-xs-12">
 						<input disabled type="text" name="balance" id="balance" value="{$notify['sms']['balance']}" class="form-control" autocomplete="off">
 						<span class="help-block">请填写短信剩余条数,必须为整数。</span>
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">短信签名</label>
-					<div class="col-sm-9">
+					<div class="col-sm-9 col-xs-12">
 						<input disabled type="text" name="signature" value="{$notify['sms']['signature']}" class="form-control" autocomplete="off">		
 						<span class="help-block">请填写短信签名。</span>
 					</div>
@@ -133,44 +133,43 @@
 	</form>
 	{elseif $_GPC['step']== 2 || $_GPC['step']== ''} 
 	<form action="" method="post"  class="form-horizontal" role="form" enctype="multipart/form-data" id="form1">
-	<input type="hidden" name="step" value="3">
-	<input type="hidden" name="flag" value="1">
-	<input type="hidden" name="uniacid" value="{$uniacid}">
-	
+		<input type="hidden" name="step" value="3">
+		<input type="hidden" name="flag" value="1">
+		<input type="hidden" name="uniacid" value="{$uniacid}">
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				一键获取公众号信息
 			</div>
 			<div class="panel-body">
-            <div class="alert alert-danger">
+			<div class="alert alert-danger">
 		<i class="fa fa-exclamation-triangle"></i> 如果无法一键获取到公众号信息，请选择下面的‘跳过’。改为手动输入公众号休息
 					</div>
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">类型</label>
-					<div class="col-sm-9">
+					<div class="col-sm-9 col-xs-12">
 						<label for="b_radio_3" class="radio-inline"><input type="radio" name="type" id="b_radio_3" value="1" {if empty($account['type']) || $account['type'] == 1}checked{/if} /> 微信</label>
 						<label for="b_radio_4" class="radio-inline"><input type="radio" name="type" id="b_radio_4" value="2" {if $account['type'] == 2}checked{/if}/> 易信</label>
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">公众登录用户</label>
-					<div class="col-sm-9">
-							<input type="text" name="wxusername" id="username" class="form-control" value="{$account['username']}" autocomplete="off"/>
-							<span class="help-block">请输入你的公众平台用户名</span>
+					<div class="col-sm-9 col-xs-12">
+						<input type="text" name="wxusername" id="username" class="form-control" value="{$account['username']}" autocomplete="off"/>
+						<span class="help-block">请输入你的公众平台用户名</span>
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">公众登录密码</label>
-					<div class="col-sm-9">
-							<input type="password" name="wxpassword" class="form-control" value="" autocomplete="off"  />
-							<span class="help-block">请输入你的公众平台密码</span>
+					<div class="col-sm-9 col-xs-12">
+						<input type="password" name="wxpassword" class="form-control" value="" autocomplete="off"  />
+						<span class="help-block">请输入你的公众平台密码</span>
 					</div>
 				</div>
 				<div class="form-group" style="display:none;">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">登录验证码</label>
-					<div class="col-sm-9">
-							<input type="text" name="verify" class="txt grid-1 alpha pin form-control" value="" autocomplete="off" />
-							<span class="help-inline"><img src="" id="imgverify"> <a href="javascript:;" id="toggle">换一张</a></span>
+					<div class="col-sm-9 col-xs-12">
+						<input type="text" name="verify" class="txt grid-1 alpha pin form-control" value="" autocomplete="off" />
+						<span class="help-inline"><img src="" id="imgverify"> <a href="javascript:;" id="toggle">换一张</a></span>
 					</div>
 				</div>
 			</div>
@@ -200,21 +199,21 @@
 			<div class="panel-body">
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">类型</label>
-					<div class="col-sm-9">
+					<div class="col-sm-9 col-xs-12">
 						<label for="b_radio_3" class="radio-inline"><input type="radio" name="type" id="b_radio_3" value="1" {if empty($account['type']) || $account['type'] == 1}checked{/if} /> 微信</label>
 						<label for="b_radio_4" class="radio-inline"><input type="radio" name="type" id="b_radio_4" value="2" {if $account['type'] == 2}checked{/if}/> 易信</label>
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span> 公众号名称</label>
-					<div class="col-sm-9">
+					<div class="col-sm-9 col-xs-12">
 						<input type="text" name="name" class="form-control" value="{$account['name']}" autocomplete="off" />
 						<span class="help-block">填写公众号的帐号名称</span>
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">公众号帐号</label>
-					<div class="col-sm-9">
+					<div class="col-sm-9 col-xs-12">
 						<input type="text" name="account" class="form-control" value="{$account['account']}" autocomplete="off" />
 						<span class="help-block">填写公众号的帐号，一般为英文帐号</span>
 					</div>
@@ -229,7 +228,7 @@
 				<div id="panel_1">
 					<div class="form-group">
 						<label class="col-xs-12 col-sm-3 col-md-2 control-label">级别</label>
-						<div class="col-sm-9">
+						<div class="col-sm-9 col-xs-12">
 							<label for="status_1" class="radio-inline"><input autocomplete="off" type="radio" name="level" id="status_1" value="0" {if empty($account['level']) || $account['level']==1} checked{/if} > 普通订阅号</label>
 							<label for="status_2" class="radio-inline"><input autocomplete="off" type="radio" name="level" id="status_2" value="1" {if $account['level']==2} checked{/if} /> 普通服务号</label>
 							<label for="status_3" class="radio-inline"><input autocomplete="off" type="radio" name="level" id="status_3" value="2" {if $account['level']==3} checked{/if} /> 认证订阅号</label>
@@ -240,22 +239,22 @@
 					<div id="adv">
 						<div class="form-group">
 							<label class="col-xs-12 col-sm-3 col-md-2 control-label">AppId</label>
-							<div class="col-sm-9">
-										<input type="text" name="key" class="form-control" value="{$account['key']}" autocomplete="off"/>
-										<div class="help-block">请填写微信公众平台后台的AppId</div>
+							<div class="col-sm-9 col-xs-12">
+								<input type="text" name="key" class="form-control" value="{$account['key']}" autocomplete="off"/>
+								<div class="help-block">请填写微信公众平台后台的AppId</div>
 							</div>
 						</div>
 						<div class="form-group">
 							<label class="col-xs-12 col-sm-3 col-md-2 control-label">AppSecret</label>
-							<div class="col-sm-9">
-										<input type="text" name="secret" class="form-control" value="{$account['secret']}" autocomplete="off"/>
-										<div class="help-block">请填写微信公众平台后台的AppSecret, 只有填写这两项才能管理自定义菜单</div>
+							<div class="col-sm-9 col-xs-12">
+								<input type="text" name="secret" class="form-control" value="{$account['secret']}" autocomplete="off"/>
+								<div class="help-block">请填写微信公众平台后台的AppSecret, 只有填写这两项才能管理自定义菜单</div>
 							</div>
 						</div>
 						<div class="form-group">
 							<label class="col-xs-12 col-sm-3 col-md-2 control-label">Oauth 2.0</label>
 							<div class="col-sm-9 col-xs-12">
-								<p class="form-control-static">在微信公众号请求用户网页授权之前，开发者需要先到公众平台网站的【开发者中心】<b>网页服务</b>中配置授权回调域名。<a href="http://www.wdlcms.com/manual/dev:v0.6:qa:mobile_redirect_url_error" target="_black">查看详情</a></p>
+								<p class="form-control-static">在微信公众号请求用户网页授权之前，开发者需要先到公众平台网站的【开发者中心】<b>网页服务</b>中配置授权回调域名。<a href="http://www.wdlcms.com/wiki" target="_black">查看详情</a></p>
 							</div>
 						</div>
 					</div>
@@ -265,24 +264,24 @@
 				{if !empty($acid)}
 					<div class="form-group">
 						<label class="col-xs-12 col-sm-3 col-md-2 control-label">接口地址</label>
-						<div class="col-sm-9">
+						<div class="col-sm-9 col-xs-12">
 							<input type="text" class="form-control" value="{$_W['siteroot']}api.php?id={$account['acid']}" readonly autocomplete="off"/>
 							<div class="help-block">设置“公众平台接口”配置信息中的接口地址</div>
 						</div>
 					</div>
 					<div class="form-group">
 						<label class="col-xs-12 col-sm-3 col-md-2 control-label" style="color:red">Token</label>
-						<div class="col-sm-9">
+						<div class="col-sm-9 col-xs-12">
 							<div class="input-group">
-							  <input type="text" name="wetoken" class="form-control" value="{$account['token']}" readonly />
-							  <span class="input-group-addon" style="cursor:pointer" onclick="tokenGen();">生成新的</span>
+								<input type="text" name="wetoken" class="form-control" value="{$account['token']}" readonly />
+								<span class="input-group-addon" style="cursor:pointer" onclick="tokenGen();">生成新的</span>
 							</div>
 							<div class="help-block">与公众平台接入设置值一致，必须为英文或者数字，长度为3到32个字符. 请妥善保管, Token 泄露将可能被窃取或篡改平台的操作数据.</div>
 						</div>
 					</div>
 					<div class="form-group">
 						<label class="col-xs-12 col-sm-3 col-md-2 control-label" style="color:red">EncodingAESKey</label>
-						<div class="col-sm-9">
+						<div class="col-sm-9 col-xs-12">
 							<div class="input-group">
 								<input type="text" name="encodingaeskey" class="form-control" value="{$account['encodingaeskey']}" />
 								<span class="input-group-addon" style="cursor:pointer" onclick="EncodingAESKeyGen();">生成新的</span>
@@ -293,7 +292,7 @@
 				{/if}
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">二维码</label>
-					<div class="col-sm-9">
+					<div class="col-sm-9 col-xs-12">
 						<input type="file" name="qrcode" value="{$item['qrcode']}">
 						<span class="help-block">只支持JPG图片</span>
 					</div>
@@ -301,7 +300,7 @@
 				{if file_exists(IA_ROOT . '/attachment/qrcode_'.$account['acid'].'.jpg')}
 					<div class="form-group">
 						<label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
-						<div class="col-sm-9">
+						<div class="col-sm-9 col-xs-12">
 							<div class="input-group">
 								<img src="{$_W[attachurl]}/qrcode_{$account['acid']}.jpg?time={php echo time()}" class="img-responsive img-thumbnail" width="150" />
 							</div>
@@ -310,7 +309,7 @@
 				{/if}
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">头像</label>
-					<div class="col-sm-9">
+					<div class="col-sm-9 col-xs-12">
 						<input type="file" name="headimg" value="{$item['headimg']}">
 						<span class="help-block">只支持JPG图片</span>
 					</div>
@@ -318,7 +317,7 @@
 				{if file_exists(IA_ROOT . '/attachment/headimg_'.$account['acid'].'.jpg')}
 					<div class="form-group">
 						<label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
-						<div class="col-sm-9">
+						<div class="col-sm-9 col-xs-12">
 							<div class="input-group">
 								<img src="{$_W[attachurl]}/headimg_{$account['acid']}.jpg?time={php echo time()}" class="img-responsive img-thumbnail" width="150" />
 							</div>
@@ -363,13 +362,13 @@
 							<form action="" method="post" class="form-horizontal" role="form">
 								<div class="form-group">
 									<label class="col-xs-12 col-sm-2 col-md-1 col-lg-1 control-label">URL:</label>
-									<div class="col-sm-9 input-group">
+									<div class="col-sm-10 input-group">
 										<p class="form-control-static"><a href="javascript:;" title="点击复制接口地址">{$_W['siteroot']}api.php?id={$account['acid']}</a></p>
 									</div>
 								</div>
 								<div class="form-group">
 									<label class="col-xs-12 col-sm-2 col-md-1 col-lg-1 control-label">Token:</label>
-									<div class="col-sm-9 input-group">
+									<div class="col-sm-10 input-group">
 										<p class="form-control-static"> <a href="javascript:;" title="点击复制Token">{$account['token']}</a></p>
 									</div>
 								</div>
@@ -446,9 +445,6 @@
 				$('div[id^="panel"]').hide();
 				$('#panel_'+$(this).val()).show();
 			});
-			
-
-
 		});
 	});
 	function tokenGen() {

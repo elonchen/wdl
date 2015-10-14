@@ -1,6 +1,6 @@
 <?php 
 /**
- * [Weizan System] Copyright (c) 2014 wdlcms.com
+ * [Weizan System] Copyright (c) 2014 wdlcms.COM
  * Weizan is NOT a free software, it under the license terms, visited http://www.wdlcms.com/ for more details.
  */
 defined('IN_IA') or exit('Access Denied');
@@ -25,11 +25,12 @@ $entries['mc']['title'] = '个人中心入口设置';
 $entries['mc']['module'] = 'mc';
 $entries['mc']['do'] = '';
 $entries['mc']['url'] = url('mc/home', array('i' => $_W['uniacid']));
-
+$entries['mc']['url_show'] = murl('mc/home', array('i' => $_W['uniacid']), true, true); 
 $entries['card']['title'] = '会员卡入口设置';
 $entries['card']['module'] = 'card';
 $entries['card']['do'] = '';
 $entries['card']['url'] = url('mc/bond/card', array('i' => $_W['uniacid']));
+$entries['card']['url_show'] = murl('mc/bond/card', array('i' => $_W['uniacid']), true, true);
 
 if($do != 'module') {
 	$entry = $entries[$do];
@@ -66,6 +67,7 @@ if($do != 'module') {
 		message('访问错误');
 	}
 	$entry['url'] = murl('entry', array('do' => $entry['do'], 'm' => $entry['module']));
+	$entry['url_show'] = murl('entry', array('do' => $entry['do'], 'm' => $entry['module']), true, true);
 	$cover['title'] = $entry['title'];
 
 		if($module['issolution']) {
@@ -93,9 +95,12 @@ if(!empty($cover)) {
 	if(!empty($cover['thumb'])) {
 		$cover['src'] = tomedia($cover['thumb']);
 	}
+	$cover['url_show'] = $entry['url_show'];
 	$reply = reply_single($cover['rid']);
+	$entry['title'] = $cover['title'];
 } else {
 	$cover['title'] = $entry['title'];
+	$cover['url_show'] = $entry['url_show'];
 }
 if(empty($reply)) {
 	$reply = array();

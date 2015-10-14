@@ -1,6 +1,6 @@
 <?php
 /**
- * [Weizan System] Copyright (c) 2014 wdlcms.com
+ * [Weizan System] Copyright (c) 2014 wdlcms.COM
  * Weizan isNOT a free software, it under the license terms, visited http://www.wdlcms.com/ for more details.
  */
 defined('IN_IA') or exit('Access Denied');
@@ -11,6 +11,36 @@ class coupon extends WeiXinAccount{
 		$acc = self::create($acid);
 		$this->account = $acc->account;
 	}
+
+	public function getCardTicket(){
+		$cachekey = "cardticket:{$this->account['acid']}";
+		$cache = cache_load($cachekey);
+		if (!empty($cache) && !empty($cache['ticket']) && $cache['expire'] > TIMESTAMP) {
+			$this->account['card_ticket'] = $cache;
+			return $cache['token'];
+		}
+		load()->func('communication');
+		$access_token = $this->getAccessToken();
+		if(is_error($access_token)){
+			return $access_token;
+		}
+		$url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token={$access_token}&type=wx_card";
+		$content = ihttp_get($url);
+		if(is_error($content)) {
+			return error(-1, '调用接口获取微信公众号 card_ticket 失败, 错误信息: ' . $content['message']);
+		}
+		$result = @json_decode($content['content'], true);
+		if(empty($result) || intval(($result['errcode'])) != 0 || $result['errmsg'] != 'ok') {
+			return error(-1, '获取微信公众号 card_ticket 结果错误, 错误信息: ' . $result['errmsg']);
+		}
+		$record = array();
+		$record['ticket'] = $result['ticket'];
+		$record['expire'] = TIMESTAMP + $result['expires_in'] - 200;
+		$this->account['card_ticket'] = $record;
+		cache_write($cachekey, $record);
+		return $record['ticket'];
+	}
+
 	
 	public function LocationLogoupload($logo){
 		global $_W;

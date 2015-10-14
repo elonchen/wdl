@@ -25,7 +25,7 @@ class BasicModule extends WeModule {
 		if(empty($this->replies)) {
 			return '必须填写有效的回复内容.';
 		}
-		return '';	
+		return '';
 	}
 	
 	public function fieldsFormSubmit($rid = 0) {

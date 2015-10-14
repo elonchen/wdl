@@ -1,7 +1,7 @@
 <?php
-	
+
 /**
- * [WEIZAN System] Copyright (c) 2014 wdlcms.com
+ * [WEIZAN System] Copyright (c) 2014 wdlcms.COM
  * WEIZAN is NOT a free software, it under the license terms, visited http://www.wdlcms.com/ for more details.
  */
 
@@ -178,8 +178,7 @@ class bfb_sdk{
 		$this->log(
 				sprintf('the result from baifubao query pay result is [%s]', 
 						$content));
-		$response_arr = json_decode(
-				json_encode(simplexml_load_string($content)), true);
+		$response_arr = json_decode(json_encode(isimplexml_load_string($content)), true);
 				foreach ($response_arr as &$value) {
 			if (empty($value) && is_array($value)) {
 				$value = '';

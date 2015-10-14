@@ -147,7 +147,6 @@ if($do == 'display') {
 		}
 	}
 	
-	load()->func('tpl');
 	$pindex = max(1, intval($_GPC['page']));
 	$psize = 20;
 	$condition = ' WHERE `uniacid`=:uniacid';
@@ -184,8 +183,14 @@ if($do == 'display') {
 	}
 	$pars[':starttime'] = $starttime;
 	$pars[':endtime'] = $endtime;
-	$fans_group = pdo_fetch('SELECT * FROM ' . tablename('mc_fans_groups') . ' WHERE uniacid = :uniacid AND acid = :acid', array(':uniacid' => $_W['uniacid'], ':acid' => $_W['acid']));
-	$fans_group = iunserializer($fans_group['groups']);
+	
+	$groups_data = pdo_fetchall('SELECT * FROM ' . tablename('mc_fans_groups') . ' WHERE uniacid = :uniacid', array(':uniacid' => $_W['uniacid']));
+	if(!empty($groups_data)) {
+		$groups = array();
+		foreach($groups_data as $gr) {
+			$groups[$gr['acid']] = iunserializer($gr['groups']);
+		}
+	}
 	$total = pdo_fetchcolumn("SELECT COUNT(*) FROM ".tablename('mc_mapping_fans').$condition, $pars);
 	$list = pdo_fetchall("SELECT * FROM ".tablename('mc_mapping_fans') . $condition . $orderby . ' LIMIT ' .($pindex - 1) * $psize.','.$psize, $pars);
 	if(!empty($list)) {

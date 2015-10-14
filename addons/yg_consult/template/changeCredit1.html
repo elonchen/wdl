@@ -1,0 +1,40 @@
+﻿	{template 'common/header'}
+	<link type="text/css" rel="stylesheet" href="./../app/resource/common/common.css">
+<div class="main">
+        <form action="" method="post" onsubmit="return check();" class="form-horizontal form" enctype="multipart/form-data">
+        <h4>{$title}</h4>
+		<table class="tb">
+			<tr>
+				<th><label for="">积分：</label></th>
+				<td>
+                  {$reply['credit1']}  
+				</td>
+			</tr>
+			
+			
+            
+            
+			<tr>
+				<th></th>
+				<td>
+					<input name="submit" type="submit" value="提交" class="btn btn-primary span3">
+					<input type="hidden" name="token" value="{$_W['token']}" />
+								<input type="hidden" name="from_user" value="{$from_user}" />
+				</td>
+			</tr>
+		</table>
+	</form>
+</div>
+
+<script type="text/javascript">
+        function check() {
+            if($.trim($('#answer').val()) == '') {
+                message('没有输入解答内容.', '', 'error');
+                return false;
+            }
+     
+			return true;
+		}
+            	
+        </script>
+{template 'common/footer'}

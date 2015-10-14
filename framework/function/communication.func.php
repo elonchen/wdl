@@ -36,6 +36,7 @@ function ihttp_request($url, $post = '', $extra = array(), $timeout = 60) {
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		@curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 		curl_setopt($ch, CURLOPT_HEADER, 1);
+		curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
 		if ($post) {
 			if (is_array($post)) {
 				$filepost = false;

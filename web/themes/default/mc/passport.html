@@ -14,24 +14,24 @@
 			<div class="panel-body">
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">开启强制注册</label>
-					<div class="col-sm-9">
+					<div class="col-sm-9 col-xs-12">
 						<label class="radio-inline">
 							<input type="radio" name="passport[focusreg]" value="1" {if !empty($passport['focusreg'])} checked="checked"{/if}/> 是
 						</label>
 						<label class="radio-inline">
 							<input type="radio" name="passport[focusreg]" value="0" {if empty($passport['focusreg'])} checked="checked"{/if}/> 否
 						</label>
-						<span class="help-block">关闭强制注册时，用户从微信、易信等进入系统时，当模块使用"checkauth"验证用户身份时，可以在非登录状态下直接使用模块功能，但不能进入用户中心（需要注册或是登录）。</span>
+						<span class="help-block">关闭强制注册时，用户从微信、易信等进入系统时，当模块使用"checkauth"验证用户身份时，可以在非登录状态下直接使用模块功能。</span>
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">身份验证项</label>
-					<div class="col-sm-9">
+					<div class="col-sm-9 col-xs-12">
 						<label class="radio-inline">
-							<input type="radio" name="passport[item]" value="mobile" {if $passport['item'] == 'mobile'} checked="checked"{/if}/> 手机优先
+							<input type="radio" name="passport[item]" value="mobile" {if $passport['item'] == 'mobile'} checked="checked"{/if}/> 手机注册
 						</label>
 						<label class="radio-inline">
-							<input type="radio" name="passport[item]" value="email" {if $passport['item'] == 'email' || empty($passport['item'])} checked="checked"{/if}/> 邮箱优先
+							<input type="radio" name="passport[item]" value="email" {if $passport['item'] == 'email'} checked="checked"{/if}/> 邮箱注册
 						</label>
 						<label class="radio-inline">
 							<input type="radio" name="passport[item]" value="random" {if $passport['item'] == 'random' || empty($passport['item'])} checked="checked"{/if}/> 二者都行
@@ -41,7 +41,7 @@
 				</div>
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">身份验证方式</label>
-					<div class="col-sm-9">
+					<div class="col-sm-9 col-xs-12">
 						<label class="radio-inline">
 							<input type="radio" name="passport[type]" value="code" {if $passport['type'] == 'code'} checked="checked"{/if}/> 随机密码
 						</label>
@@ -55,7 +55,7 @@
 						<span class="help-block">随机密码方式: 采用发送验证码的方式, 用户不需要记录密码. 在微信以外的渠道登录系统时, 需要输入手机或邮箱+验证码来进入系统</span>
 						<span class="help-block">固定密码方式: 采用设置密码的方式, 用户在首次使用时设置固定的访问密码. 在微信以外的渠道登录系统时, 需要输入手机或邮箱+密码来进入系统</span>
 						<span class="help-block">混合密码方式: 混合使用两种验证方式, 用户可以自己选择是否设置访问密码. 如果设置了访问密码, 那么登录是可以使用手机或邮箱+随机密码或固定密码来进入系统</span>
-						<span class="help-block"><strong>注意: 使用随机密码或者混合密码时, 必须先设置邮件或短信选项</strong></span>
+						<span class="help-block"><strong>注意: 使用随机密码或者混合密码时, 必须先 <a href="{php echo url('profile/notify');}" target="_blank">设置邮件</a> 或 <a href="{php echo url('account/post');}" target="_blank">短信</a> 选项</strong></span>
 					</div>
 				</div>
 			</div>
@@ -77,14 +77,14 @@
 			<div class="panel-body">
 				<div class="form-group" id="account">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">选择公众号</label>
-					<div class="col-sm-9">
+					<div class="col-sm-9 col-xs-12">
 						<select name="oauth[account]" class="form-control">
 							<option value="0">请选择公众号</option>
 							{loop $accounts $acid $name}
 							<option value="{$acid}" {if $oauth['account'] == $acid}selected{/if}>{$name}</option>
 							{/loop}
 						</select>
-						<span class="help-block">在微信公众号请求用户网页授权之前，开发者需要先到公众平台网站的【开发者中心】<b>网页服务</b>中配置授权回调域名。<a href="http://www.wdlcms.com/manual/dev:v0.6:qa:mobile_redirect_url_error" target="_black">查看详情</a></span>
+						<span class="help-block">在微信公众号请求用户网页授权之前，开发者需要先到公众平台网站的【开发者中心】<b>网页服务</b>中配置授权回调域名。<a href="http://www.wdlcms.com/wiki" target="_black">查看详情</a></span>
 					</div>
 				</div>
 			</div>

@@ -1,0 +1,28 @@
+﻿{template 'header'}
+{template 'info'}
+{if empty($list)}
+<div class="list img-rounded">没有任何记录</div>
+{/if}
+
+
+{loop $list $item}
+<div class="list img-rounded">
+	<div class="content">
+
+		问题：{$item['question']}
+		
+				{if $item['status']==0}
+	<br/>	<a class="btn" href="{php echo $this->createMobileUrl('Postyg_consult', array('id'=>$item['id']))}">
+	<i class="icon-edit"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a class="btn" onclick="return confirm('确认删除吗？');
+	return false;" href="{php echo $this->createMobileUrl('delyg_consult', array('id'=>$item['id']))}"><i class="icon-remove"></i></a>
+		{/if}
+			{if $item['status']==1}<br/><font style="color:green">解答：{$item['answer']}</font>			{/if}  
+		</div>
+</div>
+
+
+{/loop}
+	 
+
+
+{template 'footer'}

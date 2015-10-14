@@ -290,15 +290,15 @@ define(['bootstrap', 'webuploader' ], function($, WebUploader){
 	
 	module.image = function(obj, callback, options) {
 		var content = 
-'<div id="uploader"> '+
-'	<div class="queueList">'+
-'		<div id="dndArea" class="placeholder">'+
-'			<div id="filePicker"></div>'+
-'		</div>'+
-'	</div>'+
-'</div>';
+			'<div id="uploader" class="uploader app"> '+
+			'	<div class="queueList">'+
+			'		<div id="dndArea" class="placeholder">'+
+			'			<div id="filePicker"></div>'+
+			'		</div>'+
+			'	</div>'+
+			'</div>';
 		var footer = '<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>';
-		var modalobj = module.dialog('请上传图片: 小于1M', content, footer, {containerName: 'image-container'}); 
+		var modalobj = module.dialog('请上传图片', content, footer, {containerName: 'image-container'});
 		
 		modalobj.modal({'keyboard': false});
 		modalobj.find('button.btn-primary').off('click');
@@ -354,7 +354,7 @@ define(['bootstrap', 'webuploader' ], function($, WebUploader){
 			modalobj.modal('hide');
 			uploader.reset();
 			if(code == 'Q_EXCEED_SIZE_LIMIT'){
-				alert('错误信息: 图片大于 1M 无法上传.');
+				alert('错误信息: 图片大于 4M 无法上传.');
 				return
 			}
 			alert('错误信息: ' + code );

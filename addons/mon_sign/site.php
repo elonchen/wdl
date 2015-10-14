@@ -22,7 +22,7 @@ LIMIT 0 , 30
 class Mon_SignModuleSite extends WeModuleSite
 {
     public $weid;
-
+    public $acid;
     public $oauth;
 
     public static $TYPE_FOLLOW = 1;//关注
@@ -53,7 +53,9 @@ class Mon_SignModuleSite extends WeModuleSite
      */
     public function  doWebSign()
     {
-        global $_GPC;
+        global $_GPC,$_W;
+
+
         $operation = !empty($_GPC['op']) ? $_GPC['op'] : 'display';
 
         if ($operation == 'display') {
@@ -94,7 +96,7 @@ class Mon_SignModuleSite extends WeModuleSite
 
         $signUser = CRUD::findById(CRUD::$table_sign_user, $uid);
 
-
+        $sign = CRUD::findById(CRUD::$table_sign, $sid);
         if (checksubmit()) {
 
             if (empty($_GPC['credit'])) {
@@ -116,6 +118,10 @@ class Mon_SignModuleSite extends WeModuleSite
                 'credit' => $user_credit + $_GPC['credit']
 
             );
+
+            if ($sign['sync_credit'] == 1) {//同步积分
+                $this->synFanscredit($signUser['openid'],$_GPC['credit']);//同步
+            }
 
             CRUD::updateById(CRUD::$table_sign_user, $user_data, $uid);// 更新用户积分
 
@@ -583,7 +589,7 @@ class Mon_SignModuleSite extends WeModuleSite
             CRUD::updateById(CRUD::$table_sign_user, $m_sin_user_data, $signUser['id']);//更新用户的积分
 
             if ($sign['sync_credit'] == 1) {//同步积分
-                $this->synFanscredit($clientUser['openid'], $user_credit);
+                $this->synFanscredit($clientUser['openid'],$mserial_credit+$sign['sign_credit']);
             }
             $res['code'] = 200;
             $ser_msg = $mserial_credit > 0 ? "连续签到积分" . $mserial_credit . "分" : "";
@@ -750,12 +756,35 @@ class Mon_SignModuleSite extends WeModuleSite
     public function  synFanscredit($openid, $credit)
     {
         global $_W;
-        $fans = pdo_fetch("select uid from ".tablename('mc_mapping_fans')." where openid=:openid and uniacid=:uniacid limit 1",array(':openid'=>$openid,":uniacid"=>$_W['uniacid']));
-        if(!empty($fans)){
-             load()->model('mc');
-             mc_credit_update($fans['uid'], "credit1", $credit);
+
+
+        load()->model('mc');
+
+
+
+        $sql = 'SELECT * FROM ' . tablename('mc_mapping_fans') . ' WHERE openid = :openid AND uniacid = :uniacid LIMIT 1';
+        $params = array();
+        $params[':openid'] = $openid;
+        $params[':uniacid'] = $this->weid;
+        $fan = pdo_fetch($sql, $params);
+
+
+        if(!empty($fan)){
+
+            mc_credit_update($fan['uid'],'credit1',$credit);
+
         }
-        
+
+        /*
+        $fans = pdo_fetch("select * from " . tablename("fans") . " where from_user=:openid", array(":openid" => $openid));
+        if (!empty($fans)) {
+            $fans_credit1 = $fans['credit1'] + $credit;
+
+            pdo_update("fans", array('credit1' => $fans_credit1), array("from_user" => $openid));
+
+        }
+        */
+
     }
 
     /**

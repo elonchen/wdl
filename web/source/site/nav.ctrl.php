@@ -1,6 +1,6 @@
 <?php
 /**
- * [WEIZAN System] Copyright (c) 2014 WDLCMS.COM
+ * [WEIZAN System] Copyright (c) 2014 wdlcms.com
  * WEIZAN is NOT a free software, it under the license terms, visited http://www.wdlcms.com/ for more details.
  */
 defined('IN_IA') or exit('Access Denied');
@@ -57,7 +57,7 @@ if($do == 'post') {
 		if(empty($_GPC['title'])) {
 			message('抱歉，请输入导航菜单的名称！', '', 'error');
 		}
-		
+		$url = ((strexists($_GPC['url'], 'http://') || strexists($_GPC['url'], 'https://')) && !strexists($_GPC['url'], '#wechat_redirect')) ? $_GPC['url'] . '#wechat_redirect' : $_GPC['url'];
 		$data = array(
 			'uniacid' => $_W['uniacid'],
 			'multiid' => intval($_GPC['multid']),
@@ -65,7 +65,7 @@ if($do == 'post') {
 			'name' => $_GPC['title'],
 			'description' => $_GPC['description'],
 			'displayorder' => intval($_GPC['displayorder']),
-			'url' => $_GPC['url'],
+			'url' => $url,
 			'status' => intval($_GPC['status']),
 		);
 		if(empty($id) || empty($item['module'])) {

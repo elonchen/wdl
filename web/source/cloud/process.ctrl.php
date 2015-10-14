@@ -1,6 +1,6 @@
 <?php 
 /**
- * [Weizan System] Copyright (c) 2014 wdlcms.com
+ * [Weizan System] Copyright (c) 2014 wdlcms.COM
  * Weizan is NOT a free software, it under the license terms, visited http://www.wdlcms.com/ for more details.
  */
 load()->func('communication');
@@ -90,7 +90,7 @@ if(!empty($packet) && (!empty($packet['upgrade']) || !empty($packet['install']))
 		$scripts = array();
 	if(empty($packet['install'])) {
 		$updatefiles = array();
-		if(!empty($packet['scripts'])) {
+		if (!empty($packet['scripts']) && empty($packet['type'])) {
 			$updatedir = IA_ROOT . '/data/update/';
 			load()->func('file');
 			rmdirs($updatedir, true);

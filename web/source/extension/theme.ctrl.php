@@ -78,15 +78,15 @@ if($do == 'install') {
 	if (pdo_fetchcolumn("SELECT id FROM ".tablename('site_templates')." WHERE name = :name", array(':name' => $id))) {
 		message('模板已经安装或是唯一标识已存在！', '', 'error');
 	}
-	$manifest = ext_template_manifest($id);
-	
+	$manifest = ext_template_manifest($id, false);
+
 	if (!empty($manifest)) {
 		$r = cloud_t_prepare($id);
 		if(is_error($r)) {
 			message($r['message'], url('extension/theme/prepared'), 'error');
 		}
 	}
-	
+
 	if (empty($manifest)) {
 		$r = cloud_prepare();
 		if(is_error($r)) {

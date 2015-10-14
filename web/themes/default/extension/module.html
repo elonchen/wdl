@@ -1,7 +1,7 @@
 {php $newUI = true;}
 {template 'common/header-gw'}
 <script type="text/javascript">
-require(['domReady', 'jquery'], function(dom, $){
+require(['domReady'], function(dom){
 	dom(function(){
 		$('.module').delegate('.media-description-button', 'click', function(){ //控制模块详细信息
 			$(this).parents('.item').find('.media-description').toggle();
@@ -10,15 +10,10 @@ require(['domReady', 'jquery'], function(dom, $){
 	});
 });
 </script>
-<div id="row" style="margin-top: 20px;">
-	<div class="col-md-12">
-		<div class="panel panel-default">
-			<div class="panel-body">
-
 <style type="text/css">
 small a{color:#999;}
 .form h4{margin-bottom:0;}
-#upgradelog {line-height: 25px;max-height:150px;overflow: auto;padding: 15px;text-indent: 30px;}
+#upgradelog {line-height: 25px;max-height:150px;overflow: auto;padding: 15px;}
 /*模块列表样式*/
 .module .item{border-bottom:1px #DDD dotted;margin-bottom:10px; padding-bottom:5px;}
 .module .media .pull-right{margin-bottom:0;width:140px;overflow:hidden;}
@@ -30,8 +25,8 @@ small a{color:#999;}
 .module .media-body{position:relative;}
 .module .media-body .edit-info{margin-left:10px; color:rgb(255, 143, 0); display:none;}
 .module .media-body span{margin-top:6px; display:inline-block;}
-.module .media-object{display:inline-block; float:left; margin-right:20px;margin-left: 10px; width:40px; height:40px; overflow:hidden;border-radius: 50%;}
-.module .media-heading{font-weight:normal; font-size:13px;}
+.module .media-object{display:inline-block; float:left; margin-right:10px; width:48px; height:48px; overflow:hidden;}
+.module .media-heading{font-weight:normal; font-size:16px;}
 .module .media-description{display:none; margin-top:5px; overflow:hidden; background:#EEE; padding:5px; color:#666;}
 .module div.alert{font-size:14px; font-weight:600; margin-bottom:10px;}
 </style>
@@ -39,7 +34,7 @@ small a{color:#999;}
 <div class="clearfix">
 	{if $do == 'installed'}
 	<div class="form">
-		<h5 class="page-header" style="margin: 20px 0 10px;">已安装的模块</h5>
+		<h5 class="page-header">已安装的模块</h5>
 	</div>
 	<div class="module form-horizontal">
 		{loop $modules $row}
@@ -209,33 +204,32 @@ small a{color:#999;}
 			});
 			
 			window.setModuleInfo = function(modulename) {
-				var modulename = modulename;
-				$.post('{php echo url('extension/module/upgrade');}', {m : modulename, type : 'getinfo'},function(resp){
-					var moduleinfo = JSON.parse(resp);
-					if (typeof moduleinfo.type == 'error') {
+				$.post('{php echo url("extension/module/upgrade");}', {m : modulename, type : 'getinfo'},function(response){
+					if (typeof response.message.version != 'object') {
 						$('#moduleinfo').hide();
 						$('#errorinfo').show();
-						$('#errorinfo').html('<button class="btn btn-danger">' + moduleinfo.message + '</button>');
+						$('#upgrade').modal('show');
+						$('#errorinfo').html('<div class="alert alert-danger">' + response.message.message + '</div>');
 						$('#confirm').attr('href', 'javascript:;').text('无法更新').removeClass('btn-success').addClass('btn-danger');
 					} else {
 						$('#moduleinfo').show();
 						$('#errorinfo').hide();
-						$('#modulename').text(moduleinfo.message.title);
-						$('#modulenewversion').text(moduleinfo.message.version.version);
-						$('#moduleauthor').text(moduleinfo.message.username);
-						$('#upgradelog').html(moduleinfo.message.version.description);
-						$('#upgradetime').text(moduleinfo.message.version.createtime);
-						$('#upgradeprice').text(moduleinfo.message.version.upgradeprice);
+						$('#modulename').text(response.message.title);
+						$('#modulenewversion').text(response.message.version.version);
+						$('#moduleauthor').text(response.message.username);
+						$('#upgradelog').html(response.message.version.description);
+						$('#upgradetime').text(response.message.version.createtime);
+						$('#upgradeprice').text(response.message.version.upgradeprice);
 						var upgradelink = $('#confirm').attr('href') + '&m=' + modulename;
 						$('#upgrade').modal('show');
-						if (moduleinfo.message.version.upgradeprice > '0') {
-							$('#confirm').click(function(){
-								return confirm('更新此版本需要花费 '+moduleinfo.message.version.upgradeprice+' 个交易币，您确认要升级到此版本吗？');
+						if (response.message.version.upgradeprice > '0') {
+							$('#confirm').click(function() {
+								return confirm('更新此版本需要花费 ' + response.message.version.upgradeprice + ' 个微币，您确认要升级到此版本吗？');
 							});
 						}
 						$('#confirm').attr('href', upgradelink).text('确认更新').removeClass('btn-danger').addClass('btn-success');;
 					}
-				});
+				}, 'json');
 			}
 
 			$('.module .item').hover(function(){
@@ -353,7 +347,7 @@ small a{color:#999;}
 	{/if}
 	
 	<script type="text/javascript">
-		require(['angular', 'jquery', 'util'], function(angular, $, u){
+		require(['angular'], function(angular){
 			angular.module('app', []).controller('listInstallModules', function($scope, $http) {
 				$.post('{php echo url('extension/module/check');}', {foo: 'install'},function(dat){
 					try {
@@ -383,7 +377,7 @@ small a{color:#999;}
 			var insta = function(){
 				var m_name = module.pop();
 				if(!m_name) {
-					u.message('本次成功安装' + success.length + '个模块.<br>安装失败' + fail.length + '个模块', "{php echo url('extension/module/installed')}", 'info');
+					util.message('本次成功安装' + success.length + '个模块.<br>安装失败' + fail.length + '个模块', "{php echo url('extension/module/installed')}", 'info');
 					return;
 				}
 				var pragress = i + '/' + total;
@@ -400,7 +394,7 @@ small a{color:#999;}
 						i++;
 						fail.push(module_title[m_name]);
 						$('#fail').html(fail.join('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;')).parent().parent().show();
-						setTimeout(function(){insta()}, 2000);					
+						setTimeout(function(){insta()}, 2000);
 					}
 				});
 
@@ -416,5 +410,5 @@ small a{color:#999;}
 		});
 	</script>
 	{/if}
-</div></div></div></div></div>
+</div>
 {template 'common/footer-gw'}

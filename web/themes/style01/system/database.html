@@ -108,7 +108,6 @@
 		</div>
 		{/if}
 		<script type="text/javascript">
-			require(['jquery'],function($){
 				if ($(".tablename").text() == '') {
 					$(".table-info").css('display', 'block');
 				}
@@ -133,7 +132,6 @@
 						$(".table-info").css('display', 'block');
 					}
 				});
-			});
 		</script>
 	{/if}
 	{if $do == 'optimize'}

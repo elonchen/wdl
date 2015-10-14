@@ -1,7 +1,7 @@
 <?php 
 /**
- * [WEIZAN System] Copyright (c) 2014 012wz.com
- * WEIZAN is NOT a free software, it under the license terms, visited http://www.012wz.com/ for more details.
+ * [WEIZAN System] Copyright (c) 2014 wdlcms.com
+ * WEIZAN is NOT a free software, it under the license terms, visited http://www.wdlcms.com/ for more details.
  */
 defined('IN_IA') or exit('Access Denied');
 $moduels = uni_modules();
@@ -35,7 +35,6 @@ $type = in_array($do, $dos) ? $do : '';
 if(empty($type)) {
 	message('支付方式错误,请联系商家', '', 'error');
 }
-
 if(!empty($type)) {
 	$sql = 'SELECT * FROM ' . tablename('core_paylog') . ' WHERE `uniacid`=:uniacid AND `module`=:module AND `tid`=:tid';
 	$pars  = array();
@@ -51,6 +50,8 @@ if(!empty($type)) {
 		$log = null;
 	}
 	if(empty($log)) {
+		$moduleid = pdo_fetchcolumn("SELECT mid FROM ".tablename('modules')." WHERE name = :name", array(':name' => $params['module']));
+		$moduleid = empty($moduleid) ? '000000' : sprintf("%06d", $moduleid);
 		$fee = $params['fee'];
 		$record = array();
 		$record['uniacid'] = $_W['uniacid'];
@@ -58,9 +59,9 @@ if(!empty($type)) {
 		$record['module'] = $params['module'];
 		$record['type'] = $type;
 		$record['tid'] = $params['tid'];
+		$record['uniontid'] = date('YmdHis').$moduleid.random(8,1);
 		$record['fee'] = $fee;
 		$record['status'] = '0';
-
 		$record['is_usecard'] = 0;
 		$record['card_id'] = 0;
 		$record['card_fee'] = $fee;
@@ -128,6 +129,7 @@ if(!empty($type)) {
 	}
 	$ps = array();
 	$ps['tid'] = $log['plid'];
+	$ps['uniontid'] = $log['uniontid'];
 	$ps['user'] = $_W['fans']['from_user'];
 	$ps['fee'] = $log['card_fee'];
 	$ps['title'] = $params['title'];
@@ -147,8 +149,7 @@ if(!empty($type)) {
 		if(!empty($plid)) {
 			$tag = array();
 			$tag['acid'] = $_W['acid'];
-			$eso_tag = '微信支付';
-			pdo_update('core_paylog', array('openid' => $_W['openid'], 'tag' => iserializer($tag), 'eso_tag'=>$eso_tag, 'createtime'=>date('Y-m-d H:i:s')), array('plid' => $plid));
+			pdo_update('core_paylog', array('openid' => $_W['openid'], 'tag' => iserializer($tag)), array('plid' => $plid));
 		}
 		load()->model('payment');
 		load()->func('communication');

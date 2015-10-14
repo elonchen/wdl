@@ -5,7 +5,7 @@
 			<div class="panel-body">
 <ol class="breadcrumb">
 	<li><a href="./?refresh"><i class="fa fa-home"></i></a></li>
-	<li><a href="{url 'system/welcome'}">系统管理</a></li>
+	<li><a href="{url 'system/welcome'}">系统</a></li>
 	<li><a href="{url 'system/database'}">数据库</a></li>
 	<li class="active">{if $do == 'backup'}备份{elseif $do == 'restore'}还原{elseif $do == 'optimize'}优化{elseif $do == 'run'}运行SQL{/if}</li>
 </ol>
@@ -112,7 +112,6 @@
 		</div>
 		{/if}
 		<script type="text/javascript">
-			require(['jquery'],function($){
 				if ($(".tablename").text() == '') {
 					$(".table-info").css('display', 'block');
 				}
@@ -137,7 +136,6 @@
 						$(".table-info").css('display', 'block');
 					}
 				});
-			});
 		</script>
 	{/if}
 	{if $do == 'optimize'}

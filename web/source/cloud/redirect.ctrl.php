@@ -1,6 +1,6 @@
 <?php 
 /**
- * [Weizan System] Copyright (c) 2014 wdlcms.com
+ * [Weizan System] Copyright (c) 2014 wdlcms.COM
  * Weizan is NOT a free software, it under the license terms, visited http://www.wdlcms.com/ for more details.
  */
 
@@ -68,7 +68,7 @@ if ($do == 'buyversion') {
 			message('模块不存在或是未有更新的版本。', url('extension/module'), 'error');
 		break;
 		case '-3':
-			message('您的交易币不足以支付此次升级费用。', url('extension/module'), 'error');
+			message('您的微币不足以支付此次升级费用。', url('extension/module'), 'error');
 		break;
 		case '2':
 			message('您已经购买过此升级版本，系统将直接跳转至升级界面。', url('cloud/process', array('m' => $auth['name'], 'is_upgrade' => 1, 'is_buy' => 1)), 'success');

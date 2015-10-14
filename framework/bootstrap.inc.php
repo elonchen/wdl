@@ -35,6 +35,7 @@ load()->func('compat');
 load()->func('pdo');
 load()->classs('db');
 load()->classs('account');
+load()->classs('agent');
 load()->model('cache');
 load()->model('account');
 load()->model('setting');
@@ -44,7 +45,6 @@ define('CLIENT_IP', getip());
 $_W['config'] = $config;
 $_W['timestamp'] = TIMESTAMP;
 $_W['charset'] = $_W['config']['setting']['charset'];
-$_W['token'] = token();
 $_W['clientip'] = CLIENT_IP;
 
 unset($configfile, $config);
@@ -122,6 +122,30 @@ if (empty($_W['setting']['upload'])) {
 }
 
 $_W['attachurl'] = empty($_W['config']['upload']['attachurl']) ? $_W['siteroot'] . $_W['config']['upload']['attachdir'] . '/' : $_W['config']['upload']['attachurl'] . '/';
+
+$_W['os'] = Agent::deviceType();
+if($_W['os'] == Agent::DEVICE_MOBILE) {
+	$_W['os'] = 'mobile';
+} elseif($_W['os'] == Agent::DEVICE_DESKTOP) {
+	$_W['os'] = 'windows';
+} else {
+	$_W['os'] = 'unknown';
+}
+
+$_W['container'] = Agent::browserType();
+if(Agent::isMicroMessage() == Agent::MICRO_MESSAGE_YES) {
+	$_W['container'] = 'wechat';
+} elseif ($_W['container'] == Agent::BROWSER_TYPE_ANDROID) {
+	$_W['container'] = 'android';
+} elseif ($_W['container'] == Agent::BROWSER_TYPE_IPAD) {
+	$_W['container'] = 'ipad';
+} elseif ($_W['container'] == Agent::BROWSER_TYPE_IPHONE) {
+	$_W['container'] = 'iphone';
+} elseif ($_W['container'] == Agent::BROWSER_TYPE_IPOD) {
+	$_W['container'] = 'ipod';
+} else {
+	$_W['container'] = 'unknown';
+}
 
 $controller = $_GPC['c'];
 $action = $_GPC['a'];

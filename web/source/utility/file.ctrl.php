@@ -255,10 +255,7 @@ if ($do == 'fetch' || $do == 'upload') {
 	
 		if($type == 'image'){
 		
-		$thumb = empty($setting['thumb']) ? 0 : 1; 		$width = intval($setting['width']); 	
-		if(isset($option['thumb'])){
-			$thumb = empty($option['thumb']) ? 0 : 1;
-		}
+		$thumb = empty($setting['thumb']) ? 0 : 1; 		$width = intval($setting['width']);
 		if (isset($option['width']) && !empty($option['width'])) {
 			$width = intval($option['width']);
 		}

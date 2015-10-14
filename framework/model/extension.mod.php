@@ -1,6 +1,6 @@
 <?php
 /**
- * [Weizan System] Copyright (c) 2014 wdlcms.com
+ * [Weizan System] Copyright (c) 2014 wdlcms.COM
  * Weizan is NOT a free software, it under the license terms, visited http://www.wdlcms.com/ for more details.
  */
 defined('IN_IA') or exit('Access Denied');
@@ -136,15 +136,16 @@ function ext_module_manifest($modulename) {
 	return ext_module_manifest_parse($xml);
 }
 
+
 function _ext_module_manifest_entries($elm) {
 	$ret = array();
-	if(!empty($elm)) {
+	if (!empty($elm)) {
 		$call = $elm->getAttribute('call');
-		if(!empty($call)) {
+		if (!empty($call)) {
 			$ret[] = array('call' => $call);
 		}
 		$entries = $elm->getElementsByTagName('entry');
-		for($i = 0; $i < $entries->length; $i++) {
+		for ($i = 0; $i < $entries->length; $i++) {
 			$entry = $entries->item($i);
 			$row = array(
 				'title' => $entry->getAttribute('title'),
@@ -152,7 +153,7 @@ function _ext_module_manifest_entries($elm) {
 				'direct' => $entry->getAttribute('direct') == 'true',
 				'state' => $entry->getAttribute('state')
 			);
-			if(!empty($row['title']) && !empty($row['do'])) {
+			if (!empty($row['title']) && !empty($row['do'])) {
 				$ret[] = $row;
 			}
 		}
@@ -167,7 +168,7 @@ function ext_module_checkupdate($modulename) {
 		$version = $manifest['application']['version'];
 		load()->model('module');
 		$module = module_fetch($modulename);
-		if ($version > $module['version']) {
+		if (ver_compare($version, $module['version']) == '1') {
 			return true;
 		} else {
 			return false;
@@ -412,28 +413,33 @@ TPL;
 	return trim($xsd);
 }
 
-function ext_template_manifest($tpl) {
-	$manifest = array();
+
+function ext_template_manifest($tpl, $cloud = true) {
 	$filename = IA_ROOT . '/app/themes/' . $tpl . '/manifest.xml';
 	if (!file_exists($filename)) {
-		return array();
+		if ($cloud) {
+			load()->model('cloud');
+			$manifest = cloud_t_info($tpl);
+		}
+		return is_error($manifest) ? array() : $manifest;
 	}
 	$manifest = ext_template_manifest_parse(file_get_contents($filename));
-	if(empty($manifest['name']) || $manifest['name'] != $tpl) {
+	if (empty($manifest['name']) || $manifest['name'] != $tpl) {
 		return array();
 	}
 	return $manifest;
 }
 
+
 function ext_template_manifest_parse($xml) {
 	$xml = str_replace(array('&'), array('&amp;'), $xml);
-	$xml = @simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA);
+	$xml = @isimplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA);
 	if (empty($xml)) {
 		return array();
 	}
 	$manifest['name'] = strval($xml->identifie);
 	$manifest['title'] = strval($xml->title);
-	if(empty($manifest['title'])) {
+	if (empty($manifest['title'])) {
 		return array();
 	}
 	$manifest['type'] = !empty($xml->type) ? strval($xml->type) : 'other';
@@ -443,8 +449,8 @@ function ext_template_manifest_parse($xml) {
 	if (isset($xml->sections)) {
 		$manifest['sections'] = strval($xml->sections);
 	}
-	if($xml->settings->item) {
-		foreach($xml->settings->item as $msg) {
+	if ($xml->settings->item) {
+		foreach ($xml->settings->item as $msg) {
 			$attrs = $msg->attributes();
 			$manifest['settings'][] = array('key' => trim(strval($attrs['variable'])), 'value' => trim(strval($attrs['content'])), 'desc' => trim(strval($attrs['description'])));
 		}
@@ -501,4 +507,27 @@ function ext_template_type() {
 		)
 	);
 	return $types;
+}
+
+
+function ext_module_script_clean($modulename, $manifest) {
+	$moduleDir = IA_ROOT . '/addons/' . $modulename . '/';
+	$manifest['install'] = trim($manifest['install']);
+	$manifest['uninstall'] = trim($manifest['uninstall']);
+	$manifest['upgrade'] = trim($manifest['upgrade']);
+	if (strexists($manifest['install'], '.php')) {
+		if (file_exists($moduleDir . $manifest['install'])) {
+			unlink($moduleDir . $manifest['install']);
+		}
+	}
+	if (strexists($manifest['uninstall'], '.php')) {
+		if (file_exists($moduleDir . $manifest['uninstall'])) {
+			unlink($moduleDir . $manifest['uninstall']);
+		}
+	}
+	if (strexists($manifest['upgrade'], '.php')) {
+		if (file_exists($moduleDir . $manifest['upgrade'])) {
+			unlink($moduleDir . $manifest['upgrade']);
+		}
+	}
 }

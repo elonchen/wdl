@@ -1,6 +1,6 @@
 <?php
 /**
- * [Weizan System] Copyright (c) 2014 wdlcms.com
+ * [Weizan System] Copyright (c) 2014 wdlcms.COM
  * Weizan isNOT a free software, it under the license terms, visited http://www.wdlcms.com/ for more details.
  */
 defined('IN_IA') or exit('Access Denied');
@@ -10,28 +10,31 @@ abstract class WeAccount {
 	
 	const TYPE_WEIXIN = '1';
 	const TYPE_YIXIN = '2';
-	const TYPE_ALIPAY = '3';
+	const TYPE_WEIXIN_PLATFORM = '3';
 	
 	
-	public static function create($acidOrAccount) {
-		
+	public static function create($acidOrAccount = '') {
+		global $_W;
+		if(empty($acidOrAccount)) {
+			$acidOrAccount = $_W['account'];
+		}
 		if (is_array($acidOrAccount)) {
 			$account = $acidOrAccount;
 		} else {
 			$account = account_fetch($acidOrAccount);
 		}
 		if(!empty($account) && isset($account['type'])) {
-			if($account['type'] == '1') {
+			if($account['type'] == self::TYPE_WEIXIN) {
 				load()->classs('weixin.account');
 				return new WeiXinAccount($account);
 			}
-			if($account['type'] == '2') {
+			if($account['type'] == self::TYPE_YIXIN) {
 				load()->classs('yixin.account');
 				return new YiXinAccount($account);
 			}
-			if($account['type'] == '3') {
-				load()->classs('alipay.account');
-				return new AlipayAccount($account);
+			if($account['type'] == self::TYPE_WEIXIN_PLATFORM) {
+				load()->classs('weixin.platform');
+				return new WeiXinPlatform($account);
 			}
 		}
 		return null;
@@ -51,10 +54,6 @@ abstract class WeAccount {
 		if($type == '2') {
 			load()->classs('yixin.account');
 			return 'YiXinAccount';
-		}
-		if($type == '3') {
-			load()->classs('alipay.account');
-			return 'AlipayAccount';
 		}
 	}
 	
@@ -94,11 +93,22 @@ abstract class WeAccount {
 				if(in_array($packet['event'], array('card_pass_check', 'card_not_pass_check'))) {
 			$data['status'] = ($packet['event'] == 'card_pass_check') ? 3 : 2;
 			$card_id = trim($packet['cardid']);
-			pdo_update('coupon', $data, array('acid' => $_W['acid'], 'card_id' => $card_id));
+			$is_ok = pdo_fetchcolumn('SELECT id FROM ' . tablename('coupon') . ' WHERE acid = :acid AND card_id = :card_id', array(':acid' => $_W['acid'], ':card_id' => $card_id));
+			if(empty($is_ok)) {
+				$insert = array(
+					'uniacid' => $_W['uniacid'],
+					'acid' => $_W['acid'],
+					'card_id' => $card_id,
+					'status' => $data['status'],
+				);
+				pdo_insert('coupon', $insert);
+			} else {
+				pdo_update('coupon', $data, array('acid' => $_W['acid'], 'card_id' => $card_id));
+			}
 			exit();
 		}
 				if($packet['event'] == 'user_get_card') {
-						$hash = md5($packet['fromusername'] . $packet['createtime']);
+						$hash = md5($packet['fromusername'] . $packet['createtime'] . $packet['usercardcode']);
 			$is_exist = pdo_fetchcolumn('SELECT id FROM ' . tablename('coupon_record') . ' WHERE acid = :acid AND hash = :hash', array(':acid' => $_W['acid'], ':hash' => $hash));
 			if(empty($is_exist)) {
 				$data['uniacid'] = $_W['uniacid'];
@@ -143,7 +153,7 @@ abstract class WeAccount {
 		global $_W;
 		$packet = array();
 		if (!empty($message)){
-			$obj = simplexml_load_string($message, 'SimpleXMLElement', LIBXML_NOCDATA);
+			$obj = isimplexml_load_string($message, 'SimpleXMLElement', LIBXML_NOCDATA);
 			if($obj instanceof SimpleXMLElement) {
 				$packet['from'] = strval($obj->FromUserName);
 				$packet['to'] = strval($obj->ToUserName);
@@ -190,6 +200,10 @@ abstract class WeAccount {
 										$scene = strval($obj->EventKey);
 					if(!empty($scene)) {
 						$packet['scene'] = str_replace('qrscene_', '', $scene);
+						if(strexists($packet['scene'], '\\u')) {
+														$packet['scene'] = '"' . str_replace('\\u', '\u', $packet['scene']) . '"';
+							$packet['scene'] = json_decode($packet['scene']);
+						}
 						$packet['ticket'] = strval($obj->Ticket);
 					}
 				}
@@ -198,6 +212,10 @@ abstract class WeAccount {
 				if($packet['event'] == 'SCAN') {
 										$packet['type'] = 'qr';
 					$packet['scene'] = strval($obj->EventKey);
+					if(strexists($packet['scene'], '\\u')) {
+												$packet['scene'] = '"' . str_replace('\\u', '\u', $packet['scene']) . '"';
+						$packet['scene'] = json_decode($packet['scene']);
+					}
 					$packet['ticket'] = strval($obj->Ticket);
 				}
 				if($packet['event'] == 'LOCATION') {
@@ -553,13 +571,11 @@ class WeUtility {
 
 	
 	public static function logging($level = 'info', $message = '') {
-		if(!DEVELOPMENT) {
-					}
 		$filename = IA_ROOT . '/data/logs/' . date('Ymd') . '.log';
 		load()->func('file');
 		mkdirs(dirname($filename));
 		$content = date('Y-m-d H:i:s') . " {$level} :\n------------\n";
-		if(is_string($message)) {
+		if(is_string($message) && !in_array($message, array('post', 'get'))) {
 			$content .= "String:\n{$message}\n";
 		}
 		if(is_array($message)) {
@@ -568,13 +584,13 @@ class WeUtility {
 				$content .= sprintf("%s : %s ;\n", $key, $value);
 			}
 		}
-		if($message == 'get') {
+		if($message === 'get') {
 			$content .= "GET:\n";
 			foreach($_GET as $key => $value) {
 				$content .= sprintf("%s : %s ;\n", $key, $value);
 			}
 		}
-		if($message == 'post') {
+		if($message === 'post') {
 			$content .= "POST:\n";
 			foreach($_POST as $key => $value) {
 				$content .= sprintf("%s : %s ;\n", $key, $value);
@@ -1009,16 +1025,11 @@ abstract class WeModuleSite extends WeBase {
 		if(!$this->inMobile) {
 			message('支付功能只能在手机上使用');
 		}
-		if (empty($_W['member']['uid'])) {
-			checkauth();
-		}
-
 		$params['module'] = $this->module['name'];
 		$pars = array();
 		$pars[':uniacid'] = $_W['uniacid'];
 		$pars[':module'] = $params['module'];
 		$pars[':tid'] = $params['tid'];
-
 				if($params['fee'] <= 0) {
 			$pars['from'] = 'return';
 			$pars['result'] = 'success';
@@ -1041,12 +1052,15 @@ abstract class WeModuleSite extends WeBase {
 			message('没有有效的支付方式, 请联系网站管理员.');
 		}
 		$pay = $setting['payment'];
+		if (empty($_W['member']['uid'])) {
+			$pay['credit']['switch'] = false;
+		}
 		if (!empty($pay['credit']['switch'])) {
 			$credtis = mc_credit_fetch($_W['member']['uid']);
 		}
 		$iscard = pdo_fetchcolumn('SELECT iscard FROM ' . tablename('modules') . ' WHERE name = :name', array(':name' => $params['module']));
 		$you = 0;
-		if($pay['card']['switch'] == 2) {
+		if($pay['card']['switch'] == 2 && !empty($_W['openid'])) {
 						if($_W['card_permission'] == 1 && !empty($params['module'])) {
 				$cards = pdo_fetchall('SELECT a.id,a.card_id,a.cid,b.type,b.title,b.extra,b.is_display,b.status,b.date_info FROM ' . tablename('coupon_modules') . ' AS a LEFT JOIN ' . tablename('coupon') . ' AS b ON a.cid = b.id WHERE a.acid = :acid AND a.module = :modu AND b.is_display = 1 AND b.status = 3 ORDER BY a.id DESC', array(':acid' => $_W['acid'], ':modu' => $params['module']));
 				$flag = 0;
@@ -1119,11 +1133,11 @@ abstract class WeModuleSite extends WeBase {
 			}
 		}
 
-		if($pay['card']['switch'] == 3) {
+		if($pay['card']['switch'] == 3 && $_W['member']['uid']) {
 						$cards = array();
 			if(!empty($params['module'])) {
 				$cards = pdo_fetchall('SELECT a.id,a.couponid,b.type,b.title,b.discount,b.condition,b.starttime,b.endtime FROM ' . tablename('activity_coupon_modules') . ' AS a LEFT JOIN ' . tablename('activity_coupon') . ' AS b ON a.couponid = b.couponid WHERE a.uniacid = :uniacid AND a.module = :modu AND b.condition <= :condition AND b.starttime <= :time AND b.endtime >= :time  ORDER BY a.id DESC', array(':uniacid' => $_W['uniacid'], ':modu' => $params['module'], ':time' => TIMESTAMP, ':condition' => $params['fee']), 'couponid');
-				if(!empty($cards) && $_W['member']['uid']) {
+				if(!empty($cards)) {
 					$condition = '';
 					if($iscard == 1) {
 						$condition = " AND grantmodule = '{$params['module']}'";

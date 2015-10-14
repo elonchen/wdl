@@ -40,13 +40,13 @@
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">电话</label>
 					<div class="col-sm-8 col-xs-12">
-						<input type="text" id="" name="phone" value="{if !empty($item['phone'])}{$item['phone']}{/if}"  class="form-control" />
+						<input type="text" name="phone" value="{if !empty($item['phone'])}{$item['phone']}{/if}"  class="form-control" />
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">QQ</label>
 					<div class="col-sm-8 col-xs-12">
-						<input type="text" id="" name="qq" value="{if !empty($item['qq'])}{$item['qq']}{/if}"  class="form-control" />
+						<input type="text" name="qq" value="{if !empty($item['qq'])}{$item['qq']}{/if}"  class="form-control" />
 					</div>
 				</div>
 				<div class="form-group">
@@ -67,7 +67,7 @@
 				</div>
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">坐标</label>
-					<div class="col-sm-8 col-xs-12" style="margin-left:-15px;">
+					<div class="col-sm-8 col-xs-12">
 						{if !empty($item)}
 							{php echo tpl_form_field_coordinate('baidumap', $item)}
 						{else}

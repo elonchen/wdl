@@ -1,0 +1,64 @@
+{template 'common/header'}
+<link type="text/css" rel="stylesheet" href="{MODULE_URL}/datil/css/common.css">
+<div class="main">
+	  <form action="" method="post" class="form-horizontal form" onsubmit="return formcheck(this)">
+     	<div class="search">
+		<form action="site.php" method="get">
+		<input type="hidden" name="act" value="module" />
+		<input type="hidden" name="do" value="bb_ask" />
+		<input type="hidden" name="op" value="display" />
+		<input type="hidden" name="name" value="bb_ask" />
+		<table class="table table-bordered tb">
+			<tbody>
+				<tr>
+					<th>问题关键字</th>
+					<td>
+						<input class="span6" name="answer" id="" type="text" value="{$_GPC['answer']}">
+					</td>
+				</tr>
+				<tr>
+					<th>已回复</th>
+					<td>
+						<select name="status">
+							<option value="1" {if !empty($_GPC['status'])} selected{/if}>是</option>
+							<option value="0" {if empty($_GPC['status'])} selected{/if}>否</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+				 <tr class="search-submit">
+					<td colspan="2"><button class="btn pull-right span2"><i class="icon-search icon-large"></i> 搜索</button></td>
+				 </tr>
+			</tbody>
+		</table>
+		</form>
+	</div>
+        <p></p><p></p>	<div style="padding:15px;">
+        <table class="table table-hover">
+            <thead>
+            	<tr>
+					<th class="row-hover span2">问题<i></i></th>
+					<th class="row-hover span2">已回复<i></i></th>
+					<th class="row-hover span2" >操作</th>
+				</tr>
+            </thead>
+            <tbody id="level-list">
+            {loop $webyg_consultqa $qa}
+            <tr>
+                <td>{$qa['question']}</td>
+                <td>{if $qa['status']==1}	<font style="color:green">是</font>{/if}	{if $qa['status']==0}	<font style="color:red">否</font>{/if}</td>
+    
+                <td>
+                    <a class="btn" href="{php echo url('site/entry/yg_consultform', array('m' => 'yg_consult','id' => $qa['id']))}">解答</a>
+                    <a class="btn" onclick="return confirm('确认删除吗？');return false;" href="{php echo url('site/entry/yg_consultdelete', array('m' => 'yg_consult','id' => $qa['id']))}"><i class="icon-remove"></i></a></td>
+            </tr>
+            {/loop}
+            </tbody>
+            <tfoot>
+        
+            </tfoot>
+        </table>    </div>
+          {$pager}
+</div>
+
+{template 'common/footer'}

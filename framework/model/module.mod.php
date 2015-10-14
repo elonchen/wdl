@@ -8,6 +8,17 @@ defined('IN_IA') or exit('Access Denied');
 
 function module_types() {
 	static $types = array(
+	
+		'server' => array(
+			'name' => 'server',
+			'title' => '我的服务',
+			'desc' => ''
+		),
+		'wdlshow' => array(
+			'name' => 'wdlshow',
+			'title' => '展示应用',
+			'desc' => ''
+		),
 		'business' => array(
 			'name' => 'business',
 			'title' => '主要业务',
@@ -21,6 +32,11 @@ function module_types() {
 		'activity' => array(
 			'name' => 'activity',
 			'title' => '营销及活动',
+			'desc' => ''
+		),
+		'wdlgame' => array(
+			'name' => 'wdlgame',
+			'title' => '游戏应用',
 			'desc' => ''
 		),
 		'services' => array(

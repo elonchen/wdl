@@ -1,9 +1,10 @@
 <?php
 /**
- * [Weizan System] Copyright (c) 2014 wdlcms.com
+ * [Weizan System] Copyright (c) 2014 wdlcms.COM
  * Weizan isNOT a free software, it under the license terms, visited http://www.wdlcms.com/ for more details.
  */
 defined('IN_IA') or exit('Access Denied');
+load()->func('communication');
 
 class WeiXinAccount extends WeAccount {
 	protected $account = null;
@@ -20,7 +21,6 @@ class WeiXinAccount extends WeAccount {
 		if (empty($account)) {
 			return true;
 		}
-		global $_W;
 		$this->account = $account;
 		if(empty($this->account['acid'])) {
 			trigger_error('error uniAccount id, can not construct ' . __CLASS__, E_USER_WARNING);
@@ -474,7 +474,7 @@ class WeiXinAccount extends WeAccount {
 	}
 
 	public function barCodeCreateDisposable($barcode) {
-		$barcode['expire_seconds'] = empty($barcode['expire_seconds']) ? 1800 : $barcode['expire_seconds'];
+		$barcode['expire_seconds'] = empty($barcode['expire_seconds']) ? 604800 : $barcode['expire_seconds'];
 		if (empty($barcode['action_info']['scene']['scene_id']) || empty($barcode['action_name'])) {
 			return error('1', 'Invalid params');
 		}
@@ -635,7 +635,7 @@ class WeiXinAccount extends WeAccount {
 			'40099' => '该code已被核销。'
 		);
 		$code = strval($code);
-		if($code == '40001') {
+		if($code == '40001' || $code == '42001') {
 			$rec = array();
 			$rec['access_token'] = '';
 			pdo_update('account_wechats', $rec, array('acid' => $this->account['acid']));
@@ -1066,8 +1066,11 @@ class WeiXinAccount extends WeAccount {
 		if(is_error($token)){
 			return $token;
 		}
-		$data = urldecode(json_encode($data));
 		$url = "https://api.weixin.qq.com/cgi-bin/message/mass/sendall?access_token={$token}";
+		if(!empty($data['touser'])) {
+			$url = "https://api.weixin.qq.com/cgi-bin/message/mass/send?access_token={$token}";
+		}
+		$data = urldecode(json_encode($data));
 		$response = ihttp_request($url, $data);
 		if(is_error($response)) {
 			return error(-1, "访问公众平台接口失败, 错误: {$response['message']}");

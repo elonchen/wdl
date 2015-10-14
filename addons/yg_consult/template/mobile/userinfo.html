@@ -1,0 +1,75 @@
+{template 'header'}<style>
+.step .con{width:50%; float:left; margin-bottom:20px;}
+.step .con > div{background:#EEE; color:#EEE; width:90%; height:50px; position:relative; text-align:center;}
+.step .con > div .img-circle{background:#BBB; display:inline-block; width:20px; height:20px; line-height:20px; margin-top:6px;}
+.step .con > div .step-name{display:block; color:#BBB;}
+.step .con .pull-left .icon-caret-right{position:absolute; right:-15px; top:0; font-size:50px;}
+.step .active > div{background:#D9D9D9; color:#D9D9D9;}
+.step .active > div .img-circle{background:#3276b1; color:#FFF;}
+.step .active > div .step-name{color:#333;}
+</style>
+<style>
+.form-horizontal .control-label{margin-bottom:5px; font-size:14px;}
+.form-group{margin-bottom:10px;}
+</style>
+<form class="form-horizontal img-rounded" role="form" method="post" onsubmit="return checkInfo(this);">
+<div class="form-group">
+	<label for="realname" class="col-sm-3 control-label">真实姓名</label>
+	<div class="col-sm-9">
+		<input type="text" id="realname" name="realname" value="{$fans['realname']}" class="form-control" placeholder="输入您的真实姓名" />
+	</div>
+</div>
+
+
+<div class="form-group">
+	<label for="mobile" class="col-sm-3 control-label">年龄</label>
+	<div class="col-sm-6">
+		<input type="text" id="age" name="age" value="{$userinfo['age']}" class="form-control span2" placeholder="输入您的年龄" />
+	</div>
+</div>
+
+<div class="form-group">
+	<label for="mobile" class="col-sm-3 control-label">地址</label>
+	<div class="col-sm-6">
+		<input type="text" id="address" name="address" value="{$fans['address']}" class="form-control span2" placeholder="输入您的地址" />
+	</div>
+</div>
+<div class="form-group">
+	<label for="mobile" class="col-sm-3 control-label">病情</label>
+	<div class="col-sm-6">
+		<textarea class="form-control" rows="3" id="zhusu" name="zhusu" >{$userinfo['zhusu']}</textarea>
+	</div>
+</div>
+
+<div class="form-group">
+	<div class="col-xs-12">
+		<button type="submit" name="submit" value="yes" class="btn btn-primary btn-lg" style="width:100%;">提交登记</button>
+		<input type="hidden" name="token" value="{$_W['token']}" />
+	</div>
+</div>
+</form>
+
+<script type="text/javascript">
+<!--
+	function checkInfo(form) {
+				if (!form['realname'].value) {
+			alert('请输入您的真实姓名，方便我们与您联系。');
+			return false;
+		}
+						if (!form['age'].value) {
+			alert('请输入您的年龄。');
+			return false;
+		}
+				if (!form['zhusu'].value) {
+			alert('请输入您的主诉。');
+			return false;
+		}
+				if (!form['address'].value) {
+			alert('请输入您的地址。');
+			return false;
+		}
+
+	}
+//-->
+</script>
+{template 'footer'}

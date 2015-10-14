@@ -53,6 +53,10 @@ function _login($forward = '') {
 		if(empty($forward)) {
 			$forward = './index.php?c=account&a=display';
 		}
+		if ($record['uid'] != $_GPC['__uid']) {
+			isetcookie('__uniacid', '', -7 * 86400);
+			isetcookie('__uid', '', -7 * 86400);
+		}
 		message("欢迎回来，{$record['username']}。", $forward);
 	} else {
 		message('登录失败，请检查您输入的用户名和密码！');

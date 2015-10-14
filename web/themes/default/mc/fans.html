@@ -149,6 +149,7 @@
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">关注/取消关注时间</label>
 					<div class="col-sm-9 col-md-8 col-lg-8 col-xs-12">
+						{php load()->func('tpl');}
 						{php echo tpl_form_field_daterange('time', array('starttime'=>date('Y-m-d', $starttime),'endtime'=>date('Y-m-d', $endtime)));}
 					</div>
 					<div class="pull-right col-xs-12 col-sm-3 col-md-2 col-lg-2">

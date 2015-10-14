@@ -75,8 +75,20 @@ function getip() {
 
 function token($specialadd = '') {
 	global $_W;
-	$hashadd = defined('IN_MANAGEMENT') ? 'for management' : '';
-	return substr(md5($_W['config']['setting']['authkey'] . $hashadd . $specialadd), 8, 8);
+	if(!defined('IN_MOBILE')) {
+		return substr(md5($_W['config']['setting']['authkey'] . $specialadd), 8, 8);
+	} else {
+		if(!empty($_SESSION['token'])) {
+			foreach($_SESSION['token'] as $k => $v) {
+				if(TIMESTAMP - $v > 300) {
+					unset($k);
+				}
+			}
+		}
+		$key = substr(random(20), 0, 8);
+		$_SESSION['token'][$key] = TIMESTAMP;
+		return $key;
+	}
 }
 
 
@@ -102,7 +114,16 @@ function checksubmit($var = 'submit', $allowget = false) {
 	if (empty($_GPC[$var])) {
 		return FALSE;
 	}
-	if ($allowget || (($_W['ispost'] && !empty($_W['token']) && $_W['token'] == $_GPC['token']) && (empty($_SERVER['HTTP_REFERER']) || preg_replace("/https?:\/\/([^\:\/]+).*/i", "\\1", $_SERVER['HTTP_REFERER']) == preg_replace("/([^\:]+).*/", "\\1", $_SERVER['HTTP_HOST'])))) {
+	if(defined('IN_SYS')) {
+		if ($allowget || (($_W['ispost'] && !empty($_W['token']) && $_W['token'] == $_GPC['token']) && (empty($_SERVER['HTTP_REFERER']) || preg_replace("/https?:\/\/([^\:\/]+).*/i", "\\1", $_SERVER['HTTP_REFERER']) == preg_replace("/([^\:]+).*/", "\\1", $_SERVER['HTTP_HOST'])))) {
+			return TRUE;
+		}
+	} else {
+		if(empty($_W['isajax']) && empty($_SESSION['token'][$_GPC['token']])) {
+			message('抱歉，页面已经失效请您重新进入提交数据', referer(), 'error');
+		} else {
+			unset($_SESSION['token'][$_GPC['token']]);
+		}
 		return TRUE;
 	}
 	return FALSE;
@@ -289,13 +310,15 @@ function wurl($segment, $params = array()) {
 }
 
 
-function murl($segment, $params = array(), $noredirect = true) {
+function murl($segment, $params = array(), $noredirect = true, $addhost = false) {
 	global $_W;
 	list($controller, $action, $do) = explode('/', $segment);
-	$url = './index.php?i=' . $_W['uniacid'] . '&';
-	if (!empty($_W['acid'])) {
-		$url .= "j={$_W['acid']}&";
+	if (!empty($addhost)) {
+		$url = $_W['siteroot'] . 'app/';
+	} else {
+		$url = './';
 	}
+	$url .= 'index.php?i=' . $_W['uniacid'] . '&';
 	if (!empty($controller)) {
 		$url .= "c={$controller}&";
 	}
@@ -416,7 +439,7 @@ function pagination($total, $pageIndex, $pageSize = 15, $url = '', $context = ar
 }
 
 
-function tomedia($src){
+function tomedia($src, $local_path = false){
 	global $_W;
 	if (empty($src)) {
 		return '';
@@ -426,7 +449,11 @@ function tomedia($src){
 	}
 	$t = strtolower($src);
 	if (!strexists($t, 'http://') && !strexists($t, 'https://')) {
-		$src = $_W['attachurl'] . $src;
+		if(!$local_path) {
+			$src = $_W['attachurl'] . $src;
+		} else {
+			$src = $_W['siteroot'] . $_W['config']['upload']['attachdir'] . '/' . $src;
+		}
 	}
 	return $src;
 }
@@ -794,4 +821,73 @@ function media2local($media_id, $all = false){
 		return $data;
 	}
 	return '';
+}
+
+function aes_decode($message, $encodingaeskey = '', $appid = '') {
+	$key = base64_decode($encodingaeskey . '=');
+	
+	$ciphertext_dec = base64_decode($message);
+	$module = mcrypt_module_open(MCRYPT_RIJNDAEL_128, '', MCRYPT_MODE_CBC, '');
+	$iv = substr($key, 0, 16);
+	
+	mcrypt_generic_init($module, $key, $iv);
+	$decrypted = mdecrypt_generic($module, $ciphertext_dec);
+	mcrypt_generic_deinit($module);
+	mcrypt_module_close($module);
+	$block_size = 32;
+	
+	$pad = ord(substr($decrypted, -1));
+	if ($pad < 1 || $pad > 32) {
+		$pad = 0;
+	}
+	$result = substr($decrypted, 0, (strlen($decrypted) - $pad));
+	if (strlen($result) < 16) {
+		return '';
+	}
+	$content = substr($result, 16, strlen($result));
+	$len_list = unpack("N", substr($content, 0, 4));
+	$contentlen = $len_list[1];
+	$content = substr($content, 4, $contentlen);
+	$from_appid = substr($content, $xml_len + 4);
+	if (!empty($appid) && $appid != $from_appid) {
+		return '';
+	}
+	return $content;
+}
+
+function aes_encode($message, $encodingaeskey = '', $appid = '') {
+	$key = base64_decode($encodingaeskey . '=');
+	$text = random(16) . pack("N", strlen($message)) . $message . $appid;
+	
+	$size = mcrypt_get_block_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
+	$module = mcrypt_module_open(MCRYPT_RIJNDAEL_128, '', MCRYPT_MODE_CBC, '');
+	$iv = substr($key, 0, 16);
+	
+	$block_size = 32;
+	$text_length = strlen($text);
+		$amount_to_pad = $block_size - ($text_length % $block_size);
+	if ($amount_to_pad == 0) {
+		$amount_to_pad = $block_size;
+	}
+		$pad_chr = chr($amount_to_pad);
+	$tmp = '';
+	for ($index = 0; $index < $amount_to_pad; $index++) {
+		$tmp .= $pad_chr;
+	}
+	$text = $text . $tmp;
+	mcrypt_generic_init($module, $key, $iv);
+		$encrypted = mcrypt_generic($module, $text);
+	mcrypt_generic_deinit($module);
+	mcrypt_module_close($module);
+		$encrypt_msg = base64_encode($encrypted);
+	return $encrypt_msg;
+}
+
+
+function isimplexml_load_string($string, $class_name = 'SimpleXMLElement', $options = 0, $ns = '', $is_prefix = false) {
+	libxml_disable_entity_loader(true);
+	if (preg_match('/(\<\!DOCTYPE|\<\!ENTITY)/i', $string)) {
+		return false;
+	}
+	return simplexml_load_string($string, $class_name, $options, $ns, $is_prefix);
 }

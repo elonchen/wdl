@@ -161,12 +161,21 @@ if(!empty($_W['oauth_account'])) {
 					}
 				}
 				$forward = base64_decode($_SESSION['dest_url']);
-				unset($_SESSION['dest_url']);
+				$forward = strexists($forward, 'i=') ? $forward : "{$forward}&i={$_W['uniacid']}&j={$_W['acid']}";
+				if (!empty($_W['openid'])) {
+					$_SESSION['dest_url'] = '';
+					unset($_SESSION['dest_url']);
+				}
 				header('Location: ' . $_W['siteroot'] . 'app/index.php?' . $forward . '&wxref=mp.weixin.qq.com#wechat_redirect');
 				exit;
 			}
 		}
-		message('微信授权失败错误信息为: ' . $response['message']);
+		$state = 'we7sid-'.$_W['session_id'];
+		$url = "{$_W['siteroot']}app/index.php?i={$_W['uniacid']}&j={$_W['acid']}&c=auth&a=oauth&scope=snsapi_base";
+		$callback = urlencode($url);
+		$forward = "https://open.weixin.qq.com/connect/oauth2/authorize?appid={$_W['oauth_account']['key']}&redirect_uri={$callback}&response_type=code&scope=snsapi_base&state={$state}#wechat_redirect";
+		header('Location: ' . $forward);
+		exit;
 	}
 }
 exit('访问错误');

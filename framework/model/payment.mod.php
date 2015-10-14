@@ -1,17 +1,25 @@
 <?php
 
+
+
 /**
  * [Weizan System] Copyright (c) 2014 wdlcms.com
  * Weizan is NOT a free software, it under the license terms, visited http://www.wdlcms.com/ for more details.
  */
 
+
+
 defined('IN_IA') or exit('Access Denied');
+
+
 define('ALIPAY_GATEWAY', 'https://mapi.alipay.com/gateway.do');
+
+
 
 
 function alipay_build($params, $alipay = array()) {
 	global $_W;
-	$tid = $params['tid'];
+	$tid = $params['uniontid'];
 	$set = array();
 	$set['service'] = 'alipay.wap.create.direct.pay.by.user';
 	$set['partner'] = $alipay['partner'];
@@ -36,14 +44,13 @@ function alipay_build($params, $alipay = array()) {
 		}
 	}
 	sort($prepares);
-	$string = implode($prepares, '&');
+	$string = implode('&', $prepares);
 	$string .= $alipay['secret'];
 	$set['sign'] = md5($string);
 
-	$response = ihttp_request(ALIPAY_GATEWAY . '?' . http_build_query($set, '', '&'));
+	$response = ihttp_request(ALIPAY_GATEWAY . '?' . http_build_query($set, '', '&'), array(), array('CURLOPT_FOLLOWLOCATION' => 0));
 	return array('url' => $response['headers']['Location']);
 }
-
 
 
 
@@ -64,7 +71,7 @@ function wechat_build($params, $wechat) {
 		$package['body'] = $params['title'];
 		$package['attach'] = $_W['uniacid'];
 		$package['partner'] = $wechat['partner'];
-		$package['out_trade_no'] = $params['tid'];
+		$package['out_trade_no'] = $params['uniontid'];
 		$package['total_fee'] = $params['fee'] * 100;
 		$package['fee_type'] = '1';
 		$package['notify_url'] = $_W['siteroot'] . 'payment/wechat/notify.php';
@@ -117,7 +124,7 @@ function wechat_build($params, $wechat) {
 		$package['nonce_str'] = random(8);
 		$package['body'] = $params['title'];
 		$package['attach'] = $_W['uniacid'];
-		$package['out_trade_no'] = $params['tid'];
+		$package['out_trade_no'] = $params['uniontid'];
 		$package['total_fee'] = $params['fee'] * 100;
 		$package['spbill_create_ip'] = CLIENT_IP;
 		$package['time_start'] = date('YmdHis', TIMESTAMP);
@@ -143,7 +150,7 @@ function wechat_build($params, $wechat) {
 		if (is_error($response)) {
 			return $response;
 		}
-		$xml = @simplexml_load_string($response['content'], 'SimpleXMLElement', LIBXML_NOCDATA);
+		$xml = @isimplexml_load_string($response['content'], 'SimpleXMLElement', LIBXML_NOCDATA);
 		if (strval($xml->return_code) == 'FAIL') {
 			return error(-1, strval($xml->return_msg));
 		}

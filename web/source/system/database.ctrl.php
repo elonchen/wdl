@@ -5,7 +5,7 @@
  */
 $dos = array('backup', 'restore', 'trim', 'optimize', 'run');
 $do = in_array($do, $dos) ? $do : 'backup';
-$excepts = array(tablename('core_cache'), tablename('core_sessions'));
+$excepts = array();
 foreach($excepts as &$ex) {
 	$ex = str_replace('`', '', $ex);
 }
@@ -14,6 +14,9 @@ load()->func('file');
 if($do == 'backup') {
 	$_W['page']['title'] = '备份 - 数据库 - 系统管理';
 	if(checksubmit()) {
+		if (empty($_W['setting']['copyright']['status'])) {
+			message('为了保证备份数据完整请关闭站点后再进行此操作', url('system/site'), 'error');
+		}
 		$continue = dump_export();
 		if(!empty($continue)) {
 			isetcookie('__continue', base64_encode(json_encode($continue)));
@@ -275,7 +278,7 @@ function dump_export($continue = array()) {
 		if(!empty($continue) && $t == $continue['table']) {
 			$catch = true;
 		}
-		if(!$catch || in_array($t, $excepts)) {
+		if(!$catch) {
 			continue;
 		}
 		if(!empty($dump)) {
@@ -288,7 +291,9 @@ function dump_export($continue = array()) {
 			$dump .= $row['Create Table'];
 			$dump .= ";\n\n";
 		}
-
+		if (in_array($t, $excepts)) {
+			continue;
+		}
 		$fields = pdo_fetchall("SHOW FULL COLUMNS FROM {$t}", array(), 'Field');
 		if(empty($fields)) {
 			continue;

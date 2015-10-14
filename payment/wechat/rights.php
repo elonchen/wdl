@@ -1,10 +1,14 @@
 <?php
 /**
- * [Weizan System] Copyright (c) 2014 wdlcms.com
+ * [Weizan System] Copyright (c) 2014 wdlcms.COM
  * Weizan is NOT a free software, it under the license terms, visited http://www.wdlcms.com/ for more details.
  */
 $input = file_get_contents('php://input');
 
+if (preg_match('/(\<\!DOCTYPE|\<\!ENTITY)/i', $input)) {
+	exit('fail');
+}
+libxml_disable_entity_loader(true);
 $obj = simplexml_load_string($input, 'SimpleXMLElement', LIBXML_NOCDATA);
 if($obj instanceof SimpleXMLElement && !empty($obj->FeedBackId)) {
 	$data = array(

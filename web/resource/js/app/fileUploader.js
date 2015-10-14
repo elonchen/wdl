@@ -545,12 +545,7 @@ define(['bootstrap', 'webuploader', 'util', 'filestyle'], function($, WebUploade
 					// 文件接收服务端。
 					server: './index.php?c=utility&a=file&do=upload',
 					chunked: false,
-					compress: {
-						quality: 80,
-						preserveHeaders: true,
-						noCompressIfLarger: true,
-						compressSize: 1 * 1024 * 1024
-					},
+					compress: false,
 					formData : {
 						uploadtype : escape (this.options.type),
 						dest_dir : escape (this.options.dest_dir),

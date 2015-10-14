@@ -23,19 +23,19 @@ if($do == 'post') {
 	$id = intval($_GPC['id']);
 	$coupon = activity_coupon_info($id, $_W['uniacid']);
 	if(empty($coupon)){
-		message('没有指定的礼品兑换.');
+		message(error(-1, '没有指定的礼品兑换'), '', 'ajax');
 	}
 	$credit = mc_credit_fetch($_W['member']['uid'], array($coupon['credittype']));
 	if ($credit[$coupon['credittype']] < $coupon['credit']) {
-		message('您的' . $creditnames[$coupon['credittype']] . '数量不够,无法兑换.');
+		message(error(-1, "您的 {$creditnames[$token['credittype']]} 数量不够,无法兑换."), '', 'ajax');
 	}
 	
 	$ret = activity_coupon_grant($_W['member']['uid'], $id, '', '用户使用' . $coupon['credit'] . $creditnames[$coupon['credittype']] . '兑换');
 	if(is_error($ret)) {
-		message($ret['message']);
+		message($ret, '', 'ajax');
 	}
 		mc_credit_update($_W['member']['uid'], $coupon['credittype'], -1 * $coupon['credit'], array($_W['member']['uid'], '礼品兑换:' . $coupon['title'] . ' 消耗 ' . $creditnames[$coupon['credittype']] . ':' . $coupon['credit']));
-	message("兑换成功,您消费了 {$coupon['credit']} {$creditnames[$coupon['credittype']]}", url('activity/coupon/mine'));
+	message(error(0, "兑换成功,您消费了 {$token['credit']} {$creditnames[$token['credittype']]}"), '', 'ajax');
 }
 if($do == 'mine') {
 	$psize = 10;
@@ -47,23 +47,16 @@ if($do == 'mine') {
 		$filter['used'] = '2';
 		$type = 2;
 	}
-	$total = pdo_fetchall('SELECT COUNT(*) FROM ' . tablename('activity_coupon_record') . ' AS a LEFT JOIN ' . tablename('activity_coupon') . ' AS b ON a.couponid = b.couponid WHERE b.type = 1 AND a.uid = :uid AND a.status = :status GROUP BY a.couponid', array(':uid' => $_W['member']['uid'], ':status' => $type));
 	$coupon = activity_coupon_owned($_W['member']['uid'], $filter, $pindex, $psize);
-	if(!empty($coupon['data'])) {
-		foreach($coupon['data'] as &$value){
-			$value['cototal'] = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename('activity_coupon_record') . ' WHERE uid = :uid AND couponid = :couponid AND status = :status', array(':uid' => $_W['member']['uid'], ':couponid' => $value['couponid'], ':status' => $type));
-			$value['thumb'] = tomedia($value['thumb']);
-			$value['description'] = htmlspecialchars_decode($value['description']);
-			$data[$value['couponid']] = $value;
-		}
-	}
+	$data = $coupon['data'];
+	$total = $coupon['total'];
 	unset($coupon);
-	$pager = pagination(count($total), $pindex, $psize);
+	$pager = pagination($total , $pindex, $psize);
 }
 if($do == 'use') {
 	$id = intval($_GPC['id']);
-	$data = activity_coupon_owned($_W['member']['uid'], array('couponid' => $id, 'used' => 1 ));
-	$data = $data['data'][0];
+	$data = activity_coupon_owned($_W['member']['uid'], array('couponid' => $id, 'used' => 1));
+	$data = $data['data'][$id];
 
 	if(checksubmit('submit')) {
 		load()->model('user');

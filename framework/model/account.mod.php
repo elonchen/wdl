@@ -461,15 +461,14 @@ function account_weixin_basic($username) {
 	if (is_error($response)) {
 		return array();
 	}
-
 	$info = array();
 	preg_match('/fakeid=([0-9]+)/', $response['content'], $match);
 	$fakeid = $match[1];
-	$image = account_weixin_http($username, WEIXIN_ROOT . '/misc/getheadimg?fakeid='.$fakeid);
+	$image = account_weixin_http($username, WEIXIN_ROOT . '/misc/getheadimg?fakeid=' . $fakeid);
 	if (!is_error($image) && !empty($image['content'])) {
 		$info['headimg'] = $image['content'];
 	}
-	$image = account_weixin_http($username, WEIXIN_ROOT . '/misc/getqrcode?fakeid='.$fakeid.'&style=1&action=download');
+	$image = account_weixin_http($username, WEIXIN_ROOT . '/misc/getqrcode?fakeid=' . $fakeid . '&style=1&action=download');
 	if (!is_error($image) && !empty($image['content'])) {
 		$info['qrcode'] = $image['content'];
 	}
@@ -479,20 +478,22 @@ function account_weixin_basic($username) {
 	$info['name'] = trim(strip_tags($match[1]));
 	preg_match('/微信号([\s\S]+?)<\/li>/', $response['content'], $match);
 	$info['account'] = trim(strip_tags($match[1]));
-	preg_match('/功能介绍([\s\S]+?)meta_content\">([\s\S]+?)<\/li>/', $response['content'], $match);
+	preg_match('/介绍([\s\S]+?)meta_content\">([\s\S]+?)<\/li>/', $response['content'], $match);
 	$info['signature'] = trim(strip_tags($match[2]));
 	preg_match('/认证情况([\s\S]+?)meta_content\">([\s\S]+?)<\/li>/', $response['content'], $match);
 	$info['level_tmp'] = trim(strip_tags($match[2]));
+	preg_match('/类型([\s\S]+?)meta_content\">([\s\S]+?)<\/li>/', $response['content'], $match);
+	$info['type_temp'] = trim(strip_tags($match[2]));
 
 		$info['level'] = 1;
 	$is_key_secret = 1;
-	if(strexists($response['content'], '订阅号')) {
-		if(strexists($info['level_tmp'], '微信认证')) {
+	if (strexists($info['type_temp'], '订阅号')) {
+		if (strexists($info['level_tmp'], '微信认证')) {
 			$info['level'] = 3;
 		}
-	} elseif(strexists($response['content'], '服务号')) {
+	} elseif (strexists($info['type_temp'], '服务号')) {
 		$info['level'] = 2;
-		if(strexists($info['level_tmp'], '微信认证')) {
+		if (strexists($info['level_tmp'], '微信认证')) {
 			$info['level'] = 4;
 		}
 	}

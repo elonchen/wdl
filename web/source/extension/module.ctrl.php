@@ -1,6 +1,6 @@
 <?php
 /**
- * [WEIZAN System] Copyright (c) 2014 wdlcms.com
+ * [WEIZAN System] Copyright (c) 2014 wdlcms.COM
  * WEIZAN is NOT a free software, it under the license terms, visited http://www.wdlcms.com/ for more details.
  */
 defined('IN_IA') or exit('Access Denied');
@@ -169,20 +169,23 @@ if($do == 'check') {
 		} else {
 			$moduleids = array();
 			$modules = pdo_fetchall("SELECT `name` FROM " . tablename('modules') . ' ORDER BY `issystem` DESC, `mid` ASC');
-			if(!empty($modules)) {
-				foreach($modules as $m) {
+			if (!empty($modules)) {
+				foreach ($modules as $m) {
 					$moduleids[] = $m['name'];
 				}
 			}
 			$ret = cloud_m_query();
-			if(!is_error($ret)) {
+			if (!is_error($ret)) {
 				$cloudUninstallModules = array();
-				foreach($ret as $k => $v) {
-					if(!in_array(strtolower($k), $moduleids)) {
+				foreach ($ret as $k => $v) {
+					if (!in_array(strtolower($k), $moduleids)) {
 						$v['name'] = $k;
 						$cloudUninstallModules[] = $v;
 						$moduleids[] = $k;
 					}
+				}
+				foreach ($cloudUninstallModules as &$cloudUninstallModule) {
+					$cloudUninstallModule['description'] = strip_tags($cloudUninstallModule['description']);
 				}
 				exit(json_encode($cloudUninstallModules));
 			}
@@ -416,6 +419,14 @@ if($do == 'uninstall') {
 			if(!is_error($info)) {
 				$packet = cloud_m_build($module['name']);
 				$manifest = ext_module_manifest_parse($packet['manifest']);
+								if ($packet['sql']) {
+					pdo_run($packet['uninstall']);
+				} elseif ($packet['scripts']) {
+					$uninstallFile = $modulepath . TIMESTAMP . '.php';
+					file_put_contents($uninstallFile, $packet['scripts']);
+					include_once $uninstallFile;
+					unlink($uninstallFile);
+				}
 			} else {
 				message($info['message'], '', 'error');
 			}

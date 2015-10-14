@@ -6,7 +6,7 @@
 defined('IN_IA') or exit('Access Denied');
 
 $_W['setting']['authmode'] = empty($_W['setting']['authmode']) ? 1 : $_W['setting']['authmode'];
-
+unset($_SESSION['uid']);
 if($_GPC['__auth']) {
 	$auth = @json_decode(base64_decode($_GPC['__auth']), true);
 	if(is_array($auth) && !empty($auth['openid']) && !empty($auth['acid']) && !empty($auth['time']) && !empty($auth['hash'])) {

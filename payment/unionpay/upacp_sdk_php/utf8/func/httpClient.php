@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 header ( 'Content-type:text/html;charset=utf-8' );
 /**
  * [WEIZAN System] Copyright (c) 2014 wdlcms.com

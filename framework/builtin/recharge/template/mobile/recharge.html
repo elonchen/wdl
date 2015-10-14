@@ -44,22 +44,20 @@
 	</div>
 </div>
 <script>
-	require(['jquery', 'util'],function($, u){
-		$('#moneySe').change(function(){
-			var money = $('#moneySe').val();
-			if(parseFloat(money) > 0){
-				$('#money').val($('#moneySe').val());
-			} else {
-				$('#money').val('');
-			}
-		});
-		$('#form1').submit(function(){
-			var money = parseFloat($('#money').val().trim());
-			if(isNaN(money)) {
-				u.message('请输入正确的充值金额', '', 'error');
-				return false;
-			}
-		});
+	$('#moneySe').change(function(){
+		var money = $('#moneySe').val();
+		if(parseFloat(money) > 0){
+			$('#money').val($('#moneySe').val());
+		} else {
+			$('#money').val('');
+		}
+	});
+	$('#form1').submit(function(){
+		var money = parseFloat($('#money').val().trim());
+		if(isNaN(money)) {
+			util.message('请输入正确的充值金额', '', 'error');
+			return false;
+		}
 	});
 </script>
 

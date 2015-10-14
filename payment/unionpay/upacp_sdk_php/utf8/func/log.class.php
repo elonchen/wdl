@@ -1,10 +1,7 @@
-﻿<?php 
+<?php 
 	class PhpLog
 	{
-		const DEBUG = 1;/**
- * [WEIZAN System] Copyright (c) 2014 wdlcms.com
- * WEIZAN is NOT a free software, it under the license terms, visited http://www.wdlcms.com/ for more details.
- */		const INFO = 2;		const WARN = 3;		const ERROR = 4;		const FATAL = 5;		const OFF = 6;		 
+		const DEBUG = 1;		const INFO = 2;		const WARN = 3;		const ERROR = 4;		const FATAL = 5;		const OFF = 6;		 
 		const LOG_OPEN = 1;
 		const OPEN_FAILED = 2;
 		const LOG_CLOSED = 3;

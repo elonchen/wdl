@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * [WEIZAN System] Copyright (c) 2014 wdlcms.com

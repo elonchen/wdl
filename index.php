@@ -12,8 +12,7 @@ if (!empty($host)) {
 		exit;
 	}
 }
-$agent = strtolower($_SERVER['HTTP_USER_AGENT']);
-if(strexists($agent, 'mobile') || !empty($_GPC['i'])) {
+if($_W['os'] == 'mobile' && (!empty($_GPC['i']) || !empty($_SERVER['QUERY_STRING']))) {
 	header('Location: ./app/index.php?' . $_SERVER['QUERY_STRING']);
 } else {
 	header('Location: ./web/index.php?' . $_SERVER['QUERY_STRING']);
