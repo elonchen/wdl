@@ -2,7 +2,7 @@
 /**
  * 微商城模块微站定义
  *
- * @author wdlcms.com
+ * @author 012WZ.COM
  * @url
  */
 defined('IN_IA') or exit('Access Denied');
@@ -19,10 +19,6 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 		$sql = 'SELECT `settings` FROM ' . tablename('uni_account_modules') . ' WHERE `uniacid` = :uniacid AND `module` = :module';
 		$settings = pdo_fetchcolumn($sql, array(':uniacid' => $_W['uniacid'], ':module' => 'wdl_shopping'));
 		$this->settings = iunserializer($settings);
-	}
-
-	public function doMobileGrant() {
-		$this->Grant(array('wdl_shopping'));
 	}
 
 	public function doWebCategory() {
@@ -97,6 +93,8 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 			message('分类删除成功！', $this->createWebUrl('category', array('op' => 'display')), 'success');
 		}
 	}
+
+
 	public function doWebSetGoodsProperty() {
 		global $_GPC, $_W;
 		$id = intval($_GPC['id']);
@@ -119,6 +117,8 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 		}
 		die(json_encode(array("result" => 0)));
 	}
+
+
 	public function doWebGoods() {
 		global $_GPC, $_W;
 		load()->func('tpl');
@@ -144,7 +144,7 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 				if (empty($item)) {
 					message('抱歉，商品不存在或是已经删除！', '', 'error');
 				}
-				$allspecs = pdo_fetchall("select * from " . tablename('shopping_spec')." where goodsid=:id order by displayorder asc",array(":id"=>$id));
+				$allspecs = pdo_fetchall("SELECT * FROM " . TABLENAME('shopping_spec')." WHERE goodsid=:id ORDER BY displayorder ASC",array(":id"=>$id));
 				foreach ($allspecs as &$s) {
 					$s['items'] = pdo_fetchall("select * from " . tablename('shopping_spec_item') . " where specid=:specid order by displayorder asc", array(":specid" => $s['id']));
 				}
@@ -324,7 +324,7 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 					$data['total'] = 0;
 					$data['totalcnf'] = 2;
 				}
-				
+
 				if(is_array($_GPC['thumbs'])){
 					$data['thumb_url'] = serialize($_GPC['thumbs']);
 				}
@@ -429,10 +429,10 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 					}
 					//删除其他的
 					if(count($itemids)>0){
-						 pdo_query("delete from " . tablename('shopping_spec_item') . " where weid={$_W['uniacid']} and specid=$spec_id and id not in (" . implode(",", $itemids) . ")");	
+						 pdo_query("delete from " . tablename('shopping_spec_item') . " where weid={$_W['uniacid']} and specid=$spec_id and id not in (" . implode(",", $itemids) . ")");
 					}
 					else{
-						 pdo_query("delete from " . tablename('shopping_spec_item') . " where weid={$_W['uniacid']} and specid=$spec_id");	
+						 pdo_query("delete from " . tablename('shopping_spec_item') . " where weid={$_W['uniacid']} and specid=$spec_id");
 					}
 					//更新规格项id
 					pdo_update("shopping_spec", array("content" => serialize($itemids)), array("id" => $spec_id));
@@ -557,14 +557,15 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 
 		if ($operation == 'display') {
 			$pindex = max(1, intval($_GPC['page']));
-			$psize = 20;
+			$psize = 15;
 			$status = $_GPC['status'];
 			$sendtype = !isset($_GPC['sendtype']) ? 0 : $_GPC['sendtype'];
 			$condition = " o.weid = :weid";
 			$paras = array(':weid' => $_W['uniacid']);
+
 			if (empty($starttime) || empty($endtime)) {
 				$starttime = strtotime('-1 month');
-				$endtime = time();
+				$endtime = TIMESTAMP;
 			}
 			if (!empty($_GPC['time'])) {
 				$starttime = strtotime($_GPC['time']['start']);
@@ -573,6 +574,7 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 				$paras[':starttime'] = $starttime;
 				$paras[':endtime'] = $endtime;
 			}
+
 			if (!empty($_GPC['paytype'])) {
 				$condition .= " AND o.paytype = '{$_GPC['paytype']}'";
 			} elseif ($_GPC['paytype'] === '0') {
@@ -582,7 +584,7 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 				$condition .= " AND o.ordersn LIKE '%{$_GPC['keyword']}%'";
 			}
 			if (!empty($_GPC['member'])) {
-				$condition .= " AND (a.realname LIKE '%{$_GPC['member']}%' or a.mobile LIKE '%{$_GPC['member']}%')";
+				$condition .= " AND o.address LIKE '%{$_GPC['member']}%'";
 			}
 			if ($status != '') {
 				$condition .= " AND o.status = '" . intval($status) . "'";
@@ -591,55 +593,110 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 				$condition .= " AND o.sendtype = '" . intval($sendtype) . "' AND status != '3'";
 			}
 
-			$sql = 'SELECT `o`.*, `a`.`username`, `a`.`mobile` FROM ' . tablename('shopping_order') . ' AS `o` LEFT
-					JOIN' . tablename('mc_member_address') . ' AS `a` ON `o`.`addressid` = `a`.`id` WHERE ' . $condition
-					. ' ORDER BY `o`.`status` DESC, `o`.`createtime` DESC LIMIT ' . ($pindex - 1) * $psize . ',' . $psize;
-			$list = pdo_fetchall($sql,$paras);
+			$sql = 'SELECT COUNT(*) FROM ' . tablename('shopping_order') . ' AS `o` WHERE ' . $condition;
+			$total = pdo_fetchcolumn($sql, $paras);
 
-			$paytype = array (
+			if ($total > 0) {
+				if ($_GPC['export'] != 'export') {
+					$limit = ' LIMIT ' . ($pindex - 1) * $psize . ',' . $psize;
+				} else {
+					$limit = '';
+					$condition = " o.weid = :weid";
+					$paras = array(':weid' => $_W['uniacid']);
+				}
+
+				$sql = 'SELECT * FROM ' . tablename('shopping_order') . ' AS `o` WHERE ' . $condition . ' ORDER BY
+						`o`.`status` DESC, `o`.`createtime` DESC ' . $limit;
+
+				$list = pdo_fetchall($sql,$paras);
+				$pager = pagination($total, $pindex, $psize);
+
+				$paytype = array (
 					'0' => array('css' => 'default', 'name' => '未支付'),
 					'1' => array('css' => 'danger','name' => '余额支付'),
 					'2' => array('css' => 'info', 'name' => '在线支付'),
 					'3' => array('css' => 'warning', 'name' => '货到付款')
-			);
-			$orderstatus = array (
+				);
+				$orderstatus = array (
 					'-1' => array('css' => 'default', 'name' => '已取消'),
 					'0' => array('css' => 'danger', 'name' => '待付款'),
 					'1' => array('css' => 'info', 'name' => '待发货'),
 					'2' => array('css' => 'warning', 'name' => '待收货'),
 					'3' => array('css' => 'success', 'name' => '已完成')
-			);
-			foreach ($list as &$value) {
-				$s = $value['status'];
-				$value['statuscss'] = $orderstatus[$value['status']]['css'];
-				$value['status'] = $orderstatus[$value['status']]['name'];
-				if ($s < 1) {
-					$value['css'] = $paytype[$s]['css'];
-					$value['paytype'] = $paytype[$s]['name'];
-					continue;
-				}
-				$value['css'] = $paytype[$value['paytype']]['css'];
-				if ($value['paytype'] == 2) {
-					if (empty($value['transid'])) {
-						$value['paytype'] = '支付宝支付';
-					} else {
-						$value['paytype'] = '微信支付';
+				);
+
+				foreach ($list as &$value) {
+					$s = $value['status'];
+					$value['statuscss'] = $orderstatus[$value['status']]['css'];
+					$value['status'] = $orderstatus[$value['status']]['name'];
+					$value['dispatch'] = pdo_fetchcolumn("SELECT `dispatchname` FROM " . tablename('shopping_dispatch') . " WHERE id = :id", array(':id' => $value['dispatch']));
+
+					// 收货地址信息
+					list($value['username'], $value['mobile'], $value['zipcode']) = explode('|', $value['address']);
+
+					if ($s < 1) {
+						$value['css'] = $paytype[$s]['css'];
+						$value['paytype'] = $paytype[$s]['name'];
+						continue;
 					}
-				} else {
-					$value['paytype'] = $paytype[$value['paytype']]['name'];
+					$value['css'] = $paytype[$value['paytype']]['css'];
+					if ($value['paytype'] == 2) {
+						if (empty($value['transid'])) {
+							$value['paytype'] = '支付宝支付';
+						} else {
+							$value['paytype'] = '微信支付';
+						}
+					} else {
+						$value['paytype'] = $paytype[$value['paytype']]['name'];
+					}
 				}
-			}
-			$total = pdo_fetchcolumn(
-						'SELECT COUNT(*) FROM ' . tablename('shopping_order') . " o "
-						." left join ".tablename('mc_member_address')." a on o.addressid = a.id "
-						." WHERE $condition", $paras);
-			$pager = pagination($total, $pindex, $psize);
-			if (!empty($list)) {
-				foreach ($list as &$row) {
-					$row['dispatch'] = pdo_fetch("SELECT * FROM " . tablename('shopping_dispatch') . " WHERE id = :id", array(':id' => $row['dispatch']));
+
+				if ($_GPC['export'] != '') {
+					/* 输入到CSV文件 */
+					$html = "\xEF\xBB\xBF";
+
+					/* 输出表头 */
+					$filter = array(
+						'ordersn' => '订单号',
+						'username' => '姓名',
+						'mobile' => '电话',
+						'paytype' => '支付方式',
+						'dispatch' => '配送方式',
+						'dispatchprice' => '运费',
+						'price' => '总价',
+						'status' => '状态',
+						'createtime' => '下单时间',
+						'zipcode' => '邮政编码',
+						'address' => '收货地址信息'
+					);
+
+					foreach ($filter as $key => $title) {
+						$html .= $title . "\t,";
+					}
+					$html .= "\n";
+
+					foreach ($list as $k => $v) {
+						foreach ($filter as $key => $title) {
+							if ($key == 'createtime') {
+								$html .= date('Y-m-d H:i:s', $v[$key]) . "\t, ";
+							} else {
+								$html .= $v[$key] . "\t, ";
+							}
+						}
+						$html .= "\n";
+					}
+
+
+					/* 输出CSV文件 */
+					header("Content-type:text/csv");
+					header("Content-Disposition:attachment; filename=全部数据.csv");
+					echo $html;
+					exit();
+
 				}
-				unset($row);
+
 			}
+
 		} elseif ($operation == 'detail') {
 			$id = intval($_GPC['id']);
 			$item = pdo_fetch("SELECT * FROM " . tablename('shopping_order') . " WHERE id = :id", array(':id' => $id));
@@ -734,7 +791,10 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 			if (!empty($dispatch) && !empty($dispatch['express'])) {
 				$express = pdo_fetch("select * from " . tablename('shopping_express') . " WHERE id=:id limit 1", array(":id" => $dispatch['express']));
 			}
-			$item['user'] = pdo_fetch("SELECT * FROM " . tablename('mc_member_address') . " WHERE id = {$item['addressid']}");
+
+			// 收货地址信息
+			$item['user'] = explode('|', $item['address']);
+
 			$goods = pdo_fetchall("SELECT g.*, o.total,g.type,o.optionname,o.optionid,o.price as orderprice FROM " . tablename('shopping_order_goods') .
 					" o left join " . tablename('shopping_goods') . " g on o.goodsid=g.id " . " WHERE o.orderid='{$id}'");
 			$item['goods'] = $goods;
@@ -779,6 +839,7 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 			}
 		}
 	}
+
 	public function doWebNotice() {
 		global $_GPC, $_W;
 		load()->func('tpl');
@@ -827,26 +888,27 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 			$sql = "SELECT * FROM " . tablename('shopping_order') . " WHERE weid='{$_W['uniacid']}' AND transid IN ( '" . implode("','", $transids) . "' )";
 			$orders = pdo_fetchall($sql, array(), 'transid');
 		}
-		$addressids = array();
-		if(is_array($orders)){
-			foreach ($orders as $transid => $order) {
-				$addressids[] = $order['addressid'];
-			}
-		}
-		$addresses = array();
-		if (!empty($addressids)) {
-			$sql = "SELECT * FROM " . tablename('mc_member_address') . " WHERE uniacid='{$_W['uniacid']}' AND id IN ( '" . implode("','", $addressids) . "' )";
-			$addresses = pdo_fetchall($sql, array(), 'id');
-		}
+//		$addressids = array();
+//		if(is_array($orders)){
+//			foreach ($orders as $transid => $order) {
+//				$addressids[] = $order['addressid'];
+//			}
+//		}
+//		$addresses = array();
+//		if (!empty($addressids)) {
+//			$sql = "SELECT * FROM " . tablename('mc_member_address') . " WHERE uniacid='{$_W['uniacid']}' AND id IN ( '" . implode("','", $addressids) . "' )";
+//			$addresses = pdo_fetchall($sql, array(), 'id');
+//		}
 		foreach ($list as &$feedback) {
 			$transid = $feedback['transid'];
 			$order = $orders[$transid];
 			$feedback['order'] = $order;
-			$addressid = $order['addressid'];
-			$feedback['address'] = $addresses[$addressid];
+//			$addressid = $order['addressid'];
+//			$feedback['address'] = $addresses[$addressid];
 		}
 		include $this->template('notice');
 	}
+
 	public function getCartTotal() {
 		global $_W;
 		$cartotal = pdo_fetchcolumn("select sum(total) from " . tablename('shopping_cart') . " where weid = '{$_W['uniacid']}' and from_user='{$_W['fans']['from_user']}'");
@@ -907,7 +969,7 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 		unset($c);
 		$carttotal = $this->getCartTotal();
 		//幻灯片
-		$advs = pdo_fetchall("select * from " . tablename('shopping_adv') . " where enabled=1 and weid= '{$_W['uniacid']}'");
+		$advs = pdo_fetchall("select * from " . tablename('shopping_adv') . " where enabled=1 and weid= '{$_W['uniacid']}' order by displayorder asc");
 		foreach ($advs as &$adv) {
 			if (substr($adv['link'], 0, 5) != 'http:') {
 				$adv['link'] = "http://" . $adv['link'];
@@ -1262,7 +1324,7 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 				}
 				unset($g);
 			}
-			$returnurl = $this->createMobileUrl("confirm");
+			$returnUrl = $this->createMobileUrl("confirm");
 		}
 		if (count($allgoods) <= 0) {
 			header("location: " . $this->createMobileUrl('myorder'));
@@ -1326,7 +1388,9 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 				'dispatch' => $dispatchid,
 				'goodstype' => intval($item['type']),
 				'remark' => $_GPC['remark'],
-				'addressid' => $address['id'],
+				'address' =>  $address['username'] . '|' . $address['mobile'] . '|' . $address['zipcode']
+							. '|' . $address['province'] . '|' . $address['city'] . '|' .
+							$address['district'] . '|' . $address['address'],
 				'createtime' => TIMESTAMP
 			);
 
@@ -1415,7 +1479,8 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 			}
 			//邮件提醒
 			if (!empty($this->module['config']['noticeemail'])) {
-				$address = pdo_fetch("SELECT * FROM " . tablename('mc_member_address') . " WHERE id = :id", array(':id' => $order['addressid']));
+//				$address = pdo_fetch("SELECT * FROM " . tablename('mc_member_address') . " WHERE id = :id", array(':id' => $order['addressid']));
+				$address = explode('|', $order['address']);
 				$body = "<h3>购买商品清单</h3> <br />";
 				if (!empty($goods)) {
 					foreach ($goods as $row) {
@@ -1430,10 +1495,10 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 				$paytype = $order['paytype']=='3'?'货到付款':'已付款';
 				$body .= "<br />总金额：{$order['price']}元 （{$paytype}）<br />";
 				$body .= "<h3>购买用户详情</h3> <br />";
-				$body .= "真实姓名：$address[realname] <br />";
-				$body .= "地区：$address[province] - $address[city] - $address[area]<br />";
-				$body .= "详细地址：$address[address] <br />";
-				$body .= "手机：$address[mobile] <br />";
+				$body .= "真实姓名：$address[0] <br />";
+				$body .= "地区：$address[3] - $address[4] - $address[5]<br />";
+				$body .= "详细地址：$address[6] <br />";
+				$body .= "手机：$address[1] <br />";
 				load()->func('communication');
 				ihttp_email($this->module['config']['noticeemail'], '微商城订单提醒', $body);
 			}
@@ -1501,7 +1566,7 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 				}
 			}
 			unset($g);
-			$dispatch = pdo_fetch("select id,dispatchname from " . tablename('shopping_dispatch') . " where id=:id limit 1", array(":id" => $item['dispatch']));
+			$dispatch = pdo_fetch("SELECT id,dispatchname,enabled FROM " . tablename('shopping_dispatch') . ' WHERE id=:id ', array(":id" => $item['dispatch']));
 			include $this->template('order_detail');
 		} else {
 			$pindex = max(1, intval($_GPC['page']));
@@ -1624,7 +1689,7 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 				'district' => $_GPC['area'],
 				'address' => $_GPC['address'],
 			);
-			if (empty($_GPC['realname']) || empty($_GPC['mobile']) || empty($_GPC['address'])) {
+			if (empty($data['username']) || empty($data['mobile']) || empty($data['address'])) {
 				message('请输完善您的资料！');
 			}
 			if (!empty($id)) {
@@ -1759,51 +1824,60 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 		if ($params['type'] == 'delivery') {
 			$data['status'] = 1;
 		}
-
-		$sql = 'SELECT `goodsid` FROM ' . tablename('shopping_order_goods') . ' WHERE `orderid` = :orderid';
-		$goodsId = pdo_fetchcolumn($sql, array(':orderid' => $params['tid']));
-		$sql = 'SELECT `total`, `totalcnf` FROM ' . tablename('shopping_goods') . ' WHERE `id` = :id';
-		$goodsInfo = pdo_fetch($sql, array(':id' => $goodsId));
-		// 更改库存
-		if ($goodsInfo['totalcnf'] == '1' && !empty($goodsInfo['total'])) {
-			pdo_update('shopping_goods', array('total' => $goodsInfo['total'] - 1), array('id' => $goodsId));
+		$goods = pdo_fetchall("SELECT `goodsid`, `total` FROM " . tablename('shopping_order_goods') . " WHERE `orderid` = :orderid", array(':orderid' => $params['tid']));
+		if (!empty($goods)) {
+			$row = array();
+			foreach ($goods as $row) {
+				$goodsInfo = pdo_fetch("SELECT `total`, `totalcnf`, `sales` FROM " . tablename('shopping_goods') . " WHERE `id` = :id", array(':id' => $row['goodsid']));
+				$goodsupdate = array();
+				if ($goodsInfo['totalcnf'] == '1' && !empty($goodsInfo['total'])) {
+					$goodsupdate['total'] = $goodsInfo['total'] - $row['total'];
+					$goodsupdate['total'] = ($goodsupdate['total'] < 0) ? 0 : $goodsupdate['total'];
+				}
+				$goodsupdate['sales'] = $goodsInfo['sales'] + $row['total'];
+				pdo_update('shopping_goods', $goodsupdate, array('id' => $row['goodsid']));
+			}
 		}
 		pdo_update('shopping_order', $data, array('id' => $params['tid']));
-
 		if ($params['from'] == 'return') {
 
 			//积分变更
 			$this->setOrderCredit($params['tid']);
 
 			if (!empty($this->module['config']['noticeemail']) || !empty($this->module['config']['mobile'])) {
-				$order = pdo_fetch("SELECT `price`, `paytype`, `from_user`, `addressid` FROM " . tablename('shopping_order') . " WHERE id = '{$params['tid']}'");
+				$order = pdo_fetch("SELECT `ordersn`, `price`, `paytype`, `from_user`, `address`, `createtime` FROM " . tablename('shopping_order') . " WHERE id = '{$params['tid']}'");
 				$ordergoods = pdo_fetchall("SELECT goodsid, total FROM " . tablename('shopping_order_goods') . " WHERE orderid = '{$params['tid']}'", array(), 'goodsid');
 				$goods = pdo_fetchall("SELECT id, title, thumb, marketprice, unit, total FROM " . tablename('shopping_goods') . " WHERE id IN ('" . implode("','", array_keys($ordergoods)) . "')");
-				$address = pdo_fetch("SELECT * FROM " . tablename('mc_member_address') . " WHERE id = :id", array(':id' => $order['addressid']));
-
-				$body = "<h3>购买商品清单</h3> <br />";
-				if (!empty($goods)) {
-					foreach ($goods as $row) {
-						$body .= "名称：{$row['title']} ，数量：{$ordergoods[$row['id']]['total']} <br />";
-					}
-				}
-				$paytype = $order['paytype'] == '3' ? '货到付款' : '已付款' . '<br />';
-				$body .= '总金额：' . $order['price'] . '元' . $paytype . '<br />';
-				$body .= '<h3>购买用户详情</h3> <br />';
-				$body .= '真实姓名：' . $address['realname'] . '<br />';
-				$body .= '地区：' . $address['province'] . ' - ' . $address['city'] . ' - ' . $address['area'] . '<br />';
-				$body .= '详细地址：' . $address['address'] . '<br />';
-				$body .= '手机：' . $address['mobile']  . '<br />';
+//				$address = pdo_fetch("SELECT * FROM " . tablename('mc_member_address') . " WHERE id = :id", array(':id' => $order['addressid']));
+				$address = explode('|', $order['address']);
 
 				// 邮件提醒
 				if (!empty($this->module['config']['noticeemail'])) {
+					$body = "<h3>购买商品清单</h3> <br />";
+					if (!empty($goods)) {
+						foreach ($goods as $row) {
+							$body .= "名称：{$row['title']} ，数量：{$ordergoods[$row['id']]['total']} <br />";
+						}
+					}
+					$paytype = $order['paytype'] == '3' ? '货到付款' : '已付款' . '<br />';
+					$body .= '总金额：' . $order['price'] . '元' . $paytype . '<br />';
+					$body .= '<h3>购买用户详情</h3> <br />';
+					$body .= '真实姓名：' . $address[0] . '<br />';
+					$body .= '地区：' . $address[3] . ' - ' . $address[4] . ' - ' . $address[5] . '<br />';
+					$body .= '详细地址：' . $address[6] . '<br />';
+					$body .= '手机：' . $address[1]  . '<br />';
+
 					load()->func('communication');
 					ihttp_email($this->module['config']['noticeemail'], '微商城订单提醒', $body);
 				}
 				// 短信提醒
 				if (!empty($this->module['config']['mobile'])) {
 					load()->model('cloud');
-					$body = str_replace(array('<h3>', '</h3>', '<br />'), array('', '', "\n"), $body);
+					cloud_prepare();
+
+					$body = '用户' . $address[0] . ',电话:' . $address[1] . '于' . date('m月d日H:i') . '成功支付订单' . $order['ordersn']
+							. ',总金额' . $order['price'] . '元' . '.' . random(3);
+
 					cloud_sms_send($this->module['config']['mobile'], $body);
 				}
 			}
@@ -1911,7 +1985,8 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 					'firstweight' => $_GPC['firstweight'],
 					'secondprice' => $_GPC['secondprice'],
 					'secondweight' => $_GPC['secondweight'],
-					'description' => $_GPC['description']
+					'description' => $_GPC['description'],
+                    'enabled'  => $_GPC['enabled']
 				);
 				if (!empty($id)) {
 					pdo_update('shopping_dispatch', $data, array('id' => $id));

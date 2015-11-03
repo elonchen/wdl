@@ -1,12 +1,9 @@
-		
-		{if !empty($_W['quickmenu']['menus']) && empty($_W['quickmenu']['disabled'])}
-			<?php include_once template($_W['quickmenu']['template'], TEMPLATE_INCLUDEPATH);?>
-		{/if}
 		<script>require(['bootstrap']);</script>
 	</div>
 	<style>
 		h5{color:#555;}
 	</style>
+
 <?php
 	$_share['title'] = !empty($_share['title']) ? $_share['title'] : $_W['account']['name'];
 	$_share['imgUrl'] = !empty($_share['imgUrl']) ? $_share['imgUrl'] : '';
@@ -80,21 +77,9 @@
 		wx.onMenuShareTimeline(sharedata);
 		wx.onMenuShareQQ(sharedata);
 		wx.onMenuShareWeibo(sharedata);
+		getlocaltion();
 	});
 	
-	</script>
-	
-	<script>
-		require(['jquery'],function(){
-			$(function(){
-				if($('.quick')!=null && $('.quick')!=''){
-					var h = $('.quick').height()+'px';
-					$('body').css("padding-bottom",h);
-				}else{
-					$('body').css("padding-bottom","0");
-				}
-			})
-		});
 	</script>
 </body>
 </html>

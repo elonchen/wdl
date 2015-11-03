@@ -1,4 +1,8 @@
 {template 'common/header-gw'}
+<div id="row" style="margin-top: 20px;">
+	<div class="col-md-12">
+		<div class="panel panel-default">
+			<div class="panel-body">
 <ul class="nav nav-tabs">
 	<li class="active"><a href="{php echo url('system/site');}">微信开放平台信息</a></li>
 </ul>
@@ -11,6 +15,7 @@
 			<div class="col-sm-9 col-xs-12">
 				<input type="text"  name="appid" value="{$_W['setting']['platform']['appid']}" class="form-control">
 				<div class="help-block">在微信开放平台注册且审核通过后可以获取到AppId</div>
+			</div>
 			</div>
 		<div class="form-group">
 			<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require"> </span>AppSecret</label>
@@ -93,6 +98,7 @@
 		</div>
 	</div>
 </form>
+</div></div></div></div>
 <script type="text/javascript">
 	function tokenGen() {
 		var letters = 'abcdefghijklmnopqrstuvwxyz0123456789';

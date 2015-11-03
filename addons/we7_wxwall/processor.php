@@ -2,99 +2,92 @@
 /**
  * 图文回复处理类
  *
- * [WeEngine System] Copyright (c) 2013 wdlcms.com
+ * [WeiZan System] Copyright (c) 2013 012wz.com
  */
 defined('IN_IA') or exit('Access Denied');
 
 class we7_wxwallModuleProcessor extends WeModuleProcessor {
+
 	public $name = 'WxwallChatRobotModuleProcessor';
-	
+
 	public function respond() {
-		global $_W;
-		checkauth();
 		if ($this->inContext) {
-			return $this->post();
+			return $this->respText($this->post());
 		} else {
-			return $this->register();
+			return $this->respText($this->register());
 		}
 	}
-	
+
 	private function register() {
 		global $_W;
-		$rid = $this->rule;
-		$wall = pdo_fetch("SELECT * FROM ".tablename('wxwall_reply')." WHERE rid = :rid LIMIT 1", array(':rid'=>$rid));
+		if (empty($_W['openid'])) {
+			return '请先关注公众号再来参加活动吧！';
+		}
+
+		$sql = 'SELECT * FROM ' . tablename('wxwall_reply') . ' WHERE `rid` = :rid';
+		$wall = pdo_fetch($sql, array(':rid' => $this->rule));
+
 		if (empty($wall)) {
-			return array();
+			return '微信墙活动不存在或已经被删除！';
 		}
-		$member = $this->getMember();
-		if (empty($member['nickname']) || empty($member['avatar'])) {
-			$message = '发表话题前请完善您的基本信息，<a target="_blank" href="'.$this->createMobileUrl('register').'">点击完善</a>。';
-		} else {
-			$message = $wall['enter_tips'];
-		}
-		
+
 		$this->beginContext();
-		return $this->respText($message);
+		return empty($wall['enter_tips']) ? '欢迎进入微信墙，请发表话题哦！' : $wall['enter_tips'];
 	}
-	
+
 	private function post() {
-		global $_W, $engine;
+		global $_W;
 		if (!in_array($this->message['msgtype'], array('text', 'image'))) {
-			return false;
+			return '微信墙只能发表文字和图片';
 		}
-		
+
 		$member = $this->getMember();
-		$wall = pdo_fetch("SELECT * FROM ".tablename('wxwall_reply')." WHERE rid = :rid LIMIT 1", array(':rid'=>$member['rid']));
-		
-		if ((!empty($wall['timeout']) && $wall['timeout'] > 0 && TIMESTAMP - $member['lastupdate'] >= $wall['timeout'])) {
+		$sql = 'SELECT * FROM ' . tablename('wxwall_reply') . ' WHERE `rid` = :rid';
+		$wall = pdo_fetch($sql, array(':rid' => $this->rule));
+
+		if ( intval($wall['timeout']) > 0 &&  ($wall['timeout'] + $member['lastupdate']) < TIMESTAMP ) {
 			$this->endContext();
-			return $this->respText('由于您长时间未操作，请重新进入微信墙！');
+			return '由于您长时间未操作，请重新进入微信墙！';
 		}
+
 		$this->refreshContext();
-		if ((empty($wall['quit_command']) && $this->message['content'] == '退出') ||
+
+		if ( (empty($wall['quit_command']) && $this->message['content'] == '退出') ||
 			(!empty($wall['quit_command']) && $this->message['content'] == $wall['quit_command'])) {
 			$this->endContext();
-			return $this->respText($wall['quit_tips']);
+			return empty($wall['quit_tips']) ? '您已成功退出微信墙' : $wall['quit_tips'];
 		}
-		if (empty($member['nickname']) || empty($member['avatar'])) {
-			return $this->respText('发表话题前请完善您的基本信息，<a target="_blank" href="'.$this->createMobileUrl('register').'">点击完善</a>。');
-		}
-		
+
 		$data = array(
-			'rid' => $member['rid'],
-			'from_user' => $_W['member']['uid'],
+			'rid' => $this->rule,
+			'from_user' => $_W['openid'],
 			'type' => $this->message['type'],
 			'createtime' => TIMESTAMP,
 		);
+
 		if (empty($wall['isshow']) && empty($member['isblacklist'])) {
 			$data['isshow'] = 1;
-		} else {
-			$data['isshow'] = 0;
 		}
-		
+
+		// 文字类型信息
 		if ($this->message['type'] == 'text') {
 			$data['content'] = $this->message['content'];
 		}
+
+		// 图片类型信息
 		if ($this->message['type'] == 'image') {
+			load()->func('file');
 			load()->func('communication');
 			$image = ihttp_request($this->message['picurl']);
-			$partPath = IA_ROOT. '/'.$_W['config']['upload']['attachdir'].'/';
-			
-			do {
-				$filename = "images/{$_W['uniacid']}/".date('Y/m/').random(30).'.jpg';
-			} while(file_exists($partPath . $filename));
-			
+			$filename = 'images/' . $_W['uniacid'] . '/' . date('Y/m/') . md5(TIMESTAMP + CLIENT_IP + random(12)) . '.jpg';
 			file_write($filename, $image['content']);
 			$data['content'] = $filename;
 		}
-		if ($this->message['type'] == 'link') {
-			$data['content'] = iserializer(array('title' => $this->message['title'], 'description' => $this->message['description'], 'link' => $this->message['link']));
-		}
-		
+
 		pdo_insert('wxwall_message', $data);
-		
+
 		if (!empty($member['isblacklist'])) {
-			$content .= '你已被列入黑名单，发送的消息需要管理员审核！';
+			$content = '你已被列入黑名单，发送的消息需要管理员审核！';
 		} elseif (!empty($wall['isshow'])) {
 			$content = '发送消息成功，请等待管理员审核';
 		} elseif(!empty($wall['send_tips'])) {
@@ -102,43 +95,46 @@ class we7_wxwallModuleProcessor extends WeModuleProcessor {
 		} else {
 			$content = '发送消息成功。';
 		}
-		
-		return $this->respText($content);
+
+		return $content;
 	}
-	
+
 	private function getMember() {
 		global $_W;
-		$rid = $this->rule;
-		
-		$sql = "SELECT lastupdate, isblacklist, rid FROM ".tablename('wxwall_members')." WHERE from_user = :uid AND rid = :rid LIMIT 1";
-		$param = array(
-			':uid' => $_W['member']['uid'], 
-			':rid' => $this->rule
-		);
-		$member = pdo_fetch($sql, $param);
+
+		$sql = 'SELECT `lastupdate`, `isblacklist`, `rid` FROM ' . tablename('wxwall_members') . ' WHERE `from_user` =
+				:from_user AND `rid` = :rid';
+		$params = array(':from_user' => $_W['openid'], ':rid' => $this->rule);
+		$member = pdo_fetch($sql, $params);
+
+		// 获取粉丝头像
+		$account = WeAccount::create($_W['acid']);
+		$fansInfo = $account->fansQueryInfo($_W['openid']);
+
 		if (empty($member)) {
 			$member = array(
-				'from_user' => $_W['member']['uid'],
+				'from_user' => $_W['openid'],
 				'rid' => $this->rule,
 				'isjoin' => 1,
 				'lastupdate' => TIMESTAMP,
 				'isblacklist' => 0,
 			);
+			if (!is_error($fansInfo)) {
+				$member['avatar'] = rtrim($fansInfo['headimgurl'], '0') . '132';
+			}
 			pdo_insert('wxwall_members', $member);
 		} else {
-			$member ['lastupdate'] = TIMESTAMP;
-			$data = array('lastupdate' => TIMESTAMP);
-			$parm = array('from_user' => $_W['member']['uid'],'rid' => $this->rule);
-			pdo_update('wxwall_members', $data, $parm);
+			if (!is_error($fansInfo)) {
+				$member['avatar'] = rtrim($fansInfo['headimgurl'], '0') . '132';
+			}
+			$member['lastupdate'] = TIMESTAMP;
+			$params = array('from_user' => $_W['openid'],'rid' => $this->rule);
+			pdo_update('wxwall_members', $member, $params);
 		}
-		load()->model('mc');
-		$profile = mc_fetch($_W['member']['uid'], array('nickname', 'avatar'));
-		if (!empty($profile)) {
-			$member = array_merge($member, $profile);
-		}
+
 		return $member;
 	}
-	
+
 	public function hookBefore() {
 		global $_W, $engine;
 	}

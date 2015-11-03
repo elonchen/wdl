@@ -1,5 +1,13 @@
 {template 'common/header'}
-<div class="panel panel-default">
+<script src="{MODULE_URL}template/js/galleria.js"></script>
+<style type="text/css">
+    #galleria img{
+   display: block; position: relative; left: 50px; top: 30px;
+   height: 0px;
+   width: 0px;
+}
+</style>
+<div class="panel panel-default" id='list'>
   <div class="panel-heading">
     <h3 class="panel-title">商品详情</h3>
   </div>
@@ -20,7 +28,29 @@
     <li class="list-group-item">发布时间：{php echo date('Y-m-d H:i:s', $item['createtime']);}</li>
   </ul>
 </div>
+<div id="galleria"></div>
+    <script>
+    // Load theme
+    Galleria.loadTheme('{MODULE_URL}template/lightbox/galleria.lightbox.js');
 
+    $('#galleria').galleria({
+        data_source: '#list',
+        extend: function() {
+            this.bind(Galleria.LOADFINISH, function(e) {
+                $(e.imageTarget).click(this.proxy(function(e) {
+                    e.preventDefault();
+                    this.next();
+                }))
+            })
+        },
+        keep_source: true,
+        data_config: function(img) {
+            return {
+                description: $(img).next('.caption').html()
+            }
+        }
+    });
+</script>
 
 
 {template 'common/footer'}

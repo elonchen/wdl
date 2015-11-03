@@ -7,9 +7,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <meta name="format-detection" content="telephone=no" />
+    {php echo register_jssdk(false);}
     <meta name="description" content="{if $title}{$title}{else}{if !empty($_W['account']['name'])}{$_W['account']['name']}{/if}{/if}{if $_W['account']['siteinfo']['sitename']}{$_W['account']['siteinfo']['sitename']}{/if}" />
-    <link rel="stylesheet" href="/addons/amouse_article/template/mobile/css/common.css?v=20150320">
-    <link rel="stylesheet" href="../addons/amouse_article/template/mobile/css/site.css?v=20150320">
+    <link rel="stylesheet" href="{RES}css/common.css?v=20150320">
+    <link rel="stylesheet" href="{RES}css/site.css?v=20150320">
     <style>
         .bgcolor {
             background-color: rgb(233, 86, 68);
@@ -106,29 +107,27 @@
             {if !empty($row['thumb'])}
             <img src="{php echo strpos($row['thumb'],'http://')===FALSE?($_W['attachurl'].$row['thumb']):$row['thumb']}" height="65" width="45"/>
             {/if}
-                <p class="title">{$row[title]}</p>
+            <p class="title">{$row[title]}</p>
             </a>
         </li>
         {/loop}
         {else}
-        {loop $navs $nav}
+        {loop $navs $nav} 
         <li>
-            <a href="{php echo $this->createMobileUrl("index",array("cid" => $row['id']),true)}">
+            <a href="{php echo $this->createMobileUrl("index",array("cid" => $nav['id']),true)}">
             {if !empty($nav['thumb'])}
             <img src="{php echo strpos($nav['thumb'],'http://')===FALSE?($_W['attachurl'].$nav['thumb']):$nav['thumb']}" height="65" width="45"/>
             {/if}
             <p class="title">{$nav[name]}</p>
             </a>
         </li>
-        {/loop}
-        {/if}
-
+        {/loop}  {/if}
     </ul>
 </div>
 <div id="footer">  Copyright © {if !empty($set['copyright'])}{$set['copyright']}{else}{$_W['account']['name']}{/if}</div>
 </div>
 <div id="toTop" style="position: fixed; display: none; bottom: 0px; left: 10px; z-index: 998; opacity: 0.8;">
-    <a href="javascript:void(0);" onclick="javascript:window.scrollTo(0,0);"><img style="width:46px;height:46px;" src="../addons/amouse_article/template/mobile/images/topplus.png" align="absmiddle"></a>
+    <a href="javascript:void(0);" onclick="javascript:window.scrollTo(0,0);"><img style="width:46px;height:46px;" src="{RES}images/topplus.png" align="absmiddle"></a>
 </div>
 </body>
 <style>
@@ -136,32 +135,26 @@
         background: rgba(0, 0, 0, 0);
     }
 </style>
-<script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
 <script language='javascript'>
-    <?php
-        $jssdk = new JSSDK();
-        $signPackage = $jssdk->GetSignPackage();
-    ?>
-    wx.config({
-        debug:false,
-        appId: "{$_W['account']['appid_share']}",
-        timestamp: {$signPackage["timestamp"]},
-        nonceStr: '{$signPackage["nonceStr"]}',
-        signature: '{$signPackage["signature"]}',
-        jsApiList: [
-            'onMenuShareTimeline','onMenuShareAppMessage','onMenuShareWeibo'
-        ]
-    });
-    var shareMeta = {
-        imgUrl:"{$shareimg}",
-        link:"{$url}",
-        desc:"{if !empty($category['description'])}{$category['description']}{else}{$_W['account']['name']}的精美图文{/if}",
-        title:"{if !empty($category['title'])}{$category['title']}{else}{$_W['account']['name']}的精美图文{/if}"
-    };
-    wx.ready(function(){
+
+    wx.ready(function () {
+        shareMeta = {
+            imgUrl:"{$shareimg}",
+            link:"{$url}",
+            desc:"{if !empty($category['description'])}{$category['description']}{else}{$_W['account']['name']}的精美图文{/if}",
+            title:"{if !empty($category['title'])}{$category['title']}{else}{$_W['account']['name']}的精美图文{/if}",
+            success: function(){
+
+            },
+            cancel: function(){
+                // alert("分享失败，可能是网络问题，一会儿再试试？");
+            }
+        };
         wx.onMenuShareTimeline(shareMeta);
         wx.onMenuShareAppMessage(shareMeta);
         wx.onMenuShareWeibo(shareMeta);
+        wx.onMenuShareQQ(shareMeta);
+        wx.onMenuShareQZone(shareMeta);
     });
 </script>
 </html>

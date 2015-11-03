@@ -1,11 +1,15 @@
 {template 'common/header-gw'}
+<div id="row" style="margin-top: 20px;">
+	<div class="col-md-12">
+		<div class="panel panel-default">
+			<div class="panel-body">
 <ol class="breadcrumb">
 	<li><a href="./?refresh"><i class="fa fa-home"></i></a></li>
 	<li class=""><a href="{url 'system/welcome'}">系统</a></li>
 	<li class="active">云服务诊断</li>
 </ol>
-<div class="main">
-	<form action="" method="post" class="form-horizontal form" role="form" onsubmit="return confirm('如果您的系统没有发生云服务链接异常, 请不要使用重置功能.');">
+<div class="main form-horizontal form">
+	<form action="" method="post" role="form" onsubmit="return confirm('如果您的系统没有发生云服务链接异常, 请不要使用重置功能.');">
 		<h5 class="page-header">云服务状态诊断</h5>
 		<div class="form-group">
 			<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">站点URL</label>
@@ -33,7 +37,7 @@
 		<div class="form-group">
 			<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">系统版本</label>
 			<div class="col-sm-10">
-				<p class="form-control-static">Weizan{php echo IMS_VERSION}{php echo IMS_FAMILY} (Release {php echo IMS_RELEASE_DATE})</p>
+				<p class="form-control-static">WeiZan{php echo IMS_VERSION}{php echo IMS_FAMILY} (Release {php echo IMS_RELEASE_DATE})</p>
 			</div>
 		</div>
 		<div class="form-group">
@@ -44,12 +48,99 @@
 			</div>
 		</div>
 	</form>
+	<h5 class="page-header">云服务网络诊断</h5>
+	<div class="form-group">
+		<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">服务器时间检查</label>
+		<div class="col-sm-10">
+			<p class="form-control-static" id="check-time">检测中...</p>
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">DNS解析函数</label>
+		<div class="col-sm-10">
+			<p class="form-control-static" id="check-time">{if function_exists('gethostbyname')}<i class="fa fa-check text-success"></i> 正常{else}<i class="fa fa-remove text-warning"></i> 异常{/if}</p>
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">云平台域名解析</label>
+		<div class="col-sm-10">
+			<p class="form-control-static" id="check-time">v2.addons.wdlcms.com&nbsp;&nbsp;DNS解析的IP：<span id="serverdnsip">{php echo gethostbyname('v2.addons.wdlcms.com')}</span> {if !empty($_W['setting']['cloudip'])}手动设置ip：{$_W['setting']['cloudip']}{/if} <a href="javascript:;"  data-toggle="modal" data-target="#set-server-ip">设置接口IP</a></p>
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">云平台主接口测试</label>
+		<div class="col-sm-10">
+			<p class="form-control-static" id="check-ip">检测中...</p>
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">云平台到站点测试</label>
+		<div class="col-sm-10">
+			<p class="form-control-static" id="check-touch">检测中...</p>
+		</div>
+	</div>
 </div>
+<form method="post">
+<div class="modal fade in form-horizontal" id="set-server-ip" tabindex="-1" role="dialog" aria-hidden="false">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">设置云服务ip地址</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<label class="control-label col-xs-3">云服务ip</label>
+					<div class="col-xs-9">
+						<input type="text" class="form-control" name="ip" value="{$_W['setting']['cloudip']}" />
+						<span class="help-block">如果您解析的云服务ip异常，可以在此手动设置</span>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				<button type="submit" class="btn btn-primary" name="updateserverip" value="ok">确认</button>
+				<input type="hidden" name="token" value="{$_W['token']}" />
+			</div>
+		</div>
+	</div>
+</div>
+</form></div></div></div></div></div>
 <script>
 	require(['jquery', 'util'], function($, u){
 		$('#look').click(function(){
 			u.message('Token:' + $('#token').val(), '', 'info');
-		})
+		});
+		$.ajax({
+			type : "get",
+			data : {'date' : '{$_W['timestamp']}', 'version' : '{php echo IMS_VERSION}', 'siteurl' : '{$_W['siteroot']}'},
+			url : "http://v2.addons.wdlcms.com/web/index.php?c=site&a=diagnose&jsonpcallback=?",
+			dataType : "jsonp",
+			success : function(data){
+				if (data['check_time']['errno'] == '0') {
+					$('#check-time').html('<i class="fa fa-check text-success"></i> 正常');
+				} else {
+					$('#check-time').html('<i class="fa fa-remove text-warning"></i> 异常，当前时间为：'+data['check_time']['message']['localtime']+"; 服务器时间为："+data['check_time']['message']['servertime']);
+				}
+				$.getJSON('./index.php?c=cloud&a=diagnose&do=testapi&ip='+data['check_api']['message'], function(testdata) {
+					if (testdata.message) {
+						if (data['check_api']['message'] != $('#serverdnsip').html()) {
+							html = '&nbsp;&nbsp;<span class="text-danger">（<i class="fa fa-exclamation"></i> 云服务解析地址异常，系统处于高危环境，请检查程序是否被篡改）</span>';
+							$('#serverdnsip').html($('#serverdnsip').html()+html);
+						}
+						$('#check-ip').html(testdata.message);
+					}
+				});
+				if (data['check_touch']['errno'] == '0') {
+					$('#check-touch').html('<i class="fa fa-check text-success"></i> 正常');
+				} else {
+					$('#check-touch').html('<i class="fa fa-remove text-warning"></i> 异常，'+data['check_touch']['message']);
+				}
+			},
+			error:function(){
+				alert('fail');
+			}
+		});
 	});
 </script>
 {template 'common/footer-gw'}

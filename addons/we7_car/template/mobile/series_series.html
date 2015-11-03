@@ -26,7 +26,7 @@
 </div>
 <span class="gradient_h_wbw"></span>
 
-{if $op=='brand'}
+{if $op == 'brand'}
 
 <div class="main" style="padding-top: 10px;">
     <ul class="list_ul_common" style="padding:0;">
@@ -155,6 +155,10 @@
                 <td>变速箱：</td>
                 <td>{$typeone['gear_box']}</td>
             </tr>
+            <tr>
+            	<td>品牌简介:</td>
+            	<td>{$typeone['description']}</td>
+            </tr>
             </tbody>
         </table>
         <li class="box group_btn">
@@ -170,14 +174,8 @@
 
 {/if}
 
-<footer class="nav_footer">
-    <ul class="box">
-        <li><a href="javascript:history.go(-1);">返回</a></li>
-        <li><a href="javascript:history.go(1);">前进</a></li>
-        <li><a href="{php echo $this->createMobileUrl('index',array('op'=>'index'))}">首页</a></li>
-        <li><a href="javascript:location.reload();">刷新</a></li>
-    </ul>
-</footer>
+{template 'share'}
+
 <script type="text/javascript">
     $(document).ready(function () {
         new Swipe(document.getElementById('stage_36eea047'), {

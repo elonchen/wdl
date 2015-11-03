@@ -26,7 +26,7 @@
 				</div>
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">身份验证项</label>
-					<div class="col-sm-9 col-xs-12">
+					<div class="col-sm-9">
 						<label class="radio-inline">
 							<input type="radio" name="passport[item]" value="mobile" {if $passport['item'] == 'mobile'} checked="checked"{/if}/> 手机注册
 						</label>
@@ -41,7 +41,7 @@
 				</div>
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">身份验证方式</label>
-					<div class="col-sm-9 col-xs-12">
+					<div class="col-sm-9">
 						<label class="radio-inline">
 							<input type="radio" name="passport[type]" value="code" {if $passport['type'] == 'code'} checked="checked"{/if}/> 随机密码
 						</label>
@@ -77,14 +77,14 @@
 			<div class="panel-body">
 				<div class="form-group" id="account">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">选择公众号</label>
-					<div class="col-sm-9 col-xs-12">
+					<div class="col-sm-9">
 						<select name="oauth[account]" class="form-control">
 							<option value="0">请选择公众号</option>
 							{loop $accounts $acid $name}
 							<option value="{$acid}" {if $oauth['account'] == $acid}selected{/if}>{$name}</option>
 							{/loop}
 						</select>
-						<span class="help-block">在微信公众号请求用户网页授权之前，开发者需要先到公众平台网站的【开发者中心】<b>网页服务</b>中配置授权回调域名。<a href="http://www.wdlcms.com/wiki" target="_black">查看详情</a></span>
+						<span class="help-block">在微信公众号请求用户网页授权之前，开发者需要先到公众平台网站的【开发者中心】<b>网页服务</b>中配置授权回调域名。<a href="http://www.wdlcms.com/manual/dev:v0.6:qa:mobile_redirect_url_error" target="_black">查看详情</a></span>
 					</div>
 				</div>
 			</div>

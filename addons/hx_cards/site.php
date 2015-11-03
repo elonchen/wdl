@@ -2,7 +2,6 @@
 /**
  * 刮刮乐模块微站定义
  *
- * @author 华轩科技
  * @url http://bbs.wdlcms.com/
  */
 defined('IN_IA') or exit('Access Denied');

@@ -26,6 +26,7 @@
 					<input type="hidden" name="token" value="{$_W['token']}" />
 				</div>
 			</div>
+			<!--邮件暂时屏蔽
 			<h5 class="page-header">邮件设置</h5>
 			<div class="form-group">
 				<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">SMTP服务器</label>
@@ -101,120 +102,7 @@
 					<input type="hidden" name="token" value="{$_W['token']}" />
 				</div>
 			</div>
-                         
-         
-                                                   <h5 class="page-header">短信设置</h5>
-			<div class="form-group">
-				<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">短信接口</label>
-				<div class="col-sm-10 col-xs-12">
-			<label class="radio-inline"><input type="radio" name="sms[type]" value="yimei" {if $_W['setting']['sms']['type'] == "yimei" || empty($_W['setting']['sms']['type'])} checked{/if} /> 亿美 (<a href="http://www.emay.cn/" target="_blank">http://www.emay.cn/</a>)</label>
-                                                      <label class="radio-inline"><input type="radio" name="sms[type]" value="dxton" {if $_W['setting']['sms']['type'] == "dxton" || empty($_W['setting']['sms']['type'])} checked{/if} /> 短信通 (<a href="http://www.dxton.com/" target="_blank">http://dxton.com/</a>)</label>
-                                                     <div class="help-block">如果有其他短信接口，可联系客服人员</div>	
-				</div>
-                                  
-			</div>
-                                                   <div class="sms_setting sms_setting_yimei" {if $_W['setting']['sms']['type']!='yimei'}style="display:none"{/if}>
-                                                            <div class="form-group">
-                                                                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">网关地址</label>
-                                                                    <div class="col-sm-10 col-xs-12">
-                                                                            <input type="text" name="sms[url]" class="form-control" value="{$_W['setting']['sms']['url']}" />
-                                                                            <div class="help-block">网关地址</div>	
-                                                                    </div>
-                                                            </div>
-                                                            <div class="form-group">
-                                                                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">序列号</label>
-                                                                    <div class="col-sm-10 col-xs-12">
-                                                                            <input type="text" name="sms[serialNumber]" class="form-control" value="{$_W['setting']['sms']['serialNumber']}" />
-                                                                            <div class="help-block">序列号</div>	
-                                                                    </div>
-                                                            </div>
-                                                                                          <div class="form-group">
-                                                                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">密码</label>
-                                                                    <div class="col-sm-10 col-xs-12">
-                                                                            <input type="text" name="sms[password]" class="form-control" value="{$_W['setting']['sms']['password']}" />
-                                                                            <div class="help-block">密码,请通过亿美销售人员获取</div>	
-                                                                    </div>
-                                                            </div>
-                                                                                         <div class="form-group">
-                                                                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">SESSION KEY</label>
-                                                                    <div class="col-sm-10 col-xs-12">
-                                                                            <input type="text" name="sms[sessionKey]" class="form-control" value="{$_W['setting']['sms']['sessionKey']}" />
-                                                                            <div class="help-block">登录后所持有的SESSION KEY，即可通过login方法时创建</div>	
-                                                                    </div>
-                                                            </div>
-                                                              <div class="form-group">
-                                                                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">代理服务器设置</label>
-                                                                    <div class="col-sm-10 col-xs-12">
-                                                                                                                <div class='input-group'>
-                                                                                                                    <div class='input-group-addon'>地址</div>
-                                                                                                                    <input type="text" name="sms[proxyhost]" class="form-control" value="{$_W['setting']['sms']['proxyhost']}" />
-                                                                                                                    <div class='input-group-addon'>端口</div>
-                                                                                                                    <input type="text" name="sms[proxyport]" class="form-control" value="{$_W['setting']['sms']['proxyport']}" />
-                                                                                                                    <div class='input-group-addon'>用户</div>
-                                                                                                                    <input type="text" name="sms[proxyusername]" class="form-control" value="{$_W['setting']['sms']['proxyusername']}" />
-                                                                                                                    <div class='input-group-addon'>密码</div>
-                                                                                                                    <input type="text" name="sms[proxypassword]" class="form-control" value="{$_W['setting']['sms']['proxypassword']}" />
-                                                                                                                </div>
-                                                                                  <div class="help-block">可选，代理服务器设置，如果地址不填写则不使用代理服务器</div>	
-                                                                    </div>
-                                                            </div>
-                                                                                       <div class="form-group">
-                                                                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">连接超时时间</label>
-                                                                    <div class="col-sm-10 col-xs-12">
-                                                                                                                <div class='input-group'>
-                                                                                                                    <input type="text" name="sms[timeout]" class="form-control" value="{$_W['setting']['sms']['timeout']}" />
-                                                                                                                    <div class='input-group-addon'>秒</div>
-                                                                                                                </div>
-                                                                                  <div class="help-block">连接超时时间，默认0，为不超时</div>	
-                                                                    </div>
-                                                            </div>
-                                                                                         <div class="form-group">
-                                                                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">信息返回超时时间</label>
-                                                                    <div class="col-sm-10 col-xs-12">
-                                                                                                                <div class='input-group'>
-                                                                                                                    <input type="text" name="sms[response_timeout]" class="form-control" value="{$_W['setting']['sms']['response_timeout']}" />
-                                                                                                                    <div class='input-group-addon'>秒</div>
-                                                                                                                </div>
-                                                                                  <div class="help-block">信息返回超时时间，如果不填写默认为30</div>	
-                                                                    </div>
-                                                                                         </div>
-                            
-                                                   </div>
-                                                   <div class="sms_setting sms_setting_dxton" {if $_W['setting']['sms']['type']!='dxton'}style="display:none"{/if}>
-                                                       
-                                                        <div class="form-group">
-                                                                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">用户名</label>
-                                                                    <div class="col-sm-10 col-xs-12">
-                                                                            <input type="text" name="sms[dxton_username]" class="form-control" value="{$_W['setting']['sms']['dxton_username']}" />
-                                                                            <div class="help-block">短信通用户名</div>	
-                                                                    </div>
-                                                        </div>
-                                                        <div class="form-group">
-                                                                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">密码</label>
-                                                                    <div class="col-sm-10 col-xs-12">
-                                                                            <input type="text" name="sms[dxton_pwd]" class="form-control" value="{$_W['setting']['sms']['dxton_pwd']}" />
-                                                                            <div class="help-block">短信通密码</div>	
-                                                                    </div>
-                                                        </div>
-                                                       
-                                                   </div>
-			<div class="form-group">
-				<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">测试手机号</label>
-				<div class="col-sm-10 col-xs-12">
-					<input type="text" name="sms_receiver" class="form-control" value="" />
-					<div class="help-block">如果收到 “您的验证码是：【{$_W['setting']['copyright']['sitename']}短信测试】。如需帮助请联系客服。”，说明接口可用</div>
-				</div>
-			</div>
-			<div class="form-group">
-				<div class="col-sm-offset-2 col-md-offset-2 col-lg-offset-2 col-xs-12 col-sm-10 col-md-10 col-lg-10">
-					<input name="sms_submit" type="submit" value="提交" class="btn btn-primary span3" />
-					<label for="radio_8" class="checkbox-inline" style=" margin-left:10px;">
-                                                                                         <input type="checkbox" name="sms_testsend" id="radio_8" value="1" checked /> 保存后发短信给测试手机号</label>
-				</div>
-			</div>
-                        
-                        
-			
+			-->
 			<h5 class="page-header">系统锁操作</h5>
 			<div class="form-group">
 				<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">删除升级锁</label>
@@ -233,12 +121,6 @@
 		</form>
 			</div></div></div></div></div>
 	<script type="text/javascript">
-	//kindeditor($('#signature'));
-                $(function(){
-                    $(":radio[name='sms[type]']").click(function(){
-                          $(".sms_setting").hide();
-                          $(".sms_setting_" + $(this).val()).show();
-                    });
-            });
+	kindeditor($('#signature'));
 	</script>
 {template 'common/footer-gw'}

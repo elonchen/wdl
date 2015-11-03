@@ -10,8 +10,11 @@
 			{if $item['type'] == '2'}(虚拟){/if}
 		</span>
 	</div>
-	<span class="sold">
-		<span class="soldnum pull-left">已售{$item['sales']}件</span>
-		<span class="price pull-right">{$item['marketprice']}元</span>
-	</span>
+	<div class="sold">
+		<span  class="price">
+			<span>￥{$item['marketprice']}</span> &nbsp;
+			<del>￥{$item['originalprice']}</del>
+		</span>
+		<span class="soldnum text-right">已售{$item['sales']}件</span>
+	</div>
 </div>

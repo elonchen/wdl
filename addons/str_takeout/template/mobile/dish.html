@@ -15,10 +15,15 @@
 			{if !$store['business_hours_flag']}
 				<div class="tips">本店休息中，{$hour_str}营业</div>
 			{/if}
-			<div class="tips" style="color:#ff510c"><i class="fa fa-info-circle"></i> 点击分类列表可获取菜品</div>
+			<!--<div class="tips" style="color:#ff510c"><i class="fa fa-info-circle"></i> 点击分类列表可获取菜品</div> -->
 			<div id="menuNav" class="menu_nav">
-				<div class="ico_menu_wrap clearfix"><span class="ico_menu" id="icoMenu"><i></i></span></div>
-				<div class="side_nav" id="sideNav">
+				<div class="ico_menu_wrap clearfix" style="position:relative;z-index:1000">
+					<span class="ico_menu" ></span>
+					<span id="icoMenu" class="menu_list_edit">
+						<img src="../addons/str_takeout/template/resource/images/list.png" width="28" height="20px" style="position:absolute;top:16px;right:13px;">
+					</span>
+				</div>
+				<div class="side_nav" id="sideNav" style="z-index:0;">
 					<ul>
 						{loop $category $cate}
 							<li><a href="javascript:void(0);" class="" data-cid="{$cate['id']}">{$cate['title']}</a></li>

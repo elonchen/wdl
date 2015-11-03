@@ -1,6 +1,6 @@
 module =
 {
-	maxUpload: 8,
+	maxUpload: 3,
 	uploadInfo:
 	{
 	},

@@ -1,7 +1,7 @@
 <?php
 /**
- * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.wdlcms.com/ for more details.
+ * [WeiZan System] Copyright (c) 2014 012WZ.COM
+ * WeiZan is NOT a free software, it under the license terms, visited http://www.wdlcms.com/ for more details.
  */
 defined('IN_IA') or exit('Access Denied');
 $moduels = uni_modules();

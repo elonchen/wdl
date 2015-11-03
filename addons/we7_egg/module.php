@@ -3,7 +3,7 @@
 /**
  * 砸蛋抽奖模块
  *
- * [WeEngine System] Copyright (c) 2013 wdlcms.com
+ * [WeiZan System] Copyright (c) 2013 012wz.com
  */
 defined('IN_IA') or exit('Access Denied');
 
@@ -19,7 +19,7 @@ class We7_eggModule extends WeModule {
             if (!empty($award)) {
                 foreach ($award as &$pointer) {
                     if (!empty($pointer['activation_code'])) {
-                        $pointer['activation_code'] = implode("\n", iunserializer($pointer['activation_code']));
+                        $pointer['activation_code'] = implode("\n", (array)iunserializer($pointer['activation_code']));
                     }
                 }
             }
@@ -27,6 +27,8 @@ class We7_eggModule extends WeModule {
             $reply = array(
                 'periodlottery' => 1,
                 'maxlottery' => 1,
+	            'starttime' => TIMESTAMP,
+	            'endtime' => TIMESTAMP + 7 * 86400
             );
         }
 
@@ -43,6 +45,8 @@ class We7_eggModule extends WeModule {
         $id = intval($_GPC['reply_id']);
         $insert = array(
             'rid' => $rid,
+	        'uniacid' => $_W['uniacid'],
+            'title' => $_GPC['title'],
             'picture' => $_GPC['picture'],
             'description' => $_GPC['description'],
             'periodlottery' => intval($_GPC['periodlottery']),
@@ -51,11 +55,13 @@ class We7_eggModule extends WeModule {
             'default_tips' => $_GPC['default_tips'],
             'hitcredit' => intval($_GPC['hitcredit']),
             'misscredit' => intval($_GPC['misscredit']),
+            'starttime' => strtotime($_GPC['time']['start']),
+            'endtime' => strtotime($_GPC['time']['end'])
         );
         if (empty($id)) {
             pdo_insert($this->tablename, $insert);
         } else {
-            if (!empty($_GPC['picture'])) {
+            if (!empty($_GPC['picture']) && $_GPC['picture'] != $_GPC['picture-old']) {
                 load()->func('file');
                 file_delete($_GPC['picture-old']);
             } else {
@@ -63,6 +69,7 @@ class We7_eggModule extends WeModule {
             }
             pdo_update($this->tablename, $insert, array('id' => $id));
         }
+
         if (!empty($_GPC['award-title'])) {
             foreach ($_GPC['award-title'] as $index => $title) {
                 if (empty($title)) {
@@ -79,7 +86,7 @@ class We7_eggModule extends WeModule {
                 if (empty($update['inkind']) && !empty($_GPC['award-activation-code'][$index])) {
                     $activationcode = explode("\n", $_GPC['award-activation-code'][$index]);
                     $update['activation_code'] = iserializer($activationcode);
-                    $update['total'] = count($activationcode);
+                    // $update['total'] = count($activationcode);
                     $update['activation_url'] = $_GPC['award-activation-url'][$index];
                 }
                 pdo_update('egg_award', $update, array('id' => $index));
@@ -105,7 +112,7 @@ class We7_eggModule extends WeModule {
                 if (empty($insert['inkind'])) {
                     $activationcode = explode("\n", $_GPC['award-activation-code-new'][$index]);
                     $insert['activation_code'] = iserializer($activationcode);
-                    $insert['total'] = count($activationcode);
+                    // $insert['total'] = count($activationcode);
                     $insert['activation_url'] = $_GPC['award-activation-url-new'][$index];
                 }
                 pdo_insert('egg_award', $insert);
@@ -124,8 +131,9 @@ class We7_eggModule extends WeModule {
                 $deleteid[] = $row['id'];
             }
         }
-        pdo_delete($this->tablename, "id IN ('" . implode("','", $deleteid) . "')");
+	    pdo_delete($this->tablename, "id IN ('" . implode("','", $deleteid) . "')");
+	    pdo_delete('egg_winner', array('rid' => $rid));
+	    pdo_delete('egg_award', array('rid' => $rid));
         return true;
     }
-
 }

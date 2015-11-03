@@ -342,32 +342,6 @@
     </a>
 </div>
 
-<!--<div class="foot-fix-panel" style="width: 100%;visibility: visible;border-top: 1px solid rgb(209, 214, 212);background: white;">
-    <div class="panel-box" style="width: 100%;">
-        <div class="page " data-index="0" style="width: 100%; left: 0px; transition: 0ms; -webkit-transition: 0ms; -webkit-transform: translate(0px, 0px) translateZ(0px);">
-            <a class="easycall-item" href="wap.php?m=cat&a=new&wxid=oAoOquASYH-qtYyA_zRTctmbdFlE">
-                <img class="icon" src="images/bottom/shouye.png">
-                <div class="title">首页</div>
-            </a>
-            <a class="easycall-item" href="javascript:getNearby(29);">
-                <img class="icon" src="images/bottom/fujin2.png">
-                <div class="title" style="color:rgb(65,140,3); ">附近优惠</div>
-            </a>
-            <a class="easycall-item" href="http://wsq.qq.com/reflow/180332771">
-                <img class="icon" src="images/bottom/liuyan.png">
-                <div class="title">留言</div>
-            </a>
-            <a class="easycall-item" href="wap.php?m=card&b=1&wxid=oAoOquASYH-qtYyA_zRTctmbdFlE">
-                <img class="icon" src="images/bottom/wo.png">
-                <div class="title">我的</div>
-            </a>
-        </div>
-        <div class="page " data-index="1" style="width: 1280px; left: -1280px; transition: 0ms; -webkit-transition: 0ms; -webkit-transform: translate(1280px, 0px) translateZ(0px);"></div>
-        <div class="page " data-index="2" style="width: 1280px; left: -2560px; transition: 0ms; -webkit-transition: 0ms; -webkit-transform: translate(1280px, 0px) translateZ(0px);"></div>
-        <div class="page " data-index="3" style="width: 1280px; left: -3840px; transition: 0ms; -webkit-transition: 0ms; -webkit-transform: translate(1280px, 0px) translateZ(0px);"></div>
-        <div class="page " data-index="4" style="width: 1280px; left: -5120px; transition: 0ms; -webkit-transition: 0ms; -webkit-transform: translate(1280px, 0px) translateZ(0px);"></div>
-    </div>
-</div>-->
 <div class="foot-fix-panel"  style="width: 100%;height:79px;visibility: visible;border-top: 1px solid rgb(228, 221, 221);background: white;">
     <div class="panel-box" style="width: 100%;">
         <div class="page " data-index="0"  style="display:block;width: 100%;height: 30px;background: rgb(56, 173, 75);color: white; left: 0px; transition: 0ms; -webkit-transition: 0ms; -webkit-transform: translate(0px, 0px) translateZ(0px);">
@@ -417,36 +391,38 @@
     </div>
 </div>
 <script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
-<script language='javascript'>
-    <?php
-     $jssdk = new JSSDK();
-     $signPackage = $jssdk->GetSignPackage();
-    ?>
+{php $signPackage=$_W['account']['jssdkconfig'];}
+<script>
     wx.config({
-        debug:false,
-        appId: "{$_W['account']['appid_share']}",
-        timestamp: {$signPackage["timestamp"]},
-        nonceStr: '{$signPackage["nonceStr"]}',
-        signature: '{$signPackage["signature"]}',
-        jsApiList: [
-            'onMenuShareTimeline','onMenuShareAppMessage','onMenuShareWeibo'
-        ]
+        debug: false,
+        appId: '<?php echo $signPackage["appId"];?>',
+        timestamp: '<?php echo $signPackage["timestamp"];?>',
+        nonceStr: '<?php echo $signPackage["nonceStr"];?>',
+        signature: '<?php echo $signPackage["signature"];?>',
+        jsApiList: ['checkJsApi','onMenuShareTimeline','onMenuShareAppMessage','onMenuShareQQ','onMenuShareWeibo']
     });
 
-    var shareMeta = {
-        imgUrl:"{$_W['attachurl']}{$item['address']}",
-        link :  "{$url}",
-        desc : "【新盘介绍】{$item['name']}",
-        title : "【新盘介绍】{$item['name']}"
-    };
-
-    wx.ready(function(){
-        wx.onMenuShareTimeline(shareMeta);
-        wx.onMenuShareAppMessage(shareMeta);
-        wx.onMenuShareWeibo(shareMeta);
+    wx.ready(function () {
+        var shareData = {
+            imgUrl:"{$_W['attachurl']}{$item['address']}",
+            link :  "{$url}",
+            desc : "【新盘介绍】{$item['name']}",
+            title : "【新盘介绍】{$item['name']}",
+            trigger: function (res) {},
+            complete: function (res) {},
+            success: function (res) {
+            },
+            cancel: function (res) {
+            },
+            fail: function (res) {
+            }
+        };
+        wx.onMenuShareAppMessage(shareData);
+        wx.onMenuShareQQ(shareData);
+        wx.onMenuShareWeibo(shareData);
+        wx.onMenuShareTimeline(shareData);
     });
 </script>
-
 <script language="javascript">
     function getNearby(catid) {
         if (navigator.geolocation) {

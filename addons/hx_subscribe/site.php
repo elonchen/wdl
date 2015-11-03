@@ -3,7 +3,7 @@
  * 推荐关注模块微站定义
  *
  * @author 华轩科技
- * @url http://bbs.wdlcms.com/
+ * @url http://bbs.012wz.com/
  */
 defined('IN_IA') or exit('Access Denied');
 
@@ -45,7 +45,7 @@ class Hx_subscribeModuleSite extends WeModuleSite {
 				$default_groupid = pdo_fetchcolumn('SELECT groupid FROM ' .tablename('mc_groups') . ' WHERE uniacid = :uniacid AND isdefault = 1', array(':uniacid' => $_W['uniacid']));
 				$data = array(
 					'uniacid' => $_W['uniacid'],
-					'email' => md5($openid).'@wdlcms.com',
+					'email' => md5($openid).'@012wz.com',
 					'salt' => random(8),
 					'groupid' => $default_groupid,
 					'createtime' => TIMESTAMP,
@@ -282,7 +282,7 @@ class Hx_subscribeModuleSite extends WeModuleSite {
 		if ($fans['uid'] != '0') {
 			$uid = $fans['uid'];
 		}else{
-			$uid = mc_update($uid, array('email' => md5($_W['openid']).'@wdlcms.com'));
+			$uid = mc_update($uid, array('email' => md5($_W['openid']).'@012wz.com'));
 			if (!empty($fans['fanid']) && !empty($uid)) {
 				pdo_update('mc_mapping_fans', array('uid' => $uid), array('fanid' => $fans['fanid']));
 			}
@@ -305,7 +305,7 @@ class Hx_subscribeModuleSite extends WeModuleSite {
 		if ($fans['uid'] != '0') {
 			$uid = $fans['uid'];
 		}else{
-			$uid = mc_update($uid, array('email' => md5($_W['openid']).'@wdlcms.com'));
+			$uid = mc_update($uid, array('email' => md5($_W['openid']).'@012wz.com'));
 			if (!empty($fans['fanid']) && !empty($uid)) {
 				pdo_update('mc_mapping_fans', array('uid' => $uid), array('fanid' => $fans['fanid']));
 			}

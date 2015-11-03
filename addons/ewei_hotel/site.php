@@ -638,9 +638,35 @@ class Ewei_hotelModuleSite extends WeModuleSite {
 				$body .= "到店时间: " . $bdate . "<br/>";
 				$body .= "离店时间: " . $edate . "<br/><br/>";
 				$body .= "请您到管理后台仔细查看. <a href='" .$_W['siteroot'] .create_url('member/login') . "' target='_blank'>立即登录后台</a>";
-				$result = ihttp_email($reply['mail'], $subject, $body);
+				load()->func('communication');
+                $result = ihttp_email($reply['mail'], $subject, $body);
+                if($insert['paytype'] == '3') {
+                    global $_GPC, $_W;
+                    $weid = $this->_weid;
+                    $sql = 'SELECT * FROM ' . tablename('hotel2_order') . ' WHERE id = :id AND weid = :weid';
+                    $order = pdo_fetch($sql, array(':id' => $order_id, ':weid' => $weid));
+                    $sql = 'SELECT email FROM ' . tablename('hotel2_set') . ' WHERE weid = :weid';
+                    $setInfo = pdo_fetch($sql, array(':weid' => $_W['uniacid']));
+                    if ($setInfo['email']) {
+                        $body = "<h3>酒店订单</h3> <br />";
+                        $body .= '订单编号：' . $order['ordersn'] . '<br />';
+                        $body .= '姓名：' . $order['name'] . '<br />';
+                        $body .= '手机：' . $order['mobile'] . '<br />';
+                        $body .= '房型：' . $order['style'] . '<br />';
+                        $body .= '订购数量' . $order['nums'] . '<br />';
+                        $body .= '原价：' . $order['oprice']  . '<br />';
+                        $body .= '会员价：' . $order['mprice']  . '<br />';
+                        $body .= '入住日期：' . date('Y-m-d',$order['btime'])  . '<br />';
+                        $body .= '退房日期：' . date('Y-m-d',$order['etime']) . '<br />';
+                        $body .= '总价:' . $order['sum_price'];
+                        // 发送邮件提醒
+                        if (!empty($setInfo['email'])) {
+                            load()->func('communication');
+                            ihttp_email($setInfo['email'], '微酒店订单提醒', $body);
+                        }
+                    }
+                }
 			}
-
 			$url = $this->createMobileUrl('orderdetail', array('id' => $order_id));
 			die(json_encode(array("result" => 1, "url" => $url)));
 		} else {
@@ -1459,7 +1485,7 @@ class Ewei_hotelModuleSite extends WeModuleSite {
 		$sql = 'SELECT `email`, `mobile` FROM ' . tablename('hotel2_set') . ' WHERE `weid` = :weid';
 		$setInfo = pdo_fetch($sql, array(':weid' => $_W['uniacid']));
 
-		if (!empty($setInfo['email']) || !empty($setInfo['mobile'])) {
+		if ($setInfo['email']) {
 			$body = "<h3>酒店订单</h3> <br />";
 			$body .= '订单编号：' . $order['ordersn'] . '<br />';
 			$body .= '姓名：' . $order['name'] . '<br />';
@@ -1468,21 +1494,27 @@ class Ewei_hotelModuleSite extends WeModuleSite {
 			$body .= '订购数量' . $order['nums'] . '<br />';
 			$body .= '原价：' . $order['oprice']  . '<br />';
 			$body .= '会员价：' . $order['mprice']  . '<br />';
-			$body .= '入住日期：' . $order['btime']  . '<br />';
-			$body .= '退房日期：' . $order['etime']  . '<br />';
+			$body .= '入住日期：' . date('Y-m-d',$order['btime'])  . '<br />';
+			$body .= '退房日期：' . date('Y-m-d',$order['etime']) . '<br />';
 			$body .= '总价:' . $order['sum_price'];
 
 			// 发送邮件提醒
 			if (!empty($setInfo['email'])) {
 				load()->func('communication');
-				ihttp_email($this->module['config']['noticeemail'], '微商城订单提醒', $body);
+				ihttp_email($setInfo['email'], '微酒店订单提醒', $body);
 			}
+		}
 
+		if ($setInfo['mobile']) {
 			// 发送短信提醒
 			if (!empty($setInfo['mobile'])) {
 				load()->model('cloud');
-				$body = str_replace(array('<h3>', '</h3>', '<br />'), array('', '', "\n"), $body);
-				cloud_sms_send($this->module['config']['mobile'], $body);
+				cloud_prepare();
+
+				$body = '用户' . $order['name'] . ',电话:' . $order['mobile'] . '于' . date('m月d日H:i') . '成功支付微酒店订单' . $order['ordersn']
+					. ',总金额' . $order['sum_price'] . '元' . '.' . random(3);
+
+				cloud_sms_send($setInfo['mobile'], $body);
 			}
 		}
 
@@ -2181,6 +2213,7 @@ class Ewei_hotelModuleSite extends WeModuleSite {
 			$start = $_GPC['start'];
 			$end = $_GPC['end'];
 			$list = pdo_fetchall("select * from " . tablename("hotel2_room") . " where id in (" . implode(",", $rooms) . ")");
+            $num = pdo_fetchall('SELECT num FROM '. tablename('hotel2_room_price'),array(),'roomid');
 			ob_start();
 			include $this->template('room_status_lot_list');
 			$data['result'] = 1;

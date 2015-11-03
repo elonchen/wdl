@@ -2,7 +2,7 @@
 /**
  * 微点餐
  *
- * 作者:迷失卍国度
+ * 作者:微赞科技
  *
  */
 defined('IN_IA') or exit('Access Denied');

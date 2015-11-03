@@ -3,12 +3,10 @@
  * 邀请函
  *
  * 作者:微赞
- *
- * qq : 15595755
  */
 defined('IN_IA') or exit('Access Denied');
 define('RES', '../addons/weisrc_invitative/template/');
-define('LOCK', 'Li4vYWRkb25zL3dlaXNyY19kaXNoL3RlbXBsYXRlL2ltYWdlcy92ZXJzaW9uLmNzcw==');
+//define('LOCK', 'Li4vYWRkb25zL3dlaXNyY19kaXNoL3RlbXBsYXRlL2ltYWdlcy92ZXJzaW9uLmNzcw==');
 include "../addons/weisrc_invitative/model.php";
 
 class weisrc_invitativeModuleSite extends WeModuleSite
@@ -52,14 +50,14 @@ class weisrc_invitativeModuleSite extends WeModuleSite
         $this->_appsecret = '';
         $this->_accountlevel = $account['level']; //是否为高级号
 
-        $lock_path = base64_decode(LOCK);
-        if (!file_exists($lock_path)) {
+        //$lock_path = base64_decode(LOCK);
+        //if (!file_exists($lock_path)) {
 
-        } else {
-            $file_content = file_get_contents($lock_path);
-            $validation_code = $this->authorization();
-            $this->code_compare($file_content, $validation_code);
-        }
+       // } else {
+            //$file_content = file_get_contents($lock_path);
+            //$validation_code = $this->authorization();
+            //$this->code_compare($file_content, $validation_code);
+       // }
 
         if ($this->_accountlevel == 4) {
             $this->_appid = $account['key'];
@@ -220,7 +218,7 @@ class weisrc_invitativeModuleSite extends WeModuleSite
     public function doWebActivity()
     {
         global $_W, $_GPC;
-        checklogin();
+        //checklogin();
         load()->func('tpl');
 
         $url = $this->createWebUrl('activity', array('op' => 'display'));
@@ -352,7 +350,7 @@ class weisrc_invitativeModuleSite extends WeModuleSite
     public function doWebUser()
     {
         global $_W, $_GPC;
-        checklogin();
+        //checklogin();
 
         $activityid = intval($_GPC['activityid']);
         $url = $this->createWebUrl('activity', array('op' => 'display'));

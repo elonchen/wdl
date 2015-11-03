@@ -1,6 +1,6 @@
 <script src="../addons/fm_photosvote/template/mobile/newfile/lib/mobileFix.mini.js?v={php echo time()}"></script>
 <script src="../addons/fm_photosvote/template/mobile/newfile/lib/exif.js?v={php echo time()}"></script>
-<script src="../addons/fm_photosvote/template/mobile/newfile/lrz.mobile.min.js?v={php echo time()}"></script>
+<script src="../addons/fm_photosvote/template/mobile/newfile/lrz.pc.min.js?v={php echo time()}"></script>
 {template 'common/header'}
 	{if $rid!=''}
 		{template 'nav'}
@@ -70,20 +70,20 @@
 				</tr>
 			</thead>
 			<tbody>
-				{loop $list_praise $row}
+				{loop $list_praise $mid $row}
 				{php $sm = $this->getsharenum($uniacid,  $row['tfrom_user'], $rid, $row['sharenum'])}
 				<tr>
 				
 					<td><input type="checkbox" name="uid[]" value="{$row['id']}" class=""></td>
 					<td>{$row['id']}</td>
 					<td class="info"><img src="{php echo toimage($row['avatar'])}" width="50px;"/>{$row['nickname']}
-									<div>{if !empty($row['realname'])}姓名：{$row['realname']}<br/>{/if}{if !empty($row['weixin'])}微信号：{$row['weixin']}<br/>{/if}{if !empty($row['qqhao'])}QQ号：{$row['qqhao']}<br/>{/if}{if !empty($row['email'])}邮箱：{$row['email']}<br/>{/if}{if !empty($row['address'])}地址：{$row['address']}<br/>{/if}</div></a></td>				
+									<div>性别： {if $row['sex'] == 1}男{elseif $row['sex'] == 2}女{else}未知{/if}<br/>{if !empty($row['realname'])}姓名：{$row['realname']}<br/>{/if}{if !empty($row['weixin'])}微信号：{$row['weixin']}<br/>{/if}{if !empty($row['qqhao'])}QQ号：{$row['qqhao']}<br/>{/if}{if !empty($row['email'])}邮箱：{$row['email']}<br/>{/if}{if !empty($row['address'])}地址：{$row['address']}<br/>{/if}</div></a></td>				
 									<td>{$row['photoname']}</td>
 					
 					<td><img src="{php echo toimage($row['photo'])}" width="50px;"/></td>
 					<td class="row-hover">{$row['photosnum']}</td>
 					<td class="row-hover">{$row['hits']}</td>
-					<td class="row-hover">{$sm}</td>
+					<td class="row-hover">{$sharenum[$mid]}</td>
 					<td class="row-hover">{$row['mobile']}</td>
 					<td>{php echo date('Y-m-d H:i', $row['createtime']);}</td>
 					<td>
@@ -204,7 +204,21 @@
 						<span class="help-block">参赛照片名字</span>
 					</div>
 				</div>
-				
+
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">参赛者性别</label>
+					<div class="col-sm-9 col-xs-12">
+						<label class='radio-inline'>
+							<input type='radio' name='sex' value='0' {if $item['sex']==0}checked{/if} /> 未知
+						</label>
+						<label class='radio-inline'>
+							<input type='radio' name='sex' value='1' {if $item['sex']==1}checked{/if} /> 男
+						</label>
+						<label class='radio-inline'>
+							<input type='radio' name='sex' value='2' {if $item['sex']==2}checked{/if} /> 女
+						</label>
+					</div>
+				</div>
 				{if $reply['isrealname'] == 1}
 					<div class="form-group">
 						<label class="col-xs-12 col-sm-3 col-md-2 control-label">参赛者姓名</label>
@@ -335,7 +349,7 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label">优酷视频</label>
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">网络视频</label>
 					<div class="col-sm-9 col-xs-12">
 						<a href="{if (substr($item['youkuurl'],0,7)=='http://')}{$item['youkuurl']}{else}http://player.youku.com/embed/{$item['youkuurl']}{/if}"  target="_blank" class="btn btn-success">点击查看</a>
 						<input type="text" name="youkuurl" class="form-control" value="{$item['youkuurl']}" />
@@ -344,7 +358,7 @@
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span>票数</label>
 					<div class="col-sm-9 col-xs-12">
-						<input type="text" name="photosnum" class="form-control" readonly value="{$item['photosnum']}" />
+						<input type="text" name="photosnum" class="form-control"  value="{$item['photosnum']}" />
 					<span class="help-block">真实票数</span>
 					</div>
 				</div>
@@ -360,7 +374,7 @@
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span>人气</label>
 					<div class="col-sm-9 col-xs-12">
-						<input type="text" name="hits" class="form-control" readonly value="{$item['hits']}" />
+						<input type="text" name="hits" class="form-control"  value="{$item['hits']}" />
 					<span class="help-block">真实人气</span>
 					</div>
 				</div>
@@ -376,29 +390,18 @@
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span>转发</label>
 					<div class="col-sm-9 col-xs-12">
 						{php $sm = $this->getsharenum($uniacid,  $tfrom_user, $rid, $item['sharenum'])}
-						<input type="text" name="sharenum" class="form-control" value="{$item['sharenum']}" />
+						<input type="text" name="sharenum" class="form-control" value="{$sharesn}" />
 					<span class="help-block">总转发最终由投票者转发加被投票者转发与虚拟转发的总和，此处设置为虚拟转发</span>
 					</div>
 				</div>
-				
-				
-				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span>手机号</label>
-					<div class="col-sm-9 col-xs-12">
-						<input type="text" name="mobile" class="form-control" readonly value="{$item['mobile']}" />
-					</div>
-					<span class="help-block"></span>
-				</div>
-				
-				
 				 <div class="form-group">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">审核</label>
 					<div class="col-sm-9 col-xs-12">
 						<label class='radio-inline'>
-							<input type='radio' name='status' value=1' {if $item['status']==1}checked{/if} /> 通过
+							<input type='radio' name='status' value='1' {if $item['status']==1}checked{/if} /> 通过
 						</label>
 						<label class='radio-inline'>
-							<input type='radio' name='status' value=0' {if $item['status']==0}checked{/if} /> 不通过
+							<input type='radio' name='status' value='0' {if $item['status']==0}checked{/if} /> 不通过
 						</label>
 					</div>
 				</div>
@@ -728,6 +731,7 @@
 				var zl = "{php echo $reply['autozl']/100}";
 				// 也可以传入图片路径：lrz('../demo.jpg', ...
 				lrz(filename.files[0], {
+					zwidth: width,
 					quality:zl,
 					before: function() {
 						document.getElementById('progressNumber' + mid).innerHTML = '正在压缩图片...' ;

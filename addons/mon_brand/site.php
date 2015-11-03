@@ -4,7 +4,7 @@
  * qq:631872807
  */
 defined('IN_IA') or exit('Access Denied');
-define('APP_PUBLIC', './source/modules/brand/');
+
 
 class MON_BrandModuleSite extends WeModuleSite
 {
@@ -80,7 +80,7 @@ class MON_BrandModuleSite extends WeModuleSite
                 }
                 
                 if (empty($_GPC['tel'])) {
-                    message('请输入联系电话');
+                   // message('请输入联系电话');
                 }
                 
                 $data = array(

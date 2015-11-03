@@ -100,10 +100,10 @@ $(function () {
         var pricetype  = obj.attr("pricetype");
      
         if(pricetype=='num'){
-            if(!obj.isEmpty() && !obj.isNumber() ){
+/*            if(!obj.isEmpty() && !obj.isNumber() ){
                 Tip.select(obj,"请输入数字或留空!","top");
                 return;
-            }
+            }*/
             var price = $.trim( obj.val() );
             obj.parent().parent().find(".price_span").html( (price==''?"不限":price) ).removeClass('hide');
             obj.parent().addClass('hide');

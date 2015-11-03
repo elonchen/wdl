@@ -3,7 +3,6 @@
  * 种植乐园模块
  *
  * @author 微赞
- * @url http://www.00393.com/
  */
 defined('IN_IA') or exit('Access Denied');
 
@@ -38,7 +37,7 @@ class Stonefish_plantingModuleSite extends WeModuleSite {
 		    }
 		}
 		//服务号
-		$setting = $this->module['config'];
+		//$setting = $this->module['config'];
 		//不是认证号又没有借用服务号获取头像昵称
 		if($_W['account']['level']<4 && (empty($setting['appid']) || empty($setting['secret']))){// 普通号又没有借用
 			if (isset($_COOKIE["user_oauth2_wuopenid"])){
@@ -103,7 +102,7 @@ class Stonefish_plantingModuleSite extends WeModuleSite {
         global $_GPC, $_W;
 		$appid = $_W['account']['key'];
         $secret = $_W['account']['secret'];       
-        $setting = $this->module['config'];		
+        //$setting = $this->module['config'];		
         if ($_W['account']['level']<4 && !empty($setting) && !empty($setting['appid']) && !empty($setting['secret'])) { // 判断是否是借用设置
             $appid = $setting['appid'];
             $secret = $setting['secret'];
@@ -405,7 +404,6 @@ class Stonefish_plantingModuleSite extends WeModuleSite {
     }
     public function doMobileindex() {
         global $_GPC, $_W;
-        
 		$rid = intval($_GPC['rid']);		
 		$uniacid = $_W['uniacid'];
 		$acid = $_W['acid'];
@@ -497,6 +495,7 @@ class Stonefish_plantingModuleSite extends WeModuleSite {
 			//获得用户资料
 			//是否领取种子
 			$fans = pdo_fetch("SELECT * FROM " . tablename('stonefish_planting_fans') . " WHERE rid = '" . $rid . "' and fansID='" . $fansID . "' and from_user='" . $from_user . "'");
+			$seed = pdo_fetch("SELECT * FROM " . tablename('stonefish_planting_seed') . " WHERE id = '" . $seedid . "'");
 			if(empty($fans)){
                 $running = false;
                 $msg = '还没有领取过种子';
@@ -519,24 +518,32 @@ class Stonefish_plantingModuleSite extends WeModuleSite {
 				$sharenum = pdo_fetchcolumn("SELECT sum(viewnum) FROM " . tablename('stonefish_planting_data') . " WHERE rid = '" . $rid . "' and fromuser='" . $from_user . "'");
 				if(empty($sharenum)){
 					$sharenum = 0;
-				}
-				$seed = pdo_fetch("SELECT * FROM " . tablename('stonefish_planting_seed') . " WHERE id = '" . $seedid . "'");
+				}				
 				for($i = 1; $i <= 8; $i++) {
 					if($seed['seed0'.$i]<=$sharenum){
 					    $seednum = $i-1;
 						$seedimg = toimage($seed['seedimg0'.$i]);
 						$seed_num = $i;
 				    }
-				}
+				}				
 				pdo_update('stonefish_planting_fans', array('sharenum' => $sharenum), array('id' => $fans['id']));
 				//查询种子状态并更新一下助力量
 			}
+			$seedimg0 = toimage($seed['seedimg01']);
 			//是否领取种子
 			//查询种子生长级别以及是否有机会抽奖
 			$choujiang = 0;//默认没有抽奖机会
 			$award = pdo_fetch("SELECT * FROM " . tablename('stonefish_planting_award') . " WHERE rid = '" . $rid . "' and fid = '" . $fans['id'] . "' and from_user='" . $from_user . "' and shengzhangid = '".$seed_num."'");
 			if($seed_num>=$reply['award_times'] && empty($award) && $fans['choujiang']!=$seed_num){
 				$choujiang = pdo_fetchcolumn("SELECT count(id) FROM " . tablename('stonefish_planting_prize') . " WHERE prizetotal>prizedraw and sharenum <= '" . $seed_num . "'");
+				if($fans['choujiang']){
+					$chou_jiang = $fans['choujiang']+1;
+				}else{
+					$chou_jiang = $reply['award_times'];
+				}
+				if($reply['award_type']==0){
+					$chou_jiang = $seed_num;
+				}
 			}
 			//查询种子生长级别以及是否有机会抽奖
 			//是否中奖
@@ -648,6 +655,15 @@ class Stonefish_plantingModuleSite extends WeModuleSite {
 		$uid = intval($_GPC['uid']);
 		$shangjiaid = $_GPC['dianmian'];
 		$password = $_GPC['mima'];
+		$kehu = $_GPC['kehu'];
+		if(empty($shangjiaid)){
+			$data = array(                    
+			    'msg' => '请选择店名或商家网点',
+                'success' => 2,
+            );
+			$this->message($data);
+			exit;
+		}
 		if(empty($awardid)){
 			$data = array(                    
 			    'msg' => '奖品ID出错！',
@@ -702,6 +718,15 @@ class Stonefish_plantingModuleSite extends WeModuleSite {
 			$this->message($data);
 			exit;
 		}
+		if($kehu=='kehu'){
+			pdo_update('stonefish_planting_award', array('ticketid' => $shangjiaid), array('id' => $awardid));
+			$data = array(                    
+			    'msg' => '恭喜选择兑奖店面成功！',
+                'success' => 1,
+            );
+			$this->message($data);
+			exit;
+		}
 		$duijiangmima = 0;
 		if($reply['tickettype']==2){
 			//店员
@@ -726,7 +751,9 @@ class Stonefish_plantingModuleSite extends WeModuleSite {
             );
             pdo_update('stonefish_planting_award', $awardupdata, array('id' => $awardid));
 		    pdo_update('stonefish_planting_fans', array('zhongjiang' => 3), array('id' => $uid));
-		    pdo_update('stonefish_planting_prize', array('prizedraw' => $prize['prizedraw']+1), array('id' => $prize['id']));
+			if($reply['duijiangtype']==2){
+				pdo_update('stonefish_planting_prize', array('prizedraw' => $prize['prizedraw']+1), array('id' => $prize['id']));
+			}		    
 			//添加兑奖记录到商家网点
 			if($reply['tickettype']==3){			
 			    $content = '兑奖成功';
@@ -780,6 +807,14 @@ class Stonefish_plantingModuleSite extends WeModuleSite {
 		}
 		foreach ($award as &$awards) {
 			$awards['prizepic'] = pdo_fetchcolumn("SELECT prizepic FROM " . tablename('stonefish_planting_prize') . " WHERE id = '".$awards['prizeid']."'");
+			if($awards['ticketid']){
+				if($reply['tickettype']==2){
+				    $awards['ticketname'] = pdo_fetchcolumn("SELECT name FROM " . tablename('activity_coupon_password') . " WHERE uniacid = :uniacid and id = :id", array(':uniacid' => $uniacid,':id' => $awards['ticketid']));
+				}
+				if($reply['tickettype']==3){
+				    $awards['ticketname'] = pdo_fetchcolumn("SELECT title FROM " . tablename('stonefish_branch_business') . " WHERE uniacid = :uniacid and id = :id", array(':uniacid' => $uniacid,':id' => $awards['ticketid']));
+				}
+			}
 		}
 		//店员
 		if($reply['tickettype']==2){
@@ -896,8 +931,11 @@ class Stonefish_plantingModuleSite extends WeModuleSite {
             	    );
 				    pdo_insert('stonefish_branch_doingslist', $insert);
 				}
+				if($reply['duijiangtype']==1){
+				    pdo_update('stonefish_planting_prize', array('prizedraw' => $awardinfo['prizedraw']+1), array('id' => $prizeid));
+			    }
 		        //商家赠送添加使用记录
-				$data = array(                    
+				$data = array(
 					'msg' => '恭喜中奖了:'.$awardinfo['prizetype'].'('.$awardinfo['prizename'].')',
                     'success' => 1,
                 );
@@ -1209,7 +1247,7 @@ class Stonefish_plantingModuleSite extends WeModuleSite {
 				'uniacid'       => $_GPC['uniacid'],
 				'seedname'      => $_GPC['seedname'],
 				'seedad'      => $_GPC['seedad'],
-				'seedname'      => $_GPC['seedname'],
+				'seedimg'      => $_GPC['seedimg'],
 				'seed01'      => $_GPC['seed01'],
 				'seed02'      => $_GPC['seed02'],
 				'seed03'      => $_GPC['seed03'],
@@ -1873,10 +1911,10 @@ class Stonefish_plantingModuleSite extends WeModuleSite {
 		//所有奖品类别
 		$award = pdo_fetchall("SELECT * FROM " . tablename('stonefish_planting_prize') . " WHERE rid = :rid and uniacid=:uniacid ORDER BY `id` asc", array(':rid' => $rid, ':uniacid' => $_W['uniacid']));
 		foreach ($award as $k =>$awards) {
-			$award[$k]['num'] = pdo_fetchcolumn("SELECT count(id) FROM " . tablename('stonefish_planting_award') . " WHERE rid = :rid and uniacid=:uniacid and prizetype='".$awards['id']."'", array(':rid' => $rid, ':uniacid' => $_W['uniacid']));
+			$award[$k]['num'] = pdo_fetchcolumn("SELECT count(id) FROM " . tablename('stonefish_planting_award') . " WHERE rid = :rid and uniacid=:uniacid and prizeid=:prizeid", array(':rid' => $rid, ':uniacid' => $_W['uniacid'], ':prizeid' => $awards['id']));
 		}
 		//所有奖品类别
-		//导出标题		
+		//导出标题
 		if($_GPC['status']==0){
 		    $statustitle = '被取消'.$_GPC['award'];
 		}
@@ -1899,9 +1937,9 @@ class Stonefish_plantingModuleSite extends WeModuleSite {
             $where.=' and status=:status';
             $params[':status'] = $_GPC['status'];
         }
-		if (!empty($_GPC['award'])) {
-            $where.=' and prizetype=:name';
-            $params[':name'] = $_GPC['award'];
+		if (!empty($_GPC['prizeid'])) {
+            $where.=' and prizeid=:prizeid';
+            $params[':prizeid'] = $_GPC['prizeid'];
         }
         if (!empty($_GPC['keywords'])) {
             if (strlen($_GPC['keywords']) == 11 && is_numeric($_GPC['keywords'])) {
@@ -1952,7 +1990,7 @@ class Stonefish_plantingModuleSite extends WeModuleSite {
 		//所有奖品类别
 		$award = pdo_fetchall("SELECT * FROM " . tablename('stonefish_planting_prize') . " WHERE rid = :rid and uniacid=:uniacid ORDER BY `id` asc", array(':rid' => $rid, ':uniacid' => $_W['uniacid']));
 		foreach ($award as $k =>$awards) {
-			$award[$k]['num'] = pdo_fetchcolumn("SELECT count(id) FROM " . tablename('stonefish_planting_award') . " WHERE rid = :rid and uniacid=:uniacid and prizeid='".$awards['id']."'", array(':rid' => $rid, ':uniacid' => $_W['uniacid']));
+			$award[$k]['num'] = pdo_fetchcolumn("SELECT count(id) FROM " . tablename('stonefish_planting_award') . " WHERE rid = :rid and uniacid=:uniacid and prizeid=:prizeid", array(':rid' => $rid, ':uniacid' => $_W['uniacid'], ':prizeid' => $awards['id']));
 		}
 		//所有奖品类别
 		//导出标题		
@@ -1974,15 +2012,15 @@ class Stonefish_plantingModuleSite extends WeModuleSite {
         }
         $where = '';
         $params = array(':rid' => $rid, ':uniacid' => $_W['uniacid']);
-        if (isset($_GPC['tickettype'])) {
+        if ($_GPC['tickettype']>=1) {
             $where.=' and tickettype=:tickettype';
             $params[':tickettype'] = $_GPC['tickettype'];
         }else{
-			$where.=' and tickettype>=1';
+			$where.=' and (tickettype>=1 or ticketid>0)';
 		}
-		if (!empty($_GPC['award'])) {
-            $where.=' and prizetype=:name';
-            $params[':name'] = $_GPC['award'];
+		if (!empty($_GPC['prizeid'])) {
+            $where.=' and prizeid=:prizeid';
+            $params[':prizeid'] = $_GPC['prizeid'];
         }
 		if (!empty($_GPC['ticketname'])) {
             $where.=' and ticketname=:ticketname';
@@ -2012,6 +2050,14 @@ class Stonefish_plantingModuleSite extends WeModuleSite {
 			$lists['realname']=pdo_fetchcolumn("SELECT realname FROM " . tablename('stonefish_planting_fans') . " WHERE rid = :rid and uniacid=:uniacid and from_user = :from_user", array(':rid' => $rid,':uniacid' => $_W['uniacid'],':from_user' => $lists['from_user']));
 			$lists['mobile']=pdo_fetchcolumn("SELECT mobile FROM " . tablename('stonefish_planting_fans') . " WHERE rid = :rid and uniacid=:uniacid and from_user = :from_user", array(':rid' => $rid,':uniacid' => $_W['uniacid'],':from_user' => $lists['from_user']));
 			$lists['fid']=pdo_fetchcolumn("SELECT id FROM " . tablename('stonefish_planting_fans') . " WHERE rid = :rid and uniacid=:uniacid and from_user = :from_user", array(':rid' => $rid,':uniacid' => $_W['uniacid'],':from_user' => $lists['from_user']));
+			if($lists['ticketid']){
+				if($reply['tickettype']==2){
+				    $lists['ticketname'] = pdo_fetchcolumn("SELECT name FROM " . tablename('activity_coupon_password') . " WHERE uniacid = :uniacid and id = :id", array(':uniacid' => $_W['uniacid'],':id' => $lists['ticketid']));
+				}
+				if($reply['tickettype']==3){
+				    $lists['ticketname'] = pdo_fetchcolumn("SELECT title FROM " . tablename('stonefish_branch_business') . " WHERE uniacid = :uniacid and id = :id", array(':uniacid' => $_W['uniacid'],':id' => $lists['ticketid']));
+				}
+			}
 		}
 		//中奖资料	
         //一些参数的显示
@@ -2042,9 +2088,10 @@ class Stonefish_plantingModuleSite extends WeModuleSite {
     public function doWebSetstatus() {
         global $_GPC, $_W;
         $id = intval($_GPC['id']);
+		$pid = intval($_GPC['pid']);
 		$rid = intval($_GPC['rid']);
         $status = intval($_GPC['status']);
-        //$reply = pdo_fetch("SELECT * FROM " . tablename('stonefish_planting_reply') . " WHERE rid = :rid ORDER BY `id` DESC", array(':rid' => $rid));
+        $reply = pdo_fetch("SELECT duijiangtype FROM " . tablename('stonefish_planting_reply') . " WHERE rid = :rid ORDER BY `id` DESC", array(':rid' => $rid));
 		if (empty($id)) {
             message('抱歉，传递的参数错误！', '', 'error');
         }
@@ -2062,6 +2109,13 @@ class Stonefish_plantingModuleSite extends WeModuleSite {
 			$p['ticketname'] = '';
         }
         $temp = pdo_update('stonefish_planting_award', $p, array('id' => $id));
+		$prizedraw = pdo_fetchcolumn("SELECT prizedraw FROM " . tablename('stonefish_planting_prize') . " WHERE id = :id ORDER BY `id` DESC", array(':id' => $pid));
+		if($reply['duijiangtype']==2 && $status == 2){
+			pdo_update('stonefish_planting_prize', array('prizedraw' => $prizedraw+1), array('id' => $id));
+		}
+		if($reply['duijiangtype']==2 && $status == 1){
+			pdo_update('stonefish_planting_prize', array('prizedraw' => $prizedraw-1), array('id' => $id));
+		}
         if ($temp == false) {
             message('抱歉，刚才操作数据失败！', '', 'error');
         } else {

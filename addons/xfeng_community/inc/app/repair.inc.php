@@ -44,22 +44,97 @@ defined('IN_IA') or exit('Access Denied');
 			if($this->module['config']['print_status']){
 				if (empty($this->module['config']['print_type']) || $this->module['config']['print_type'] == '2') {
 					$data['print_sta'] = -1;
-				}
-			}	
+				
+				$createtime = date('Y-m-d H:i:s', $_W['timestamp']);
+				$msgNo = time()+1;
+				$freeMessage = array(
+		'memberCode'=>$this->module['config']['member_code'], 
+		'msgDetail'=>
+'
+    '.$this->module['config']['cname'].'物业公司欢迎您报修
+
+内容：'.$_GPC['content'].'
+-------------------------
+
+地址：'.$member['address'].'
+业主：'.$member['realname'].'
+电话：'.$member['mobile'].'
+时间：'.$createtime.'
+',
+		'deviceNo'=>$this->module['config']['deviceNo'], 
+		'msgNo'=>$msgNo,
+	);
+
+	echo $this->sendFreeMessage($freeMessage);
+
+}	
+}
 			pdo_insert("xcommunity_report",$data);
 			$id = pdo_insertid();
 			//短信提醒
-			// $con = $_GPC['content'];
-			// $this->Resms($con);
+			$content = $_GPC['content'];
+			$mobile = $member['mobile'];
+			if ($this->module['config']['report_type']) {
+				$result = $this->Resms($content,$mobile);
+			}
+			//微信提醒
+			$notice = pdo_fetchAll("SELECT * FROM".tablename('xcommunity_wechat_notice')."WHERE regionid='{$member['regionid']}'");
+			foreach ($notice as $key => $value) {
+				if ($value['repair_status'] == 2) {
+					$openid = $value['fansopenid'];
+					$url = $this->createMobileUrl('repair',array('op' => 'display'));
+					$template_id = $this->module['config']['repair_tplid'];
+					$createtime = date('Y-m-d H:i:s', $_W['timestamp']);
+					$content = array(
+							'first' => array(
+									'value' => '新报修通知',
+								),
+							'keyword1' => array(
+									'value' => $member['realname'],
+								),
+							'keyword2' => array(
+									'value' => $member['mobile'],
+								),
+							'keyword3'	=> array(
+									'value' => $member['address'],
+								),
+							'keyword4'    => array(
+									'value' => $_GPC['content'],
+								),
+							'keyword5'    => array(
+									'value' => $createtime,
+								),
+							'remark'    => array(
+								'value' => '请尽快联系客户。',
+							),	
+						);
+					$this->sendtpl($openid,$url,$template_id,$content);
+				}
+			}
+
+				
+			
 			message('报修申请提交成功,请查看"我的报修"等待工作人员联系。',$this->createMobileUrl('repair',array('op'=>'display')),'success');
 		}
 	}elseif ($op == 'display'||$op=='more') {
 		$pindex = max(1, intval($_GPC['page']));
 		$psize = 10;
 		//通过Id查出回复记录，在一起组装一个新的二维数组
-		$list    = pdo_fetchall("select * from ".tablename("xcommunity_report")."where weid='{$_W['weid']}' and type=1 LIMIT ".($pindex - 1) * $psize.','.$psize);
+		//修改报修，改为管理员和自己可见
+		if ($member['manage_status']) {
+			$list    = pdo_fetchall("select * from ".tablename("xcommunity_report")."where weid='{$_W['weid']}' and type=1 LIMIT ".($pindex - 1) * $psize.','.$psize);
+
+		}else{
+			$list    = pdo_fetchall("select * from ".tablename("xcommunity_report")."where weid='{$_W['weid']}' and type=1  AND openid = '{$_W['fans']['from_user']}' LIMIT ".($pindex - 1) * $psize.','.$psize);
+
+		}
 		if($op!='more'||!empty($list)){
-			$total = pdo_fetchcolumn('select count(*) from'.tablename("xcommunity_report")."where  weid='{$_W['weid']}' and type=1 ");
+			if ($member['manage_status']) {
+				$total = pdo_fetchcolumn('select count(*) from'.tablename("xcommunity_report")."where  weid='{$_W['weid']}' and type=1 ");
+			}else{
+				$total = pdo_fetchcolumn('select count(*) from'.tablename("xcommunity_report")."where  weid='{$_W['weid']}' and type=1  AND openid = '{$_W['fans']['from_user']}'");
+
+			}
 			$pager = pagination($total, $pindex, $psize);
 		}
 		foreach ($list as $key => $value) {

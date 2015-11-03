@@ -34,9 +34,10 @@
 		<table class="table table-hover">
 			<thead class="navbar-inner">
 				<tr>
-					<th style="width:200px;">住户姓名</th>
-					<th style="width:200px;">住户手机</th>
+					<th style="width:100px;">住户姓名</th>
+					<th style="width:100px;">住户手机</th>
 					<th style="width:100px;">地址</th>
+					<th style="width:150px;">注册时间</th>
 					<th style="width:100px;">状态</th>
 					<th style="min-width:100px; width:30%;">操作</th>
 				</tr>
@@ -47,6 +48,7 @@
 					<td>{$item['realname']}</td>
 					<td>{$item['mobile']}</td>
 					<td>{php echo cutstr(htmlspecialchars_decode($item['address']), 5, true)}</td>
+					<td>{php echo date('Y-m-d H:i',$item['createtime'])}</td>
 					<td>{if $item['status']}<span class="label label-success">通过</span>{else}<span class="label label-error">禁止</span>{/if}</td>
 					<td>
 						{if empty($item['status'])}<a href="{php echo $this->createWebUrl('member', array('op'=>'verify', 'status' => 1, 'regionid' => $regionid, 'id' => $item['id']));}">审核通过</a>&nbsp;|&nbsp;{else}<a href="{php echo $this->createWebUrl('member', array('op'=>'verify', 'status' => 0, 'regionid' => $regionid, 'id' => $item['id']));}">禁止用户</a>&nbsp;|&nbsp;{/if}

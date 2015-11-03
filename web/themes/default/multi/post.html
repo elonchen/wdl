@@ -22,8 +22,7 @@
 </style>
 
 <form class="form-horizontal form" action="" method="post">
-<div class="clearfix">
-	<form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+	<div class="clearfix">
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				站点风格选择
@@ -43,16 +42,41 @@
 						<label class="radio-inline"><input type="radio" name="status" value="0" {if $multi['status'] === 0}checked{/if}>否</label>
 					</div>
 				</div>
-
 				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label">选择微站风格</label>
-					<div class="col-sm-9">
-						<select class="form-control" name="styleid">
-							<option value="">请选择微站默认风格</option>
+					<label class="col-xs-12 col-sm-4 col-md-3 col-lg-2 control-label">选择微站风格</label>
+					<div class="col-sm-8 col-xs-12">
+						<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#ListStyle">选择风格</button>
+						<input type="hidden" name="styleid" id="styleid" value="{$multi['styleid']}" />
+					</div>
+				</div>
+
+				<!-- 风格列表 -->
+				<div class="modal fade" id="ListStyle" aria-hidden="false" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+							<h4 class="modal-title">微站模板风格列表</h4>
+						</div>
+						<div class="modal-body template clearfix">
 							{loop $styles $style}
-								<option value="{$style['id']}" {if $multi['styleid'] == $style['id']}selected{/if}>{$style['name']}</option>
+							<div class="item item-style {if $multi['styleid'] == $style['id']} active {/if}">
+								<div class="title">
+									<div style="overflow:hidden; height:28px;">{$style['name']}</div>
+									<a href="javascript:;" onclick="$('#styleid').val({$style['id']});$('#ListStyle').modal('hide');">
+										<img src="{$_W['siteroot']}app/themes/{$style['tname']}/preview.jpg" class="img-rounded">
+									</a>
+									<span class="fa fa-check"></span>
+								</div>
+								<div class="btn-group  btn-group-justified">
+									<a href="javascript:;" class="btn btn-default btn-xs" onclick="$('#styleid').val({$style['id']});$('#ListStyle').modal('hide');">选择风格</a>
+								</div>
+							</div>
 							{/loop}
-						</select>						
+
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -66,11 +90,11 @@
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">绑定域名</label>
 					<div class="col-sm-9 col-xs-12">
 						<input type="text" name="bindhost" class="form-control" value="{$multi['bindhost']}" />
-						<span class="help-block">绑定时请先将域名解析指向到本服务器，请只填写host部分，例如 www.baidu.com 或是 wdlcms.baidu.com。</span>
+						<span class="help-block">绑定时请先将域名解析指向到本服务器，请只填写host部分，例如 www.baidu.com 或是 we7.baidu.com。</span>
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label">标题附加内容</label>
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">微站标题</label>
 					<div class="col-sm-9">
 						<input type="text" name="sitename" class="form-control" value="{$multi['site_info']['sitename']}" />
 						<span class="help-block">微站默认的标题，如果为空则显示公众号名称</span>
@@ -103,8 +127,6 @@
 				<input type="hidden" name="token" value="{$_W['token']}" />
 			</div>
 		</div>
-	</form>
-</div>
+	</div>
 </form>
-
 {template 'common/footer'}

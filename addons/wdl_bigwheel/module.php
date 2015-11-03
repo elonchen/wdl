@@ -5,7 +5,7 @@
  */
 defined('IN_IA') or exit('Access Denied');
 
-class Wdl_bigwheelModule extends WeModule {
+class wdl_bigwheelModule extends WeModule {
 
 	public $tablename = 'bigwheel_reply';
 

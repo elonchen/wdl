@@ -1,7 +1,7 @@
 <?php
 /**
  * @author WeEngine Team
- * @url http://bbs.wdlcms.com/forum.php?mod=forumdisplay&fid=36&filter=typeid&typeid=1
+ * @url http://bbs.012wz.com/forum.php?mod=forumdisplay&fid=36&filter=typeid&typeid=1
  */
 defined('IN_IA') or exit('Access Denied');
 
@@ -57,27 +57,73 @@ class We7_businessModuleSite extends WeModuleSite {
 
     public function doWebDisplay() {
         global $_W, $_GPC;
-        if (empty($_GPC['do'])) {
-            $_GPC['do'] = 'display';
-        }
+
         $pindex = max(1, intval($_GPC['page']));
-        $psize = 20;
+        $psize = 10;
         $condition = '';
         if (!empty($_GPC['keyword'])) {
             $condition .= " AND title LIKE '%{$_GPC['keyword']}%'";
         }
-        if( is_array($_GPC['industry']) ){
+        if (is_array($_GPC['industry'])) {
             if (!empty($_GPC['industry']['parent'])) {
-            $condition .= " AND industry1 = '{$_GPC['industry']['parent']}'";
+                $condition .= " AND industry1 = '{$_GPC['industry']['parent']}'";
             }
             if (!empty($_GPC['industry']['child'])) {
                 $condition .= " AND industry2 = '{$_GPC['industry']['child']}'";
             }
         }
-        
-        $list = pdo_fetchall("SELECT * FROM " . tablename('business') . " WHERE weid = '{$_W['weid']}' $condition ORDER BY id DESC LIMIT " . ($pindex - 1) * $psize . ',' . $psize);
-        $total = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename('business') . " WHERE weid = '{$_W['weid']}' $condition");
-        $pager = pagination($total, $pindex, $psize);
+
+        $sql = 'SELECT COUNT(*) FROM ' . tablename('business') . ' WHERE `weid` = :weid ' . $condition;
+        $params = array(':weid' => $_W['uniacid']);
+        $total = pdo_fetchcolumn($sql, $params);
+        if ($total > 0) {
+            $sql = 'SELECT * FROM ' . tablename('business') . ' WHERE `weid` = :weid ' . $condition . ' ORDER BY `id`
+                    DESC LIMIT ' . ($pindex - 1) * $psize . ',' . $psize;
+            $list = pdo_fetchall($sql, $params);
+            $pager = pagination($total, $pindex, $psize);
+        }
+
+        if (!empty($_GPC['export'])) {
+            /* 输入到CSV文件 */
+            $html = "\xEF\xBB\xBF";
+
+            /* 输出表头 */
+            $filter = array(
+                'title' => '名称',
+                'phone' => '电话',
+                'address' => '地址',
+                'industry1' => '行业',
+            );
+
+            foreach ($filter as $key => $value) {
+                $html .= $value . "\t,";
+            }
+
+            $html .= "\n";
+            $key_array = array_keys($filter);
+
+            foreach ($list as $k => $v) {
+                foreach ($v as $k1 => $v1) {
+                    if (in_array($k1, $key_array)) {
+                        if ($k1 == 'createtime' || $k1 == 'dateline') {
+                            $html .= date('Y-m-d H:i:s', $v1) . "\t ,";
+                        } else {
+                            $html .= $v1 . "\t,";
+                        }
+                    }
+                }
+                $html .= "\n";
+            }
+
+            /* 输出CSV文件 */
+            header("Content-type:text/csv");
+            header("Content-Disposition:attachment; filename=全部数据.csv");
+            echo $html;
+            exit();
+        }
+
+        load()->func('tpl');
+
         include $this->template('display');
     }
 
@@ -106,6 +152,21 @@ class We7_businessModuleSite extends WeModuleSite {
         $content = strip_tags($item['content']);
         $content = cutstr($content, 50, true);
         include $this->template('detail');
+    }
+
+    public function getHomeTiles() {
+        global $_W;
+        $urls = array();
+
+        $sql = 'SELECT `id`, `title` FROM ' . tablename('business') . ' WHERE `weid` = :weid';
+        $replies = pdo_fetchall($sql, array(':weid' => $_W['uniacid']));
+        if (!empty($replies)) {
+            foreach ($replies as $reply) {
+                $urls[] = array('title' => $reply['title'], 'url' => $this->createMobileUrl('detail', array('id' => $reply['id'])));
+            }
+        }
+
+        return $urls;
     }
 
 }

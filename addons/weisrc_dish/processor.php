@@ -2,7 +2,7 @@
 /**
  * 微点餐
  *
- * 作者:迷失卍国度
+ * 作者:微赞科技
  *
  */
 defined('IN_IA') or exit('Access Denied');
@@ -42,7 +42,7 @@ class weisrc_dishModuleProcessor extends WeModuleProcessor {
             $method_name = 'wapselect';
         }
 
-        $url = $_W['siteroot'] . create_url('mobile/module', array('do' => $method_name, 'name' => 'weisrc_dish', 'weid' => $_W['weid'],'from_user' => base64_encode(authcode($this->message['from'], 'ENCODE')), 'storeid' => $row['storeid']));
+        $url = $this->buildSiteUrl($this->createMobileUrl($method_name, array('storeid' => $row['storeid'])));
 
 //        $response['FromUserName'] = $this->message['to'];
 //        $response['ToUserName'] = $this->message['from'];
@@ -73,7 +73,7 @@ class weisrc_dishModuleProcessor extends WeModuleProcessor {
 /**
  * 微点餐
  *
- * 作者:迷失卍国度
+ * 作者:微赞科技
  *
- * qq : 15595755
+ * qq : 800083075
  */

@@ -98,7 +98,11 @@
 		$(obj).parent().parent().parent().remove();
 	}
 	function calc(){
-
+		
+	if ($(".spec_item_title").length == 0) {
+		alert('请添加每种规格下的规格项');
+	}
+	
 	window.optionchanged = false;
 	var html = '<table class="table table-bordered table-condensed"><thead><tr class="active">';
 	var specs = [];

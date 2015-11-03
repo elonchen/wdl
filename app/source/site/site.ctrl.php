@@ -103,6 +103,10 @@ if($do == 'list') {
 		$sql = 'SELECT `subscribeurl` FROM ' . tablename('account_wechats') . " WHERE `acid` = :acid";
 		$subscribeurl = pdo_fetchcolumn($sql, array(':acid' => intval($_W['acid'])));
 	}
+	$sql = 'SELECT `topad` FROM ' . tablename('account_wechats') . " WHERE `acid` = :acid";
+	$topad = pdo_fetchcolumn($sql, array(':acid' => intval($_W['acid'])));
+	$sql = 'SELECT `footad` FROM ' . tablename('account_wechats') . " WHERE `acid` = :acid";
+	$footad = pdo_fetchcolumn($sql, array(':acid' => intval($_W['acid'])));
 		$detail['click'] = intval($detail['click']) + 1;
 	pdo_update('site_article', array('click' => $detail['click']), array('uniacid' => $_W['uniacid'], 'id' => $id));
 		$_share = array('desc' => $detail['description'], 'title' => $detail['title'], 'imgUrl' => $detail['thumb']);

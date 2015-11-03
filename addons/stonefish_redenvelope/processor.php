@@ -2,7 +2,7 @@
 /**
  * 抢红包模块
  *
- * @author 石头鱼
+ * @author 微赞
  * @url http://www.00393.com/
  */
 defined('IN_IA') or exit('Access Denied');

@@ -41,7 +41,7 @@
 					<th style="width:100px;">总浏览数</th>
 					<th style="min-width:180px;">开始时间/结束时间</th>
 					<th style="width:100px;">状态</th>
-					<th style="width:230px;">操作</th>
+					<th style="width:280px;">操作</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -55,14 +55,14 @@
 						{$row['endtime']}</td>
 					<td>{$row['status']}</td>
 					<td>
-                    	<a href="{php echo $this->createWebUrl('awardlist',array('rid'=>$row['id']))}" class="btn  btn-default" data-toggle="tooltip" data-placement="top" title="SN"><i class="fa fa-cog"></i>SN</a>
-                        <a class="btn btn-default" data-toggle="tooltip" data-placement="top" href="{php echo url('platform/reply/post',array('m'=>'wdl_bigwheel','rid'=>$row['id']));}" title="编辑"><i class="fa fa-edit"></i></a>
+                    	<a href="{php echo $this->createWebUrl('awardlist',array('rid'=>$row['id']))}" class="btn btn-default" title="SN">SN</a>
                         {if $row['isshow']==0}
-                        <a class="btn btn-default" title="开始活动" data-placement="top" href="#" onclick="drop_confirm('您确定要开始吗,设置中途可以随时修改!', '{php echo $this->createWebUrl('setshow',array('rid'=>$row['id'],'isshow'=>1))}');"><i class="fa fa-play"></i></a>
+                        <a class="btn btn-default" title="开始活动"href="#" onclick="drop_confirm('您确定要开始吗,设置中途可以随时修改!', '{php echo $this->createWebUrl('setshow',array('rid'=>$row['id'],'isshow'=>1))}');">开始活动</a>
                         {elseif $row['isshow']==1}
-                        <a class="btn btn-default" title="结束活动" data-placement="top" href="#" onclick="drop_confirm('您确定要暂停吗,设置中途可以随时修改!', '{php echo $this->createWebUrl('setshow',array('rid'=>$row['id'],'isshow'=>0))}');"><i class="fa fa-stop"></i></a>
+                        <a class="btn btn-default" title="结束活动" href="#" onclick="drop_confirm('您确定要暂停吗,设置中途可以随时修改!', '{php echo $this->createWebUrl('setshow',array('rid'=>$row['id'],'isshow'=>0))}');">结束活动</a>
                         {/if}
-                        <a class="btn btn-default" data-toggle="tooltip" data-placement="top" href="#" onclick="drop_confirm('您确定要删除吗?', '{php echo $this->createWebUrl('delete',array('rid'=>$row['id']))}');" title="删除"><i class="fa fa-times"></i></a>
+						<a class="btn btn-default" href="{php echo url('platform/reply/post',array('m'=>'wdl_bigwheel','rid'=>$row['id']));}" title="编辑">编辑</a>
+                        <a class="btn btn-default" href="#" onclick="drop_confirm('您确定要删除吗?', '{php echo $this->createWebUrl('delete',array('rid'=>$row['id']))}');" title="删除">删除</a>
                   	</td>
 				</tr>
 				{/loop}
@@ -79,11 +79,7 @@
 	{$pager}
 </div>
 <script>
-	require(['bootstrap'],function($){
-		$('.btn').tooltip();
-	});
 $(function(){
-   
     $(".check_all").click(function(){
        var checked = $(this).get(0).checked;
 		$(':checkbox').each(function(){this.checked = checked});

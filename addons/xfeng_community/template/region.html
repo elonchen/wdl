@@ -13,10 +13,10 @@
 			<thead class="navbar-inner">
 				<tr>
 					<th style='width:150px;'>名称<i></i></th>
-					<th style='width:150px;'>联系人<i></i></th>
+					<th style='width:100px;'>联系人<i></i></th>
 					<th style='width:150px;'>电话<i></i></th>
-					<th class="row-hover" style="min-width:800px;">常用操作</th>
-					<th class="row-hover span1" style="text-align:right;width:100px;">操作</th>
+					<th class="row-hover" style="min-width:850px;">常用操作</th>
+					<th class="row-hover span1" style="text-align:right;width:60px;">操作</th>
 				</tr>
 			</thead>
 			<tbody id="status-items">
@@ -38,8 +38,14 @@
 						<a href="{php echo $this->createWebUrl('homemaking', array('op' => 'display', 'regionid'=>$region['id']));}">家政服务</a>
 						|
 						<a href="{php echo $this->createWebUrl('houselease', array('op' => 'display', 'regionid'=>$region['id']));}">房屋租赁</a>
+						|
+						<a href="{php echo $this->createWebUrl('notice', array('op' => 'display', 'regionid'=>$region['id']));}">通知设置</a>
+						
 					</td>
-					<td style="text-align:right;" class="span1"><a onclick="if (confirm('删除操作不可恢复，确认吗？')){ $(this).parent().parent().next().remove(); return true;} else {return false;}" href="{php echo $this->createWebUrl('region', array('op' => 'delete', 'id' => $region['id']))}" class="btn btn-small" title="删除"><i class="glyphicon glyphicon-remove-circle"></i></a></td>
+					<td style="text-align:right;" class="span1">
+					<a onclick="if (confirm('删除操作不可恢复，确认吗？')){ $(this).parent().parent().next().remove(); return true;} else {return false;}" href="{php echo $this->createWebUrl('region', array('op' => 'delete', 'id' => $region['id']))}" class="btn btn-default btn-sm" data-original-title="删除"><i class="fa fa-times"></i></a>
+					
+					</td>
 				</tr>
 			{/loop}
 			</tbody>

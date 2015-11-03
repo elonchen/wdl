@@ -23,11 +23,16 @@ class We7_albumModuleSite extends WeModuleSite {
         if (empty($album)) {
             message('相册不存在或是已经被删除！');
         }
+        $title = $album['title'];
         $_W['styles']  = $this->module['config']['album'];
         $pindex = max(1, intval($_GPC['page']));
         $psize = 10;
-        $result['list'] = pdo_fetchall("SELECT * FROM " . tablename('album_photo') . " WHERE albumid = :albumid ORDER BY displayorder DESC LIMIT " . ($pindex - 1) * $psize . ',' . $psize, array(':albumid' => $album['id']));
+
+        $sql = 'SELECT * FROM ' . tablename('album_photo') . ' WHERE `albumid` = :albumid ORDER BY `displayorder` DESC
+                LIMIT ' . ($pindex - 1) * $psize . ',' . $psize;
+        $result['list'] = pdo_fetchall($sql, array(':albumid' => $album['id']));
         $url = "app/index.php?c=entry&m=we7_album&do=detail&id={$album['id']}&i={$_W['uniacid']}";
+
         //360全景
         if ($album['type'] == 1 && $_GPC['gettype'] == 'xml') {
             $result['list'] = pdo_fetchall("SELECT * FROM " . tablename('album_photo') . " WHERE albumid = :albumid ORDER BY displayorder ASC", array(':albumid' => $album['id']));
@@ -51,6 +56,7 @@ class We7_albumModuleSite extends WeModuleSite {
 			</panorama>';
             return $xml;
         }
+
         include $this->template('detail');
     }
 
@@ -137,6 +143,7 @@ class We7_albumModuleSite extends WeModuleSite {
             if (empty($album)) {
                 message('相册不存在或是已经被删除！');
             }
+
             if (checksubmit('submit')) {
                 if (!empty($_GPC['attachment-new'])) {
                     foreach ($_GPC['attachment-new'] as $index => $row) {
@@ -174,11 +181,20 @@ class We7_albumModuleSite extends WeModuleSite {
                 message('相册更新成功！', $this->createWebUrl('list', array('foo' => 'photo', 'albumid' => $album['id'])));
             }
 
-            if ($album['type'] == 0) {
-                $photos = pdo_fetchall("SELECT * FROM " . tablename('album_photo') . " WHERE albumid = :albumid ORDER BY displayorder DESC", array(':albumid' => $album['id']));
-            } else {
-                $photos = pdo_fetchall("SELECT * FROM " . tablename('album_photo') . " WHERE albumid = :albumid ORDER BY displayorder ASC", array(':albumid' => $album['id']));
+            if (checksubmit('delete')) {
+                pdo_delete('album_photo', array('albumid' => $id));
+                message('全部照片已成功删除', referer(), 'success');
             }
+
+            $sql = 'SELECT * FROM ' . tablename('album_photo') . ' WHERE `albumid` = :albumid ORDER BY `displayorder`';
+            $params = array(':albumid' => $album['id']);
+            if (empty($album['type'])) {
+                $sql .= ' DESC';
+            } else {
+                $sql .= ' ASC';
+            }
+            $photos = pdo_fetchall($sql, $params);
+
             include $this->template('album');
         } elseif ($foo == 'delete') {
             $type = $_GPC['type'];
@@ -258,91 +274,97 @@ class We7_albumModuleSite extends WeModuleSite {
 
     public function doMobileList() {
         global $_W, $_GPC;
-        $_W['styles']  = $this->module['config']['album'];
+        $_W['styles'] = $this->module['config']['album'];
+        $_W['styles']['listtype'] = max(1, $_W['styles']['listtype']);
         $pindex = max(1, intval($_GPC['page']));
         $psize = 10;
-        
-        $pcate = $_GPC['pcate'];
-        $ccate = $_GPC['ccate'];
-        $show_category   = true;
-        if($pcate=='' && $ccate==''){
-                $category = pdo_fetchall("SELECT * FROM " . tablename('album_category') . " WHERE weid = '{$_W['uniacid']}' and parentid=0 and enabled=1 ORDER BY displayorder DESC LIMIT " . ($pindex - 1) * $psize . ',' . $psize);
-                if (!empty($category)) {
-                    $children = '';
-                    foreach ($category as &$cate) {
-                        if(empty($cate['parentid'])){
-                              $cate['url'] = $this->createMobileUrl('list',array('pcate'=>$cate['id']));
-                        }
-                        else{
-                              $cate['url'] = $this->createMobileUrl('list',array('pcate'=>$cate['parentid'],'ccate'=>$cate['id']));
-                        }
-                       
-                     
-                        $children = pdo_fetchall("SELECT * FROM " . tablename('album_category') . " WHERE parentid={$cate['id']} and enabled=1 ORDER BY displayorder desc");
-                        foreach ($children as &$c) {
-                            $c['url'] = $this->createMobileUrl('list',array('pcate'=>$c['parentid'],'ccate'=>$c['id']));
-                          }
-                        unset($c);
-                        $cate['children'] = $children;
-                       
-                    }   
-                    unset($cate);
+        $pcate = intval($_GPC['pcate']);
+        $ccate = intval($_GPC['ccate']);
+        $where = ' WHERE weid = :weid';
+        $params = array(':weid' => $_W['uniacid']);
+
+        if (empty($pcate) && empty($ccate)) {
+            $sql = 'SELECT * FROM ' . tablename('album_category') . $where . ' AND `enabled` = :enabled ORDER BY
+                    `displayorder` DESC LIMIT ' . ($pindex - 1) * $psize . ',' . $psize;
+            $params[':enabled'] = 1;
+            $categories = pdo_fetchall($sql, $params, 'id');
+
+            if (!empty($categories)) {
+                foreach ($categories as $key => $category) {
+                    if (empty($category['parentid'])) {
+                        $categories[$key]['url'] = $this->createMobileUrl('list', array('pcate' => $category['id']));
+                    } else {
+                        $categories[$key]['url'] = $this->createMobileUrl('list', array('pcate' => $category['parentid'], 'ccate' => $category['id']));
+                    }
+                    if ($category['parentid'] > 0) {
+                        $categories[$category['parentid']]['children'][] = $categories[$key];
+                        unset($categories[$key]);
+                    }
                 }
-        }
-        else {
+            }
+
+            $show_category = true;
+        } else {
             $condition = "";
-            $ccate = intval($_GPC['ccate']);
-            $pcate = intval($_GPC['pcate']);
-            if(!empty($pcate) && !empty($ccate)){
-               $condition.="  and pcate={$pcate} and ccate={$ccate} ";    
+            if (!empty($pcate) && !empty($ccate)) {
+                $condition .= "  and pcate={$pcate} and ccate={$ccate} ";
+            } else if (!empty($pcate)) {
+                $condition .= "  and pcate={$pcate}";
+            } else if (!empty($ccate)) {
+                $condition .= "  and ccate={$ccate} ";
             }
-            else if(!empty($pcate)){
-                $condition.="  and pcate={$pcate}";
+
+            $where .= ' AND `isview` = :isview ';
+            $sql = 'SELECT COUNT(*) FROM ' . tablename('album') . $where . $condition;
+            $params[':isview'] = 1;
+            $total = pdo_fetchcolumn($sql, $params);
+
+            if ($total > 0) {
+                $sql = 'SELECT * FROM ' . tablename('album') . $where . $condition . ' ORDER BY `displayorder` DESC
+                        LIMIT ' . ($pindex - 1) * $psize . ',' . $psize;
+                $list = pdo_fetchall($sql, $params);
+
+                $pager = pagination($total, $pindex, $psize);
             }
-            else if(!empty($ccate)){
-                 $condition.="  and ccate={$ccate} ";
-            }
-            $pc = pdo_fetchcolumn("select name from " . tablename('album_category') . " WHERE id=:id limit 1",array(':id'=>$pcate));
-            $cc = pdo_fetchcolumn("select name from " . tablename('album_category') . " WHERE id=:id limit 1",array(':id'=>$ccate));
-           
-            $sql = "SELECT * FROM " . tablename('album') . " WHERE weid = '{$_W['uniacid']}' AND isview = '1' $condition ORDER BY displayorder DESC LIMIT " . ($pindex - 1) * $psize . ',' . $psize;
-            $list  = pdo_fetchall($sql);
- 
-            $total = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename('album') . " WHERE weid = '{$_W['uniacid']}' AND isview = '1' $condition");
-            $pager = pagination($total, $pindex, $psize);
-            $show_category   = false;
+
+            $sql = 'SELECT `name` FROM ' . tablename('album_category') . ' WHERE `id` = :id';
+            $params = array(':id' => $pcate);
+            $pc = pdo_fetchcolumn($sql, $params);
+            $params[':id'] = $ccate;
+            $cc = pdo_fetchcolumn($sql, $params);
+
+            $show_category = false;
         }
+
         include $this->template('list');
     }
- public function doMobileListMore() {
+
+    public function doMobileListMore() {
         global $_GPC, $_W;
-       
         $pindex = max(1, intval($_GPC['page']));
         $psize = 10;
-         $category = pdo_fetchall("SELECT * FROM " . tablename('album_category') . " WHERE weid = '{$_W['uniacid']}' and parentid=0 and enabled=1 ORDER BY displayorder DESC LIMIT " . ($pindex - 1) * $psize . ',' . $psize);
-                if (!empty($category)) {
-                    $children = '';
-                    foreach ($category as &$cate) {
-                        if(empty($cate['parentid'])){
-                              $cate['url'] = $this->createMobileUrl('list',array('pcate'=>$cate['id']));
-                        }
-                        else{
-                              $cate['url'] = $this->createMobileUrl('list',array('pcate'=>$cate['parentid'],'ccate'=>$cate['id']));
-                        }
-                       
-                     
-                        $children = pdo_fetchall("SELECT * FROM " . tablename('album_category') . " WHERE parentid={$cate['id']} and enabled=1 ORDER BY displayorder desc");
-                        foreach ($children as &$c) {
-                            $c['url'] = $this->createMobileUrl('list',array('pcate'=>$c['parentid'],'ccate'=>$c['id']));
-                          }
-                        unset($c);
-                        $cate['children'] = $children;
-                       
-                    }   
-                    unset($cate);
+        $category = pdo_fetchall("SELECT * FROM " . tablename('album_category') . " WHERE weid = '{$_W['uniacid']}' and parentid=0 and enabled=1 ORDER BY displayorder DESC LIMIT " . ($pindex - 1) * $psize . ',' . $psize);
+        if (!empty($category)) {
+            $children = '';
+            foreach ($category as &$cate) {
+                if (empty($cate['parentid'])) {
+                    $cate['url'] = $this->createMobileUrl('list', array('pcate' => $cate['id']));
+                } else {
+                    $cate['url'] = $this->createMobileUrl('list', array('pcate' => $cate['parentid'], 'ccate' => $cate['id']));
                 }
+                $children = pdo_fetchall("SELECT * FROM " . tablename('album_category') . " WHERE parentid={$cate['id']} and enabled=1 ORDER BY displayorder desc");
+                foreach ($children as &$c) {
+                    $c['url'] = $this->createMobileUrl('list', array('pcate' => $c['parentid'], 'ccate' => $c['id']));
+                }
+                unset($c);
+                $cate['children'] = $children;
+
+            }
+            unset($cate);
+        }
         include $this->template('list_more');
     }
+
     public function getAlbumTiles() {
         global $_W;
         $urls = array();
@@ -352,14 +374,13 @@ class We7_albumModuleSite extends WeModuleSite {
                 $urls[] = array('title' => $row['title'], 'url' => $this->createMobileUrl('detail', array('id' => $row['id'])));
             }
         }
-        $category  = pdo_fetchall("SELECT id, name,parentid FROM " . tablename('album_category') . " WHERE weid = '{$_W['uniacid']}'");
+        $category = pdo_fetchall("SELECT id, name,parentid FROM " . tablename('album_category') . " WHERE weid = '{$_W['uniacid']}'");
         if (!empty($category)) {
             foreach ($category as $row) {
-                if(empty($row['parentid'])){
-                    $urls[] = array('title' =>"分类: ". $row['name'], 'url' => $this->createMobileUrl('list', array('pcate'=>$row['id'])));
-                }
-                else{
-                    $urls[] = array('title' =>"分类: ". $row['name'], 'url' => $this->createMobileUrl('list', array('pcate'=>$row['parentid'],'ccate'=>$row['id'])));
+                if (empty($row['parentid'])) {
+                    $urls[] = array('title' => "分类: " . $row['name'], 'url' => $this->createMobileUrl('list', array('pcate' => $row['id'])));
+                } else {
+                    $urls[] = array('title' => "分类: " . $row['name'], 'url' => $this->createMobileUrl('list', array('pcate' => $row['parentid'], 'ccate' => $row['id'])));
                 }
             }
         }
@@ -368,7 +389,7 @@ class We7_albumModuleSite extends WeModuleSite {
 
     public function doWebCategory() {
         global $_GPC, $_W;
-           load()->func('tpl');
+        load()->func('tpl');
         $operation = !empty($_GPC['op']) ? $_GPC['op'] : 'display';
         if ($operation == 'display') {
             if (!empty($_GPC['displayorder'])) {
@@ -391,12 +412,11 @@ class We7_albumModuleSite extends WeModuleSite {
             $id = intval($_GPC['id']);
             if (!empty($id)) {
                 $category = pdo_fetch("SELECT * FROM " . tablename('album_category') . " WHERE id = '$id'");
-                
-                if( empty($category['parentid'])){
+
+                if (empty($category['parentid'])) {
                     $url = "../app/index.php?c=entry&m=we7_album&do=list&pcate={$category['id']}&i={$_W['uniacid']}";
-                            
-                }
-                else{
+
+                } else {
                     $url = "../app/index.php?c=entry&m=we7_album&do=list&pcate={$category['parentid']}&ccate={$category['id']}&i={$_W['uniacid']}";
                 }
             } else {
@@ -419,12 +439,12 @@ class We7_albumModuleSite extends WeModuleSite {
                     'name' => $_GPC['catename'],
                     'enabled' => intval($_GPC['enabled']),
                     'displayorder' => intval($_GPC['displayorder']),
-             
+
                     'description' => $_GPC['description'],
                     'parentid' => intval($parentid),
-                    'thumb'=>$_GPC['thumb']
+                    'thumb' => $_GPC['thumb']
                 );
-              
+
 
                 if (!empty($id)) {
                     unset($data['parentid']);

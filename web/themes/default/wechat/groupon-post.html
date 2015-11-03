@@ -43,7 +43,7 @@
 	<div class="card_section" style="position: relative">
 		<div class="shop-panel" id="color-purview">
 			<div class="logo-area">
-				<span class="logo pull-left"><img src="{$setting['logourl_']}" alt=""/></span>
+				<span class="logo pull-left"><img src="{$setting['logourl']}" alt=""/></span>
 				<div class="pull-left" style="height:38px;line-height:38px" id="brand_name"></div>
 				<div class="clear"></div>
 			</div>
@@ -136,9 +136,8 @@
 	</div>
 	<div class="form-group">
 		<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="text-danger">*</span> 商户LOGO</label>
-		<div class="col-sm-9 col-xs-12" id="logo_upload">
-			{php echo tpl_form_field_wechat_image('logo_url', $setting['logourl'], '', array('acid' => $acid, 'mode' => 'file_upload'));}
-			<div class="help-block">商户LOGO大小不超过1M。像素为：300*300。仅支持JPG格式</div>
+		<div class="col-sm-9 col-xs-12">
+			<img src="{$setting['logourl']}" alt="" style="width:100px;"/>
 		</div>
 	</div>
 	<div class="form-group">
@@ -289,7 +288,7 @@
 	<div class="form-group">
 		<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="text-danger">*</span> 适用门店</label>
 		<div class="col-sm-9 col-xs-12">
-			<label class="radio"><input type="radio" value="1" name="is_location"/> 指定门店适用</label>
+			<label class="radio"><input type="radio" value="1" name="is_location" checked/> 指定门店适用</label>
 			<a href="javascript:;" class="label label-success" style="" id="select-location">选择适用门店</a>
 			<table class="table" id="location-contain-out"  style="width:500px;max-width:500px;min-width:500px;display: none">
 				<thead>
@@ -300,7 +299,7 @@
 				<tbody id="location-contain">
 				</tbody>
 			</table>
-			<label class="radio"><input type="radio" value="2" name="is_location" checked/> 全部门店适用</label>
+			<label class="radio"><input type="radio" value="2" name="is_location"/> 全部门店适用</label>
 		</div>
 	</div>
 </div>
@@ -357,7 +356,6 @@
 			$('#title-purview').html($(':input[name="title"]').val());
 			$('#sub-title-purview').html($(':input[name="sub_title"]').val());
 			$('#brand_name').html($(':input[name="brand_name"]').val());
-			$('.logo-area img').attr('src', $('#logo_upload img').attr('src'));
 			var time_type = $(':radio[name="time_type"]:checked').val();
 			var time = '';
 			if(time_type == 1) {
@@ -416,16 +414,16 @@
 				var locations_detail = [];
 				var tmp = [];
 				if(chks.length>0){
-				$.each(chks, function(){
-					locations.push($(this).val());
-					tmp['id'] = $(this).attr('data-id');
-					tmp['name'] = $('#loca-' + $(this).attr('data-id') + ' .name').html();
-					tmp['address'] = $('#loca-' + $(this).attr('data-id') + ' .address').html();
-					locations_detail.push(tmp);
-					tmp=[];
-				});
-				var s = locations.join('-');
-				$('#form4 input[name="location-select"]').val(s);
+					chks.each(function(){
+						locations.push(this.value);
+						tmp['id'] = this.value;
+						tmp['name'] = $('#loca-' + this.value + ' .name').html();
+						tmp['address'] = $('#loca-' + this.value + ' .address').html();
+						locations_detail.push(tmp);
+						tmp=[];
+					});
+					var s = locations.join('-');
+					$('#form4 input[name="location-select"]').val(s);
 
 					if(locations_detail) {
 						var str = '';
@@ -440,7 +438,6 @@
 						$('#location-contain-out').show();
 					}
 				} else {
-				$('#form4 input[name="location-select"]').val('');
 					$('#location-contain').html('')
 				}
 				obj.modal('hide');

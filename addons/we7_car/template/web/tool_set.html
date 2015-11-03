@@ -1,6 +1,6 @@
 {template 'common/header'}
 <ul class="nav nav-tabs">
-    <li class="active"><a>汽车实用工具管理</a></li>	
+    <li class="active"><a href="{php echo $this->createWebUrl('tool')}">汽车实用工具管理</a></li>
 </ul>
 <style>
     .table td span{display:inline-block;}
@@ -23,8 +23,8 @@
                         <td>保险计算</td>
                         <td>计算车辆保险</td>
                         <td>
-							<div class="switch" data-on-label="启用" data-off-label="停用">
-                                <input type="checkbox" value="1" {if $toolsArr['1']}checked="checked"{/if} />
+							<div class="make-switch" data-on-label="启用" data-off-label="停用">
+                                <input type="checkbox" value="1" {if $toolsArr['1']} checked="checked" {/if} />
                             </div>
                         </td>
                     </tr>
@@ -32,8 +32,8 @@
                         <td>车贷计算</td>
                         <td>车辆贷款计算</td>
                         <td>
-                            <div class="make-switch" data-on-label="启 用" data-off-label="停用">
-                                <input type="checkbox" value="2" {if $toolsArr['2']}checked="checked"{/if} />
+                            <div class="make-switch" data-on-label="启用" data-off-label="停用">
+                                <input type="checkbox" value="2" {if $toolsArr['2']} checked="checked" {/if} />
                             </div>
                         </td>
                     </tr>
@@ -42,7 +42,7 @@
                         <td>全款计算</td>
                         <td>
                             <div class="make-switch" data-on-label="启用" data-off-label="停用">
-                                <input type="checkbox" value="3" {if $toolsArr['3']}checked="checked"{/if} />
+                                <input type="checkbox" value="3" {if $toolsArr['3']} checked="checked" {/if} />
                             </div>
                         </td>
                     </tr>
@@ -51,7 +51,7 @@
                         <td>车型比较</td>
                         <td>
                             <div class="make-switch" data-on-label="启用" data-off-label="停用">
-                                <input type="checkbox" value="4" {if $toolsArr['4']}checked="checked"{/if} />
+                                <input type="checkbox" value="4" {if $toolsArr['4']} checked="checked" {/if} />
                             </div>
                         </td>
                     </tr>
@@ -60,7 +60,7 @@
                         <td>"违章查询"</td>
                         <td>
                             <div class="make-switch" data-on-label="启用" data-off-label="停用">
-                                <input type="checkbox" value="5" {if $toolsArr['5']}checked="checked"{/if} />
+                                <input type="checkbox" value="5" {if $toolsArr['5']} checked="checked" {/if} />
                             </div>
                         </td>
                     </tr>

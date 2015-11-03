@@ -71,7 +71,7 @@
 						<td><input type="checkbox" name="uid[]" value="{$row['id']}" class=""></td>
 						<td class="row-hover"><span {if stristr($row['id'],$keyword)}class="active"{/if}>{$row['id']}</span></td>
 						<td class="info" style="text-align:left;"><img src="{php echo toimage($row['avatar'])}" width="50px;"/><span {if stristr($row['nickname'],$keyword)}class="active"{/if}>{$row['nickname']}</span>
-						<div>{if !empty($row['realname'])}姓名：{$row['realname']}<br/>{/if}{if !empty($row['weixin'])}微信号：{$row['weixin']}<br/>{/if}{if !empty($row['qqhao'])}QQ号：{$row['qqhao']}<br/>{/if}{if !empty($row['email'])}邮箱：{$row['email']}<br/>{/if}{if !empty($row['address'])}地址：{$row['address']}<br/>{/if}</div></a></td>				
+						<div>性别： {if $row['sex'] == 1}男{elseif $row['sex'] == 2}女{else}未知{/if}{if !empty($row['realname'])}<br/>姓名：{$row['realname']}<br />{/if}{if !empty($row['weixin'])}微信号：{$row['weixin']}<br/>{/if}{if !empty($row['qqhao'])}QQ号：{$row['qqhao']}<br/>{/if}{if !empty($row['email'])}邮箱：{$row['email']}<br/>{/if}{if !empty($row['address'])}地址：{$row['address']}<br/>{/if}</div></a></td>				
 						<td><span {if stristr($row['photoname'],$keyword)}class="active"{/if}>{$row['photoname']}</span></td>
 						<td><img src="{php echo toimage($row['photo'])}" width="50px;"/></td>
 						<td class="row-hover">{php echo $row['photosnum'] + $row['xnphotosnum']}</td>

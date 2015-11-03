@@ -1,6 +1,6 @@
 {if ($_GPC['do'] == 'tuser' || $_GPC['do'] == 'tuserphotos') && !empty($tfrom_user)}
 	
-	<div style="  position: fixed;  bottom: 200px;  width: 65px;  height: 65px;  z-index: 10000;  right: 10px;" onclick="ewm();">
+	<div style="  position: fixed;  bottom: 200px;  width: 65px;  height: 65px;  z-index: 10000;  right: 10px; display:none;" onclick="ewm();">
 		<img src="../addons/fm_photosvote/template/mobile/photos/ewm.png" width="65" style="border-radius:100px;">
 	</div>
 	<div class="modal fade" id="ewmdisplay" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="  margin-top: 60px;z-index:1000000">
@@ -150,13 +150,34 @@
 			</div>	
 			<div class="modal-body">
 				<div class="form-group">							
-					<div style="text-align:center; background-color: transparent;" class=" text-info" id = "fminfotext">
-						
+					<div style="text-align:center; background-color: transparent;" class=" text-info" id = "fminfotext"></div>
+				</div>
+				<div class="form-group huodongt"  style="display:none;" >							
+					<div style="text-align:left; background-color: transparent;" >
+						<h3 style="font-size:16px;">抽奖去 👇</h3>
 					</div>
 				</div>
+
+				{if $_GPC['do'] == 'photosvoteview' || $_GPC['do'] == 'tuser'|| $_GPC['do'] == 'tuserphotos' }
+				
+					{if !empty($huodong) && !empty($huodong['huodongname']) && !empty($huodong['hhhdpicture']) && ($huodong['ishuodong'] == 1 && !empty($huodong['huodongurl'])) }
+						
+						<div class="form-group huodong"  style="display:none;background:#EC4933;height:50px;line-height:50px;">
+							<a href="{$huodong['huodongurl']}&from=fm_photosvote&oid={$from_user}"  >
+							<div style="width:50px;height:50px;overflow:hidden;margin-right:20px;margin-left:10px;float:left;">
+								<img src="{php echo toimage($huodong['hhhdpicture'])}" width="50" style="">
+							</div>						
+							<div style="text-align:left; background-color: transparent;color:#fff;font-size:15px;" class=" text-info">
+								{$huodong['huodongname']}
+							</div>
+							</a>
+						</div>
+						
+					{/if}
+				{/if}
 			</div>
 			<div class="modal-footer" style="  text-align: center;">
-				<button type="button" class="btn btn-info" data-dismiss="modal">确定</button>
+				<button type="button" class="btn btn-info" data-dismiss="modal">关闭</button>
 			</div>
 		</div><!-- /.modal-content -->
 	</div><!-- /.modal-dialog -->
@@ -170,7 +191,7 @@ function fminfo(text) {
 function ewm() {
 	$('#ewmdisplay').modal('toggle');
 	
-	$.post("{php echo $this->createMobileUrl('qrcode', array('url' => $url, 'tid' => $user['id']))}", function(data) {
+	$.post("{php echo $this->createMobileUrl('qrcode', array('url' => $url, 'tid' => $user['uid']))}", function(data) {
 		if (data.success == true) {
 			$('.tishi').hide();
 			$('.sys').show();
@@ -246,6 +267,18 @@ function tvote() {
 }
 
 function tvotestart(tfrom_user, vfrom, iscode) {
+	
+	{if !empty($reply['iplocallimit']) && ($_GPC['do'] == 'photosvoteview' || $_GPC['do'] == 'tuser'|| $_GPC['do'] == 'tuserphotos') }
+		var tdw = sessionStorage.getItem("dw");
+		if (!tdw) {
+			var userlocal = sessionStorage.getItem("userlocal");
+			var diqu = sessionStorage.getItem("diqu");
+			var stoplocal = '{php echo $this->createMobileUrl('stopip', array('rid'=> $rid, 'iptype' => 'local'))}&nowlocal=' + userlocal + "&diqu=" + diqu;
+			window.location.href = stoplocal;
+			return false;
+		}
+	{/if}
+	
 	if (iscode == 1) {
 		var qs = function(e) {
 		  return document.querySelector(e);
@@ -270,14 +303,21 @@ function tvotestart(tfrom_user, vfrom, iscode) {
 					tfrom_user: tfrom_user,
 					vfrom: vfrom
 				};
-				$.post("{php echo $this->createMobileUrl('Tvotestart', array('vote' => '1', 'rid' => $rid))}", submitData, function(data) {		geetest.style.display = "none";				
-					//qs('#' + id).parentNode.parentNode.style.display = "none";
+				$.post("{php echo $this->createMobileUrl('Tvotestart', array('vote' => '1', 'rid' => $rid))}", submitData, function(data) {	
+					//geetest.style.display = "none";
+
+					qs('#' + id).parentNode.parentNode.style.display = "none";
 					if (data.success == true) {
-						//qs('#' + id).parentNode.parentNode.style.display = "none";
 						fminfo(data.msg);
-						setTimeout(function () {								
-							window.location.reload();
-						},3000)
+						
+							{if !empty($huodong) && !empty($huodong['huodongname']) && !empty($huodong['hhhdpicture']) && ($huodong['ishuodong'] == 1 && !empty($huodong['huodongurl'])) }
+								$(".huodongt").show();
+								$(".huodong").show();
+							{else}
+								setTimeout(function () {								
+									window.location.reload();
+								},3000)
+							{/if}
 						return 
 						
 					} else {
@@ -311,9 +351,16 @@ function tvotestart(tfrom_user, vfrom, iscode) {
 		$.post("{php echo $this->createMobileUrl('Tvotestart', array('vote' => '1', 'rid' => $rid))}", submitData, function(data) {
 			if (data.success == true) {
 				fminfo(data.msg);
-				setTimeout(function () {								
+				
+				{if !empty($huodong) && !empty($huodong['huodongname']) && !empty($huodong['hhhdpicture']) && ($huodong['ishuodong'] == 1 && !empty($huodong['huodongurl'])) }
+					$(".huodongt").show();
+					$(".huodong").show();
+				{else}
+					setTimeout(function () {								
 					window.location.reload();
-				},3000)
+					},3000)
+				{/if}
+				
 				return 
 				
 			} else {
@@ -502,4 +549,56 @@ function getcode() {
 function subsribe() {
 	$('#subsribe').modal('toggle');
 }
+
+	function getlocaltion() {
+		
+			wx.getLocation({
+			    type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+			    success: function (res) {
+			        var latitude = res.latitude; // 纬度，浮点数，范围为90 ~ -90
+			        var longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180。
+			        var speed = res.speed; // 速度，以米/每秒计
+			        var accuracy = res.accuracy; // 位置精度
+					var location= latitude+"," + longitude;
+					//百度接口，一天可以调用100w次
+					var url="http://api.map.baidu.com/geocoder/v2/" + "?ak=2WUgR2cnnF4WGBVpNLzvS8HS&callback=renderReverse&location="+location+"&output=json&pois=0";
+					$.ajax({
+					      type : "get",
+					      async:false,
+					      url : url,
+					      dataType : "jsonp",
+					      jsonp: "callback",//传递给请求处理程序或页面的，用以获得jsonp回调函数名的参数名(默认为:callback)
+					      jsonpCallback:"renderReverse",//自定义的jsonp回调函数名称，默认为jQuery自动生成的随机函数名
+					      success : function(json){
+					      		
+					          if (json.status=="0"){
+					          	sessionStorage.setItem("getLocation", "{$reply["iplocallimit"]}"); 
+					            var address=json.result.addressComponent;
+					            var diqu="{$reply["iplocallimit"]}".split(",");
+					            var str=address.province+","+address.city+","+address.district;
+					          
+					         	sessionStorage.setItem("userlocal", str); 
+					         	sessionStorage.setItem("diqu", diqu); 
+					            var dw=false;
+					            $.each(diqu, function(i, item){ 
+					                 if (str.indexOf(item)>-1) {
+					                   dw=true;
+					                   sessionStorage.setItem("dw", dw); 
+					                   return false;
+					                 }  
+					             }); 
+					          } else {
+					            alert("获取定位失败");
+					        }
+					      },
+					      error:function(){
+					          alert('获取定位失败');
+					      }
+					  });
+
+
+			    }
+			});
+		
+	}
 </script>

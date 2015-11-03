@@ -3,7 +3,7 @@
 /**
  * 微商城模块定义
  *
- * @author wdlcms.com
+ * @author 012WZ.COM
  * @url
  */
 defined('IN_IA') or exit('Access Denied');

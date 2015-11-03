@@ -138,12 +138,12 @@ _q('#addToMenu').onclick = function() {
     var self = this;
     if (isMenuFilled) {
         MDialog.confirm(
-            '', '加入菜单前是否需要保留您上一次的菜单？', null,
-            '保留', function(){
-                window.location.href = self.getAttribute('href') +  '#wechat_webview_type=1';
+            '', '加入菜单前是否需要清空您上一次的菜单？', null,
+            '清空', function(){
+                window.location.href = self.getAttribute('href') +  '&clearMenu=1#wechat_webview_type=1';
             }, null,
-            '不保留', function() {
-                window.location.href = self.getAttribute('href') + '&clearMenu=1#wechat_webview_type=1';
+            '不清空', function() {
+                window.location.href = self.getAttribute('href') + '#wechat_webview_type=1';
             }, null,
             null, true, true
         );

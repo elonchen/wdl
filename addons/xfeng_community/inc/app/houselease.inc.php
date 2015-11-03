@@ -46,7 +46,7 @@ defined('IN_IA') or exit('Access Denied');
 		}
 	}elseif ($op == 'display' || $op == 'more') {
 			$pindex = max(1, intval($_GPC['page']));
-			$psize = 2;
+			$psize = 10;
 			$sql  = "select * from".tablename('xcommunity_service')."where weid = '{$_W['weid']}' and servicecategory = 2 and regionid=".$member['regionid']." LIMIT ".($pindex - 1) * $psize.','.$psize;
 			$list = pdo_fetchall($sql);
 			foreach ($list as $key => $value) {
@@ -72,7 +72,7 @@ defined('IN_IA') or exit('Access Denied');
 		message('房屋租赁信息取消成功。',referer(),'success');
 	}elseif ($op == 'my') {
 		$pindex = max(1, intval($_GPC['page']));
-		$psize = 2;
+		$psize = 10;
 		$sql  = "select * from".tablename('xcommunity_service')."where weid = '{$_W['weid']}' and openid='{$_W['fans']['from_user']}' and servicecategory = 2 and regionid=".$member['regionid']." LIMIT ".($pindex - 1) * $psize.','.$psize;
 		$list = pdo_fetchall($sql);
 		foreach ($list as $key => $value) {

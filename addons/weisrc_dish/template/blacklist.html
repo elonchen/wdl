@@ -4,11 +4,11 @@
 </ul>
 {if $operation == 'display'}
 <div class="main">
-    <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
-        <!--<a class="btn btn-primary" href="{php echo $this->createWebUrl('area', array('op' => 'post', 'storeid' => $storeid))}"><i class="icon-plus"></i>添加区域</a>-->
-        <a class="btn btn-primary" href="javascript:location.reload()"><i class="icon-refresh"></i>刷新</a>
-        <div style="padding-top: 15px;"></div>
-    </form>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <a class="btn btn-primary" href="javascript:location.reload()"><i class="fa fa-refresh"></i>刷新</a>
+        </div>
+    </div>
     <div class="panel panel-default">
         <form action="" method="post" class="form-horizontal form" >
             <input type="hidden" name="storeid" value="{$storeid}" />

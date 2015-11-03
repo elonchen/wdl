@@ -1,12 +1,11 @@
-
 <html lang="zh-CN"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 <meta name="format-detection" content="telephone=no">
-<title>全部菜品</title>
-<link rel="stylesheet" type="text/css" href="../addons/weisrc_dish/template/css/1/wei_canyin_v1.8.4.css?v=1.1" media="all">
+<title>全部商品</title>
+<link rel="stylesheet" type="text/css" href="../addons/weisrc_dish/template/css/1/wei_canyin_v1.8.4.css?v=1.1.1" media="all">
 <link rel="stylesheet" type="text/css" href="../addons/weisrc_dish/template/css/1/wei_dialog_v1.2.1.css?v=1.1" media="all">
-
+<link data-turbolinks-track="true" href="{RES}/mobile/diandan/assets/diandanbao/font.css?v=1" media="all" rel="stylesheet">
 <style>
     /*解决右边背景总是为灰色的bug*/
     #page_allMenu section article, #pInfo {
@@ -16,10 +15,85 @@
 <script type="text/javascript" src="../addons/weisrc_dish/template/js/1/wei_webapp_v2_common_v1.9.4.js"></script>
 <style>abbr,article,aside,audio,canvas,datalist,details,dialog,eventsource,fieldset,figure,figcaption,footer,header,hgroup,mark,menu,meter,nav,output,progress,section,small,time,video,legend{display:block;}</style>
 <script type="text/javascript" src="../addons/weisrc_dish/template/js/1/wei_dialog_v1.9.9.js"></script>
-<script type='text/javascript' src='../addons/weisrc_dish/template/js/2/jQuery.js?v=1'></script>
 </head>
 <body id="page_allMenu">
-<div class="center">
+<style>
+    .ddb-nav-header {
+        opacity: 0.95;
+        position: fixed;
+        top: 0;
+        width: 100%;
+        height: 45px;
+        line-height: 44px;
+        z-index: 1999;
+        border-bottom: 1px solid #eeeeee;
+        background-color: white;
+        color: #555555
+    }
+
+    .ddb-nav-header a {
+        color: #555555
+    }
+
+    .ddb-nav-header .header-title {
+        width: 50%;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        text-align: center;
+        overflow: hidden;
+        font-size: 17px;
+        font-weight: bold;
+        display: inline-block;
+        margin-left: 25%
+    }
+
+    .ddb-nav-header .nav-left-item, .ddb-nav-header .nav-right-item {
+        display: inline-block;
+        height: 100%
+    }
+
+    .ddb-nav-header .nav-left-item i, .ddb-nav-header .nav-right-item i {
+        width: 20px;
+        font-size: 18px;
+        line-height: inherit;
+    }
+
+    .ddb-nav-header .nav-left-item {
+        width: 25%;
+        float: left;
+        padding-left: 10px
+    }
+
+    .ddb-nav-header .nav-right-item {
+        width: 20%;
+        float: right;
+        text-align: right
+    }
+
+    .ddb-nav-header .nav-right-item .operation-button {
+        font-size: 16px;
+        text-align: center;
+        color: #ef4437;
+        font-weight: bold
+    }
+
+    .ddb-nav-header .nav-left-item ~ .header-title {
+        margin-left: 0
+    }
+
+    .ddb-nav-header.label-red {
+        border-bottom: 0
+    }
+</style>
+<div class="ddb-nav-header ng-scope">
+    <a class="nav-left-item" href="#/"><i class="fa fa-angle-left"></i></a>
+    <div class="header-title ng-binding">{$store['title']}</div>
+    <a class="nav-right-item" href="{php echo $this->createMobileurl('detail', array('id' => $storeid, 'isdelivery' => $this->_isdelivery), true)}">
+        <div class="operation-button gray"><i class="fa fa-home"></i>
+        </div>
+    </a>
+</div>
+<div class="center" style="top:45px;">
     <nav id="navBar">
         <dl>
             {php $flag = false;}
@@ -35,12 +109,13 @@
                 {php $flag = true;}
             {/loop}
         </dl>
+        <div style="margin-top: 100px;"></div>
     </nav>
     <section id="infoSection">
         <article>
             <div id="pInfo">
                 {loop $list $row}
-                <dl dunitname="{$row['unitname']}" dsubcount="{$row['subcount']}" dishid="{$row['id']}" dname="{$row['title']}" dtaste="{$row['taste']}" ddescribe="{$row['description']}" dprice="{$row['productprice']}" dishot="{if $row['subcount']>20}2{else}0{/if}" dspecialprice="{$row['marketprice']}" disspecial="{$row['isspecial']}" shopinfo="">
+                <dl dunitname="{$row['unitname']}" dsubcount="{$row['subcount']}" dishid="{$row['id']}" dname="{$row['title']}" dtaste="{$row['taste']}" ddescribe="{$row['description']}" dprice="{$row['productprice']}" dishot="{if $row['subcount']>20}2{else}0{/if}" dspecialprice="{if $row['isspecial']==2}{$row['marketprice']}{/if}" disspecial="{$row['isspecial']}" shopinfo="">
                     <dt><h3>{$row['title']}</h3></dt>
                     <dd>
                         <a href="javascript:void(0)" class="dataIn">
@@ -50,12 +125,11 @@
                             {/if}
                         </a>
                     </dd>
-                    <dd>{if $row['isspecial']==1}
-                        <em>{$row['productprice']}元/{$row['unitname']}</em>
-                        {else if $row['isspecial']==3}
-                        <em><b class="vip">会员</b>{$row['marketprice']}元/{$row['unitname']}<br><del>{$row['productprice']}元/{$row['unitname']}</del></em>
-                        {else if $row['isspecial']==2}
+                    <dd>
+                        {if $row['marketprice']!=''}
                         <em class="sale"><b>特价</b>{$row['marketprice']}元/{$row['unitname']}<br><del>{$row['productprice']}元/{$row['unitname']}</del></em>
+                        {else}
+                        <em>{$row['productprice']}元/{$row['unitname']}</em>
                         {/if}
                     </dd>
                     <dd class="dpNum">{$row['subcount']}人点过</dd>
@@ -67,7 +141,7 @@
                     </dd>
                 </dl>
                 {/loop}
-                <div style="margin-top: 60px;"></div>
+                <div style="margin-top: 100px;"></div>
             </div>
         </article>
     </section>
@@ -115,10 +189,14 @@
                     for(key in dishList) {
                         //alert(key);
                         var dish = dishList[key];
-                        if (dish.dIsSpecial == view_const_dish_SPECIAL_PRICE_YES) {
+//                        if (dish.dIsSpecial == view_const_dish_SPECIAL_PRICE_YES) {
+//                            var priceHtml = "<em class='sale'><b>特价</b>"+dish['dSpecialPrice']+"元/"+dish['unitname']+"<br/><del>"+dish['dPrice']+"元/"+dish['unitname']+"</del></em>";
+//                        } else if (dish.dIsSpecial == view_const_dish_SPECIAL_PRICE_VIP) {
+//                            var priceHtml = "<em><b class='vip'>会员</b>"+dish['dSpecialPrice']+"元/"+dish['unitname']+"<br/><del>"+dish['dPrice']+"元/"+dish['unitname']+"</del></em>";
+//                        }
+
+                        if (dish['dSpecialPrice'] != '') {
                             var priceHtml = "<em class='sale'><b>特价</b>"+dish['dSpecialPrice']+"元/"+dish['unitname']+"<br/><del>"+dish['dPrice']+"元/"+dish['unitname']+"</del></em>";
-                        } else if (dish.dIsSpecial == view_const_dish_SPECIAL_PRICE_VIP) {
-                            var priceHtml = "<em><b class='vip'>会员</b>"+dish['dSpecialPrice']+"元/"+dish['unitname']+"<br/><del>"+dish['dPrice']+"元/"+dish['unitname']+"</del></em>";
                         } else {
                             var priceHtml = "<em>"+dish['dPrice']+"元/"+dish['unitname']+"</em>";
                         }
@@ -148,14 +226,13 @@
         });
     }
 
-    //选择菜品按钮样式
+    //选择商品按钮样式
     function doSelectBtn(){
         var btn = _qAll("article dl .btn");
         var btnIndex = 0,btnLength = btn.length;
 
         // countDish();
         for(btnIndex;btnIndex<btnLength;btnIndex++){
-
             var countNumText=parseInt(btn[btnIndex].children[1].innerHTML),
                 btnAdd=btn[btnIndex].children[2],
                 btnMin=btn[btnIndex].children[0];
@@ -228,27 +305,12 @@
                         }, null,
                             '取消', function(){}, null,
                             null, true, true
-                        ); 
+                        );
                     }, 500);
                     beforeAddDish = false;
                 } else {
-                    var totalcount = 0;
-                    var totalprice = 0;
-           
-                    jQuery("#pInfo dl").each(function(){
-                        var c =  parseInt( jQuery(this).find('i').html() );
-                        totalcount+=c;
-                         var price= jQuery(this).attr('dspecialprice');
-                      
-                        if(price==""){
-                            var dprice= jQuery(this).attr('dprice');
-                            price= dprice;
-                        }
-                        totalprice+=  c * parseInt(price);
-                    });
-   
-                    //var totalprice = parseInt(_q("#totalprice").value)+parseInt(price);
-                    //var totalcount = parseInt(_q("#totalcount").value)+1;
+                    var totalprice = parseFloat(_q("#totalprice").value)+parseFloat(price);
+                    var totalcount = parseInt(_q("#totalcount").value)+1;
                     _q("#totalprice").value = totalprice;
                     _q("#totalpriceshow").innerHTML = totalprice;
                     _q("#totalcount").value = totalcount;
@@ -306,24 +368,8 @@
                     price= dspecialprice;
                 }
 
-                     var totalcount = 0;
-                    var totalprice = 0;
-           
-                    jQuery("#pInfo dl").each(function(){
-                        var c =  parseInt( jQuery(this).find('i').html() );
-                        totalcount+=c;
-                         var price= jQuery(this).attr('dspecialprice');
-                      
-                        if(price==""){
-                            var dprice= jQuery(this).attr('dprice');
-                            price= dprice;
-                        }
-                
-                        totalprice+=  c * parseInt(price);
-                    });
-                    
-                //var totalprice = parseInt(_q("#totalprice").value)-parseInt(price);
-                //var totalcount = parseInt(_q("#totalcount").value)-1;
+                var totalprice = parseFloat(_q("#totalprice").value)-parseFloat(price);
+                var totalcount = parseInt(_q("#totalcount").value)-1;
                 _q("#totalprice").value = totalprice;
                 _q("#totalpriceshow").innerHTML = totalprice;
                 _q("#totalcount").value = totalcount;
@@ -370,7 +416,7 @@
             }) // btnMin.addEventListener
         }
 
-        //更新分类菜品数量
+        //更新分类商品数量
         function ajaxDishReset(dishid, o2uNum, successCallback, errorCallback) {
             var params = {
                 'dishid' : dishid,
@@ -435,23 +481,6 @@
             btns.children[0].style.display ="inline-block";
             btns.children[1].style.display ="inline-block";
         };
-        var totalcount = 0;
-        var totalprice = 0;
-          jQuery("#pInfo dl").each(function(){
-                        var c =  parseInt( jQuery(this).find('i').html() );
-                        totalcount+=c;
-                         var price= jQuery(this).attr('dspecialprice');
-                      
-                        if(price==""){
-                            var dprice= jQuery(this).attr('dprice');
-                            price= dprice;
-                        }
-                        totalprice+=  c * parseInt(price);
-                    });
-                 _q("#totalprice").value = totalprice;
-                _q("#totalpriceshow").innerHTML = totalprice;
-                _q("#totalcount").value = totalcount;
-                _q("#totalcountshow").innerHTML = totalcount;
     }
 
     function countDish(){
@@ -536,7 +565,7 @@
             MDialog.popupCustom(_tmpHtml,true, function(){}, true);
     }
 
-    // 获取各个分类被选中菜品的数量
+    // 获取各个分类被选中商品的数量
     function getDishNumOfCategory() {
         var params = {
         };

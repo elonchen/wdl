@@ -3,7 +3,7 @@
  * 一元夺宝模块定义
  *
  * @author 封遗
- * @url http://bbs.wdlcms.com/
+ * @url http://bbs.012wz.com/
  */
 defined('IN_IA') or exit('Access Denied');
 

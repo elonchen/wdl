@@ -3,7 +3,7 @@
  * 幸运大抽奖模块微站定义
  *
  * @author 华轩科技
- * @url http://bbs.wdlcms.com/
+ * @url http://bbs.012wz.com/
  */
 defined('IN_IA') or exit('Access Denied');
 
@@ -115,7 +115,7 @@ class Hx_lotteryModuleSite extends WeModuleSite {
 				if ($fans['uid'] != '0') {
 					$uid = $fans['uid'];
 				}else{
-					$uid = mc_update($uid, array('email' => md5($from_user).'@wdlcms.com'));
+					$uid = mc_update($uid, array('email' => md5($from_user).'@012wz.com'));
 					if (!empty($fans['fanid']) && !empty($uid)) {
 						pdo_update('mc_mapping_fans', array('uid' => $uid), array('fanid' => $fans['fanid']));
 					}
@@ -265,7 +265,7 @@ class Hx_lotteryModuleSite extends WeModuleSite {
 				if ($fans['uid'] != '0') {
 					$uid = $fans['uid'];
 				}else{
-					$uid = mc_update($uid, array('email' => md5($from_user).'@wdlcms.com'));
+					$uid = mc_update($uid, array('email' => md5($from_user).'@012wz.com'));
 					if (!empty($fans['fanid']) && !empty($uid)) {
 						pdo_update('mc_mapping_fans', array('uid' => $uid), array('fanid' => $fans['fanid']));
 					}
@@ -319,8 +319,7 @@ class Hx_lotteryModuleSite extends WeModuleSite {
 					$rate = $reply['rate'];
 					$prizes = iunserializer($reply['prizes']);
 					$p_num = $prizes['p1_num'] + $prizes['p2_num'] + $prizes['p3_num'] + $prizes['p4_num'];
-                                                                                          empty($p_num) && $p_num = 1;
-                                        
+					empty($p_num) && $p_num = 1;                                  
 					$arr['p1'] = round(100 * $rate * $prizes['p1_num']/$p_num);
 					$arr['p2'] = round(100 * $rate * $prizes['p2_num']/$p_num);
 					$arr['p3'] = round(100 * $rate * $prizes['p3_num']/$p_num);

@@ -1,7 +1,7 @@
 <?php
 /**
  * 抢红包模块
- * @author 微赞
+ *
  */
 defined('IN_IA') or exit('Access Denied');
 

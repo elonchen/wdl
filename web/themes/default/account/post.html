@@ -43,9 +43,6 @@
 			<div class="col-sm-9">
 				<select name="groupid" class="form-control">
 					<option value="0" {if $account['groupid'] == 0} selected{/if} >基础服务</option>
-					{if $_W['isfounder']}
-						<option value="-1" {if $account['groupid'] == -1} selected{/if}>所有服务</option>
-					{/if}
 					{loop $group['package'] $item}
 					<option {if $account['groupid'] == $item['id']} selected{/if} value="{$item['id']}">{$item['name']}</option>
 					{/loop}

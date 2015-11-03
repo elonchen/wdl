@@ -22,7 +22,6 @@ class Czt_voiceModule extends WeModule {
 			}
 		}
 		//这里来展示设置项表单
-		load()->func('tpl');
 		include $this->template('settings');
 	}
 

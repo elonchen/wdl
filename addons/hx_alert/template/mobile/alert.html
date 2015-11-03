@@ -9,30 +9,17 @@
    <script src="{$_W['siteroot']}/addons/hx_alert/template/style/js/main.m.js"></script>
    <script src="{$_W['siteroot']}/addons/hx_alert/template/style/js/wxtools.min.js"></script>
 </head>
-   <script>var _host = "http://" + window.location.host;
-function attention_wx()
-{
-   //alert("关注微信“整蛊专家”，朋友圈整人利器！更多朋友圈整人游戏等你来玩！");
-   location.href='{$reply[gzurl]}';
+<script>
+sharedata = {
+    'title' : "{$list['title']}", // 
+    'desc' : "",  //
+    'link' :  "{$_W['siteroot']}app/index.php?i={$_W['uniacid']}&c=entry&do=alert&m=hx_alert&mid={$list['id']}",
+    'imgUrl' : "{php echo tomedia($reply['picture'])}",
 }
-var dataForWeixin = {
-      appId : "",
-      MsgImg : "{$_W['attachurl']}{$reply['picture']}",
-      TLImg : "{$_W['attachurl']}{$reply['picture']}",
-      shareurl : "{$_W['siteroot']}app/index.php?i={$list['uniacid']}&c=entry&do=alert&m=hx_alert&mid={$list['id']}",
-      title : "{$list['title']}",
-      desc : '',
-      fakeid : "",
-      before_share : function()
-      {
-         
-      },
-      callback : function() {
-           setTimeout(function(){
-            attention_wx();
-       },500);
-      }
-};
+ 
+sharedata.success = function(){
+    location.href='{$reply[gzurl]}';
+}
 </script>
    <script>function HTMLDecode(strEncodeHTML)
  {

@@ -27,7 +27,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">菜品选择</label>
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">商品选择</label>
                     <div class="col-sm-9">
                         {loop $categorys $category}
                         <b>{$category['name']}</b><br/>
@@ -56,11 +56,12 @@
 </div>
 {elseif $operation == 'display'}
 <div class="main">
-    <form action="" method="post" class="form-horizontal form" onsubmit="return formcheck(this)"  enctype="multipart/form-data">
-        <a class="btn btn-primary" href="{php echo $this->createWebUrl('intelligent', array('op' => 'post', 'storeid' => $storeid))}"><i class="icon-plus"></i> 添加智能选菜</a>
-        <a class="btn btn-primary" href="javascript:location.reload()"><i class="icon-refresh"></i> 刷新</a>
-    </form>
-    <div style="padding-top: 15px;"></div>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <a class="btn btn-primary" href="{php echo $this->createWebUrl('intelligent', array('op' => 'post', 'storeid' => $storeid))}"><i class="fa fa-plus"></i> 添加智能选菜</a>
+            <a class="btn btn-primary" href="javascript:location.reload()"><i class="fa fa-refresh"></i> 刷新</a>
+        </div>
+    </div>
     <div class="panel panel-default">
         <form action="" method="post" class="form-horizontal form" >
         <div class="table-responsive panel-body">
@@ -69,7 +70,7 @@
             <tr>
                 <th style="width:10%;">显示顺序</th>
                 <th style="width:8%;">适用人数</th>
-                <th style="width:72%;text-align: left;">菜品</th>
+                <th style="width:72%;text-align: left;">商品</th>
                 <th style="width:10%;text-align:right;">操作</th>
             </tr>
             </thead>

@@ -3,7 +3,7 @@
  * 微画报模块微站定义
  *
  * @author 微赞科技
- * @url http://bbs.wdlcms.com/
+ * @url http://bbs.012wz.com/
  */
 defined('IN_IA') or exit('Access Denied');
 
@@ -33,7 +33,7 @@ class Hx_pictorialModuleSite extends WeModuleSite {
 		global $_W, $_GPC;
 		//$_W['styles'] = mobile_styles();
 		$pindex = max(1, intval($_GPC['page']));
-		$psize = 20;
+		$psize = 1;
 		$result['list'] = pdo_fetchall("SELECT * FROM ".tablename('hx_pictorial')." WHERE weid = '{$_W['uniacid']}' AND isview = '1' ORDER BY displayorder DESC LIMIT " . ($pindex - 1) * $psize .',' .$psize);
 		$total = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename('hx_pictorial') . " WHERE weid = '{$_W['uniacid']}' AND isview = '1'");
 		$result['pager'] = pagination($total, $pindex, $psize);

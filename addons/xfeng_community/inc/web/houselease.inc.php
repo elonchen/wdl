@@ -36,8 +36,11 @@ defined('IN_IA') or exit('Access Denied');
 			$item       = pdo_fetch("SELECT * FROM".tablename('xcommunity_service')."WHERE id=:id",array(':id' => $id));
 			$member     = pdo_fetch("SELECT * FROM".tablename('xcommunity_member')."WHERE openid = '{$item['openid']}'");
 			$images = unserialize($item['images']);
-			$picid  = implode(',', $images);
-			$imgs   = pdo_fetchall("SELECT * FROM".tablename('xfcommunity_images')."WHERE id in({$picid})");
+			if ($images) {
+				$picid  = implode(',', $images);
+				$imgs   = pdo_fetchall("SELECT * FROM".tablename('xfcommunity_images')."WHERE id in({$picid})");
+			}
+			
 		}
 		if(checksubmit('submit')){
 			$data = array(

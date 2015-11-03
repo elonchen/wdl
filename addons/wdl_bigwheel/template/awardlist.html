@@ -1,11 +1,14 @@
 {template 'common/header'}
+
 {template 'common'}
+
 <div class="main">
 	<ul class="nav nav-tabs">
 		<li{if $_GPC['do'] == 'manage'} class="active"{/if}><a href="{php echo $this->createWebUrl('manage');}">大转盘管理</a></li>
 		<li{if $_GPC['do'] == 'post'} class="active"{/if}><a href="{php echo url('platform/reply/post',array('m'=>'wdl_bigwheel'));}">添加大转盘规则</a></li>
 		<li{if $_GPC['do'] == 'awardlist'} class="active"{/if}><a href="{php echo $this->createWebUrl('awardlist',array('name'=>'bigwheel', 'rid' => $rid));}">中奖名单</a></li>
 	</ul>
+
     <div class="panel panel-info">
 	<div class="panel-heading">筛选</div>
 	<div class="panel-body">
@@ -60,8 +63,9 @@
 					<th style="width:150px;">SN码</th>
 					<th style="width:80px;">奖品类别</th>
 					<th style="width:80px;">状态</th>
-					<th width="120px">领取者手机号</th>
+					<th style="width:120px">领取者手机号</th>
 					<th style="width:120px;">领取者微信码</th>
+					<th style="width:120px;">领取者昵称</th>
 					<th style="width:120px;">中奖时间</th>
 					<th style="width:120px;">使用时间</th>
 					<th style="width:300px;">操作</th>
@@ -78,6 +82,13 @@
 						{else}<span class="label label-warning">已兑奖</span>{/if}</td>
 					<td><span class="label label-info phone" data-fans="{$row['from_user']}"}>显示手机号</span></td>
 					<td>{$row['from_user']}</td>
+					<td>
+						{if empty($row['nickname'])}
+						<span class="label label-danger">未完善</span>
+						{else}
+						{$row['nickname']}
+						{/if}
+					</td>
 					<td>{php echo date('Y/m/d H:i',$row['createtime']);}</td>
 					<td>{if $row['consumetime'] == 0}未使用{else}{php echo date('Y/m/d H:i',$row['consumetime']);}{/if}</td>
 					<td>
@@ -94,24 +105,26 @@
 </div>
 {$pager}
 </div>
-<script>
-$(".phone").click(function() {
-	$(".phone").addClass('label-teal');
-	$(".phone").text('显示手机号');
-	obj=$(this);
-	obj.text('加载中...');
-	fans=obj.attr('data-fans');
-	$.post("{php echo $this->createWebUrl('getphone',array('rid'=>$rid))}", { fans: fans},
-	function(data){
-		obj.removeClass('label-teal');
-		obj.text(data);
-	});
 
-});
-	function drop_confirm(msg, url){
-    if(confirm(msg)){
-        window.location = url;
-    }
-}
+<script type="text/javascript">
+	$(".phone").click(function() {
+		$(".phone").addClass('label-teal');
+		$(".phone").text('显示手机号');
+		obj=$(this);
+		obj.text('加载中...');
+		fans=obj.attr('data-fans');
+		$.post("{php echo $this->createWebUrl('getphone',array('rid'=>$rid))}", { fans: fans},
+		function(data){
+			obj.removeClass('label-teal');
+			obj.text(data);
+		});
+
+	});
+		function drop_confirm(msg, url){
+		if(confirm(msg)){
+			window.location = url;
+		}
+	}
 </script>
+
 {template 'common/footer'}

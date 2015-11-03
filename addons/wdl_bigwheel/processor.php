@@ -8,7 +8,7 @@
 defined('IN_IA') or exit('Access Denied');
  
 
-class Wdl_bigwheelModuleProcessor extends WeModuleProcessor {
+class wdl_bigwheelModuleProcessor extends WeModuleProcessor {
 
 	public function respond() {
 		global $_W;

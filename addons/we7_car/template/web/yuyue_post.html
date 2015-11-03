@@ -1,10 +1,12 @@
 {template 'common/header'}
-{php load()->func('tpl')}
+
+
 <ul class="nav nav-tabs">
     <li class="active"><a href="{php echo $this->createWebUrl('yuyue', array('op'=>'post', 'weid'=>$weid));}">添加预约</a></li>	
     <li><a href="{php echo $this->createWebUrl('yuyue', array('op'=>'list', 'weid'=>$weid));}">预约管理</a></li>
     <li ><a href="{php echo $this->createWebUrl('yuyue', array('op'=>'show','weid'=>$weid));}">预约订单</a></li>
 </ul>
+
 <div class="main">
     <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
         <div class="panel panel-default">
@@ -211,6 +213,7 @@
         </div>
     </form>
 </div>
+
 <script text="text/javascript">
     function addtext() {
         $html =
@@ -224,7 +227,7 @@
                 '</tr>';
         $("#flag").before($html);
     }
-    ;
+
     function addselect() {
         $html =
                 '<tr>' +
@@ -237,15 +240,13 @@
                 '</tr>';
         $("#flag").before($html);
     }
-    ;
 
-
-
-function message(msg) {
+    function message(msg) {
         require(['util'], function(util) {
             util.message(msg);
         });
     }
+
     $('form').submit(function() {
         if ($.trim($(':text[name="title"]').val()) == '') {
             message('必须填写预约标题.', '', 'error');
@@ -300,5 +301,6 @@ function message(msg) {
         return true;
     });
 </script>
+
 {template 'common/footer'}
 

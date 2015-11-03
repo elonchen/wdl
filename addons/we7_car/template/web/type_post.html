@@ -6,7 +6,7 @@
     {if $id}<li class="active"><a href="{php echo $this->createWebUrl('type',array('op'=>'post'));}">编辑品牌车型</a></li> {/if}
 </ul>
 <div class="main">
-    <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data" onsubmit="return validate(this);">
+    <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data" id="form">
         <div class="panel panel-default">
             <div class="panel-heading">
                 修改品牌车系设置
@@ -121,13 +121,13 @@
             util.message(msg);
         });
     }
-    $('form').submit(function() {
+
+    $('#form').submit(function() {
         if ($.trim($(':text[name="title"]').val()) == '') {
             message('必须填写车型名称.', '', 'error');
             return false;
         }
         if ($.trim($("#bid").val()) <= 0) {
-
             message('请选择车型品牌.', '', 'error');
             return false;
         }

@@ -3,7 +3,7 @@
  * 弹死你模块处理程序
  *
  * @author 华轩科技
- * @url 
+ * @url http://bbs.wdlcms.com/
  */
 defined('IN_IA') or exit('Access Denied');
 
@@ -11,7 +11,7 @@ class Hx_alertModuleProcessor extends WeModuleProcessor {
 	public $reply = 'hx_alert_reply';
 	public $list = 'hx_alert_list';
 	public function respond() {
-		global $_W;
+		 global $_W;
         $rid = $this->rule;
         $sql = "SELECT * FROM " . tablename($this->reply) . " WHERE `rid`=:rid LIMIT 1";
         $row = pdo_fetch($sql, array(':rid' => $rid));

@@ -2,7 +2,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=0" />
-<title>朋友圈发语音</title>
+<title>来自朋友圈的语音</title>
 <link href="{MODULE_URL}template/mobile/css/bootstrap.min.css" media="screen" rel="stylesheet" type="text/css" />
 <link href="{MODULE_URL}template/mobile/css/bootstrap-theme.min.css" media="screen" rel="stylesheet" type="text/css" />
 <link href="{MODULE_URL}template/mobile/css/font-awesome.min.css" media="screen" rel="stylesheet" type="text/css" />
@@ -19,14 +19,14 @@
 <div class="container-fluid page-container">
 <div class="row">
 <div class="col-xs-12 highcol hdmain">
-<h1>朋友圈发语音</h1>
+<h1>来自朋友圈的语音</h1>
 <div class="cibox">
 <div class="ico-rec-loading">
 <div style="color:#aaaaaa;text-align:center;top:60px;left:0;position:absolute;width:100%;font-size:16px;">正在读取语音...</div>
 </div>
 <div class="ico-rec-play hide" onclick="playVoiceByUser();return false;"><img src="{MODULE_URL}template/mobile/images/2781215_5_7fe06370f6_o.png" alt="" /></div>
 <div class="ico-rec-playing hide"><img class="pi-1 hide" src="{MODULE_URL}template/mobile/images/2781219_5_2905ad457a_o.png" alt="" /> <img class="pi-2 hide" src="{MODULE_URL}template/mobile/images/2781220_5_001114eff2_o.png" alt="" /> <img class="pi-3 hide" src="{MODULE_URL}template/mobile/images/2781221_5_cacc5ecf9d_o.png" alt="" /></div>
-<div class="voice-time-bar"><span class="voice-time">5</span>s</div>
+<div class="voice-time-bar"><span class="voice-time">{$_GPC['time']}</span>s</div>
 </div>
 <div class="btnbox">
 <div class="btn-rec-gomy"><a class="hdbtn hdbtn-2" href="{php echo $_W['siteroot'].'app/'.$this->createMobileUrl('index',array(),1);}">我也要发语音</a></div>
@@ -42,7 +42,7 @@
 </div>
 <script type="text/javascript">
 
- var voice_record_time=5;
+ var voice_record_time={$_GPC['time']}||5;
  function switchIconTo(s){
    var ss=[ "loading" , "play" , "playing"];
    var i=0;
@@ -129,6 +129,9 @@
        $('.voice-time-bar').show();
        setTimeout('playVoiceByUser()',500);
        //playVoice(localId);
+     },
+     fail:function() {
+      alert('读取失败');
      }
    });
  }

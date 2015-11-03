@@ -26,11 +26,17 @@
         </div>
         <div class="author_time">
             <div class="author">{php echo $this->module['config']['cname']}</div>
-            <div class="time">{php echo date('Y-m-d', $list[createtime]);}</div>
+            <div class="time">
+            {if $list}
+                {php echo date('Y-m-d', $list[createtime]);}
+            {else}
+                {php echo date('Y-m-d', TIMESTAMP);}
+            {/if}
+            </div>
         </div>
         {if $list['topPicture']}
         <div class="notice_img">
-            <img src="{$_W['attachurl']}{$list['topPicture']}" />
+            <img src="{$_W['attachurl']}{$list['topPicture']}" style="max-width:100%;max-height:100px;" />
         </div>
         {/if}
         {if $list['content']}

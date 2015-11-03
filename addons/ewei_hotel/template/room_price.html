@@ -86,10 +86,10 @@
 				var roomid = input.attr("roomid");
 				var date = input.attr("date");
 				var pricetype  = input.attr("pricetype");
-				if(!input.isNumber()){
+/*				if(!input.isNumber()){
 					Tip.select(input,"请输入数字!","top");
 					return;
-				}
+				}*/
 				var price = $.trim( input.val() );
 				input.parent().parent().find(".price_span").html( price ).removeClass('hide');
 				input.parent().addClass('hide');

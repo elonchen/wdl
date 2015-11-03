@@ -1,5 +1,6 @@
 <form method="post" action="{php echo url('site/entry/editbranchsave',array('m' => 'stonefish_bigwheel','rid' => $rid))}" id="form1">
-	<input type="hidden" name="uid" value="{$data['id']}"><input type="hidden" name="usecount" value="{$data['usecount']}">
+	<input type="hidden" name="uid" value="{$data['id']}">
+	<input type="hidden" name="usecount" value="{$data['usecount']}">
 	<div class="table-responsive" style="height:200px;overflow-Y: auto; overflow-X:hidden;">
 	<table class="table" style="min-width:568px;">
 	<tr>
@@ -13,15 +14,9 @@
 	<tr>
 		<td style="border-top:none;vertical-align:middle;"><strong>状态</strong></td>
 		<td style="border-top:none;vertical-align:middle;">
-		                <label class="radio-inline">
-					        <input type="radio" name="status" value="0" {if $data['status'] == 0} checked="checked"{/if}/>不可用
-					    </label>
-						<label class="radio-inline">
-					        <input type="radio" name="status" value="1" {if $data['status'] == 1} checked="checked"{/if}/>未审核
-					    </label>
-						<label class="radio-inline">
-					        <input type="radio" name="status" value="2" {if $data['status'] == 2} checked="checked"{/if}/>已审核
-					    </label>
+		    <label class="radio-inline"><input type="radio" name="status" value="0" {if $data['status'] == 0} checked="checked"{/if}/>不可用</label>
+			<label class="radio-inline"><input type="radio" name="status" value="1" {if $data['status'] == 1} checked="checked"{/if}/>未审核</label>
+			<label class="radio-inline"><input type="radio" name="status" value="2" {if $data['status'] == 2} checked="checked"{/if}/>已审核</label>
 		</td>
 	</tr>
 	<tr>

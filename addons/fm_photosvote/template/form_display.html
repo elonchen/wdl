@@ -2,10 +2,10 @@
             <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style='color:red'>*</span>是否显示最上方导航</label>
             <div class="col-sm-9 col-xs-12">
                	<label class="radio-inline">
-                	<input type="radio" name="istopheader" value="1" {if $reply['istopheader'] == 1} checked="checked"{/if}/>是
+                	<input type="radio" name="istopheader" value="1" {if $istop['istopheader'] == 1} checked="checked"{/if}/>是
                 </label>
                 <label class="radio-inline">
-                	<input type="radio" name="istopheader" value="0" {if $reply['istopheader'] == 0} checked="checked"{/if}/>否
+                	<input type="radio" name="istopheader" value="0" {if $istop['istopheader'] == 0} checked="checked"{/if}/>否
                 </label>
 				<div class="help-block">前端是否显示最上方导航</div>
             </div>
@@ -14,14 +14,34 @@
             <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style='color:red'>*</span>前端是否开启公告</label>
             <div class="col-sm-9 col-xs-12">
                	<label class="radio-inline">
-                	<input type="radio" name="ipannounce" value="1" {if $reply['ipannounce'] == 1} checked="checked"{/if}/>是
+                	<input type="radio" name="ipannounce" value="1" {if $istop['ipannounce'] == 1} checked="checked"{/if}/>是
                 </label>
                 <label class="radio-inline">
-                	<input type="radio" name="ipannounce" value="0" {if $reply['ipannounce'] == 0} checked="checked"{/if}/>否
+                	<input type="radio" name="ipannounce" value="0" {if $istop['ipannounce'] == 0} checked="checked"{/if}/>否
                 </label>
 				<div class="help-block">前端是否开启公告</div>
             </div>
         </div>
+		<div class="form-group">
+            <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style='color:red'>*</span>前端是否开启背景音乐</label>
+            <div class="col-sm-9 col-xs-12">
+               	<label class="radio-inline">
+                	<input type="radio" name="isbgaudio" value="1" {if $istop['isbgaudio'] == 1} checked="checked"{/if}/>是
+                </label>
+                <label class="radio-inline">
+                	<input type="radio" name="isbgaudio" value="0" {if $istop['isbgaudio'] == 0} checked="checked"{/if}/>否
+                </label>
+				<div class="help-block">前端是否开启背景音乐</div>
+            </div>
+        </div>
+
+		<div class="form-group">
+			<label class="col-xs-12 col-sm-3 col-md-2 control-label">音频链接</label>
+			<div class="col-sm-9 col-xs-12" ng-invoker="context.bind($istop, istop);">
+				{php echo tpl_form_field_audio('bgmusic', $istop['bgmusic']);}
+				<span class="help-block">选择上传的音频文件或直接输入URL地址，支持格式：mp3</span>
+			</div>
+		</div>
 		
 		<div class="form-group">
             <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style='color:red'>*</span>首页是否显示说明</label>
@@ -146,7 +166,7 @@
 				<div class="input-group">
 					<span class="input-group-addon">首页显示</span>
 					<input type="text" name="xuninum" id="xuninum" class="form-control" value="{$reply['xuninum']}" />
-					<span class="input-group-addon">位虚拟人气　此数值随下面设置自动变化</span>
+					<span class="input-group-addon">位虚拟人气　此数值随虚拟人气设置自动变化。 当前总共</span>
 					<input type="text" name="hits" id="hits" class="form-control"  value="{$reply['hits']}" />
 					<span class="input-group-addon">位真实点击</span>
 				</div>

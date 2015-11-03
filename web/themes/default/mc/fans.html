@@ -74,7 +74,6 @@
 						u.message(dat.message, location.href, 'error');
 						return;
 					}
-
 					count += dat.count;
 					if((dat.total <= count) || (!dat.count && !dat.next)) {
 						$scope.adv.downloadState = '';
@@ -120,7 +119,7 @@
 				</div>
 					<div class="form-group">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">用户组</label>
-					<div class="col-sm-9 col-md-8 col-lg-8 col-xs-12">
+					<div class="col-sm-9 col-md-8 col-lg-8">
 						<label class="radio-inline">
 							<input type="radio" name="type" value="" {if $type == ''}checked="checked"{/if}/> 不指定
 						</label>
@@ -131,30 +130,11 @@
 							<input type="radio" name="type" value="unbind" {if $type == 'unbind'}checked="checked"{/if}/> 未注册为会员
 						</label>
 					</div>
-				</div>
-				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label">是否关注</label>
-					<div class="col-sm-9 col-md-8 col-lg-8 col-xs-12">
-						<label class="radio-inline">
-							<input type="radio" name="follow" value="" {if $follow == ''}checked="checked"{/if}/> 不限
-						</label>
-						<label class="radio-inline">
-							<input type="radio" name="follow" value="1" {if $follow == '1'}checked="checked"{/if}/> 已关注
-						</label>
-						<label class="radio-inline">
-							<input type="radio" name="follow" value="2" {if $follow == '2'}checked="checked"{/if}/> 取消关注
-						</label>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label">关注/取消关注时间</label>
-					<div class="col-sm-9 col-md-8 col-lg-8 col-xs-12">
-						{php load()->func('tpl');}
-						{php echo tpl_form_field_daterange('time', array('starttime'=>date('Y-m-d', $starttime),'endtime'=>date('Y-m-d', $endtime)));}
-					</div>
 					<div class="pull-right col-xs-12 col-sm-3 col-md-2 col-lg-2">
 						<button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
 					</div>
+				</div>
+				<div class="form-group">
 				</div>
 			</form>
 		</div>
@@ -171,6 +151,7 @@
 					<th style="width:180px;">对应用户</th>
 					<th style="width:80px;">是否关注</th>
 					<th style="width:180px;">关注/取消时间</th>
+					<th style="width:120px;">来源公众号</th>
 					<th style="min-width:70px;" class="text-right">操作</th>
 				</tr>
 			</thead>
@@ -182,7 +163,7 @@
 					<td>{$item['user']['nickname']}</td>
 					<td>
 						{if empty($item['uid'])}
-						<a href="{php echo url('mc/member/post', array('uid' => $item['uid'],'openid' => $item['openid'], 'fanid' => $item['fanid']));}" class="text-danger" title="该用户尚未注册会员，请为其手动注册！">[ 注册为会员 ]</a>
+							<a href="{php echo url('mc/member/post', array('uid' => $item['uid'],'openid' => $item['openid'], 'fanid' => $item['fanid']));}" class="text-danger" title="该用户尚未注册会员，请为其手动注册！">[ 注册为会员 ]</a>
 						{else}
 						<a href="{php echo url('mc/member/post', array('uid'=>$item['uid']));}"><span>{if $item['user']['niemmo_effective'] == 1}{$item['user']['niemmo']}{else}{$item['uid']}{/if}</span></a>
 						{/if}
@@ -190,7 +171,7 @@
 					<td>
 					{if $item['follow'] == '1'}
 						<span class="label label-success">已关注 </span> 
-					{elseif $item['unfollowtime'] <> '0'}
+					{elseif !empty($item['unfollowtime'])} 
 						<span class="label label-warning" >取消关注 </span>
 					{else}
 						<span class="label label-danger">未关注 </span>
@@ -328,28 +309,12 @@
 					<span class="help-block">{if $row['follow'] == '1'} <span class="label label-success" >已订阅 </span> {elseif $row['unfollowtime'] <> '0'} <span class="label label-warning"> 取消关注 </span> {else} <span class="label label-danger" >未订阅 </span>{/if}</span>
 				</div>
 			</div>
-			{if $row['follow'] == '1' && $row['followtime'] <> '0'}
 			<div class="form-group">
 				<label class="col-xs-12 col-sm-3 col-md-2 control-label">关注时间</label>
 				<div class="col-sm-10">
-					<span class="help-block">{php echo date('Y-m-d H:i:s', $row['followtime'])}</span>
+					<span class="help-block">{if $row['followtime'] <> '0'}  {php echo date('Y-m-d H:i:s', $row['followtime'])} {else} <span class="label label-danger" >未记录 </span> {/if}</span>
 				</div>
 			</div>
-			{elseif $row['unfollowtime'] <> '0'}
-			<div class="form-group">
-				<label class="col-xs-12 col-sm-3 col-md-2 control-label">取消关注时间</label>
-				<div class="col-sm-10">
-					<span class="help-block">{php echo date('Y-m-d H:i:s', $row['unfollowtime'])}</span>
-				</div>
-			</div>
-			{else}
-			<div class="form-group">
-				<label class="col-xs-12 col-sm-3 col-md-2 control-label">关注时间</label>
-				<div class="col-sm-10">
-					<span class="help-block">未记录</span>
-				</div>
-			</div>
-			{/if}
 			<div class="form-group">
 				<label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
 				<div class="col-sm-10">

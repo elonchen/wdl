@@ -39,6 +39,7 @@ class Hl_zzzModule extends WeModule {
 
         $insert = array(
             'rid' => $rid,
+            'uniacid' => $_W['uniacid'],
             'picture' => $_GPC['picture'],
             'title' => $_GPC['title'],
             'prace_times' => intval($_GPC['prace_times']),

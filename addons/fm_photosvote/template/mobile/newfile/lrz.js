@@ -95,17 +95,14 @@
           }
         };
         img.onload = function() {
-            // 获得图片缩放尺寸
-            var resize = that.resize(this);
 
             EXIF.getData(img, function() {
                 var orientation = EXIF.getTag(this, "Orientation");
+                // 获得图片缩放尺寸
+                var resize = that.resize(this, orientation);
                 // 初始化canvas
                 var canvas = document.createElement('canvas'),
                   ctx;
-
-                // 根据旋转重置尺寸
-                that.rotateResize(resize, orientation);
 
                 canvas.width = resize.w;
                 canvas.height = resize.h;
@@ -119,15 +116,22 @@
                 results.origin = file;
 
                 // 兼容iOS6/iOS7
-                if (ua.os.family === 'iOS' && +ua.os.version < 8) {
+                if (ua.os.family === 'iOS' && parseInt(ua.os.version) < 8) {
 
                   var mpImg = new MegaPixImage(img);
-
-                  mpImg.render(canvas, {
-                    width: canvas.width,
-                    height: canvas.height,
-                    orientation: orientation
-                  });
+                  if("5678".indexOf(orientation) > -1){
+                    mpImg.render(canvas, {
+                        width: canvas.height,
+                        height: canvas.width,
+                        orientation: orientation
+                      });
+                  }else{
+                    mpImg.render(canvas, {
+                        width: canvas.width,
+                        height: canvas.height,
+                        orientation: orientation
+                      });
+                  }
 
                   results.base64 = canvas.toDataURL('image/jpeg', that.defaults.quality);
 
@@ -142,19 +146,37 @@
                       ctx.rotate(180 * Math.PI / 180);
                       ctx.drawImage(img, -resize.w, -resize.h, resize.w, resize.h);
                       break;
-
                     case 6:
-                      canvas.width = resize.h;
-                      canvas.height = resize.w;
                       ctx.rotate(90 * Math.PI / 180);
-                      ctx.drawImage(img, 0, -resize.h, resize.w, resize.h);
+                      ctx.drawImage(img, 0, -resize.w, resize.h, resize.w);
+                      break;
+                    case 8:
+                      ctx.rotate(270 * Math.PI / 180);
+                      ctx.drawImage(img, -resize.h, 0, resize.h, resize.w);
                       break;
 
-                    case 8:
-                      canvas.width = resize.h;
-                      canvas.height = resize.w;
+                    case 2:
+                      ctx.translate(resize.w, 0);
+                      ctx.scale(-1, 1);
+                      ctx.drawImage(img, 0, 0, resize.w, resize.h);
+                      break;
+                    case 4:
+                      ctx.translate(resize.w, 0);
+                      ctx.scale(-1, 1);
+                      ctx.rotate(180 * Math.PI / 180);
+                      ctx.drawImage(img, -resize.w, -resize.h, resize.w, resize.h);
+                      break;
+                    case 5:
+                      ctx.translate(resize.w, 0);
+                      ctx.scale(-1, 1);
+                      ctx.rotate(90 * Math.PI / 180);
+                      ctx.drawImage(img, 0, -resize.w, resize.h, resize.w);
+                      break;
+                    case 7:
+                      ctx.translate(resize.w, 0);
+                      ctx.scale(-1, 1);
                       ctx.rotate(270 * Math.PI / 180);
-                      ctx.drawImage(img, -resize.w, 0, resize.w, resize.h);
+                      ctx.drawImage(img, -resize.h, 0, resize.h, resize.w);
                       break;
 
                     default:
@@ -200,7 +222,10 @@
             };
 
             // 压缩开始前回调
-            this.defaults.before();
+            if (typeof this.defaults.before === 'function') {
+              this.defaults.before();
+            }
+            
             img.src = blob;
           },
 
@@ -209,87 +234,52 @@
            * @param img
            * @returns {{w: (Number), h: (Number)}}
            */
-          resize: function(img) {
+          resize: function(img, orientation) {
             var w = this.defaults.width,
               h = this.defaults.height,
-              scale = img.width / img.height,
               ret = {
                 w: img.width,
                 h: img.height
               };
 
-            if (w & h) {
-              ret.w = w;
-              ret.h = h;
+            if("5678".indexOf(orientation) > -1){
+              ret.w = img.height;
+              ret.h = img.width;
+            }
+
+            var scale = ret.w / ret.h;
+
+            if (w && h) {
+              if (scale >= w / h) {
+                if (ret.w > w) {
+                  ret.w = w;
+                  ret.h = Math.ceil(w / scale);
+                }
+              } else {
+                if (ret.h > h) {
+                  ret.h = h;
+                  ret.w = Math.ceil(h * scale);
+                }
+              }
             } else if (w) {
-              ret.w = w;
-              ret.h = Math.ceil(w / scale);
+              if(w < ret.w){
+                ret.w = w;
+                ret.h = Math.ceil(w / scale);
+              }
             } else if (h) {
-              ret.w = Math.ceil(h * scale);
-              ret.h = h;
+              if(h < ret.h){
+                ret.w = Math.ceil(h * scale);
+                ret.h = h;
+              }
             }
 
             // 超过这个值base64无法生成，在IOS上
             if (ret.w >= 3264 || ret.h >= 2448) {
-              ret.w *= 0.8;
-              ret.h *= 0.8;
+              ret.w *= 0.2;
+              ret.h *= 0.2;
             }
 
             return ret;
-        },
-
-        /**
-         * 根据旋转角度重置之前设定的宽高
-         * @param resize
-         * @param orientation
-         * @return
-         */
-        rotateResize: function (resize, orientation) {
-            switch (orientation) {
-                case 6:
-                case 8:
-                    if(this.defaults.width && this.defaults.height) {
-                        var oldW = resize.w, oldH = resize.h;
-
-                        resize.w = oldH;
-                        resize.h = oldW;
-                        return false;
-                    }
-
-                    var diffVal;
-
-                    if(this.defaults.width) {
-                        if(resize.w > resize.h) {
-                            diffVal = resize.w - resize.h;
-                            resize.w += diffVal;
-                            resize.h += diffVal;
-                        }
-                        else if (resize.w < resize.h) {
-                            diffVal = resize.h - resize.w;
-                            resize.w -= diffVal;
-                            resize.h -= diffVal;
-                        }
-                        return false;
-                    }
-
-                    if(this.defaults.height) {
-                        if(resize.w > resize.h) {
-                            diffVal = resize.w - resize.h;
-                            resize.w -= diffVal;
-                            resize.h -= diffVal;
-                        }
-                        else if (resize.w < resize.h) {
-                            diffVal = resize.h - resize.w;
-                            resize.w += diffVal;
-                            resize.h += diffVal;
-                        }
-                        return false;
-                    }
-                    break;
-
-                default:
-                    // do nothing
-            }
         }
       };
 

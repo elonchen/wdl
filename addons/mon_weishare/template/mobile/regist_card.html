@@ -67,6 +67,8 @@
 					<br/>
 		
 		<a href="javascript:void(0)" id="btn_regist" class="btn btn-primary btn-block">领取{$share['cardname']}</a>
+				<a href="{php echo $this->createMobileUrl('sort',array("id"=>$share['id'],"uid"=>$shareUser['id']))}"  class="btn btn-primary btn-block">积分排名</a>
+		
 		<p>{$share['tip']}，<a href="{php echo $this->createMobileUrl('rule',array("id"=>$share['id']))}">点击查看活动规则>>></a></p>
 	</div>
 	{/if}

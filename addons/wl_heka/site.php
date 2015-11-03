@@ -9,7 +9,9 @@
 defined('IN_IA') or exit('Access Denied');
 
 class Wl_hekaModuleSite extends WeModuleSite {
+
     public $tablename = 'heka_reply';
+
     public function getHomeTiles() {
         global $_W;
         $urls = array();
@@ -97,21 +99,66 @@ class Wl_hekaModuleSite extends WeModuleSite {
 
     public function doWebList() {
         global $_GPC, $_W;
-        checklogin();
         $weid = $_W['uniacid'];
         if (checksubmit('delete')) {
             pdo_delete('heka_list', " id  IN  ('" . implode("','", $_GPC['select']) . "')");
             message('删除成功！', referer(),'success');
         }
-        $pindex = max(1, intval($_GPC['page']));
-        $psize = 50;
-        $where = '';
-        $sql = "SELECT * FROM " . tablename('heka_list') . "  WHERE weid = $weid  ORDER BY create_time DESC LIMIT " . ($pindex - 1) * $psize . ",{$psize}";
-        $list = pdo_fetchall($sql);
-        if (!empty($list)) {
-            $total = pdo_fetchcolumn("SELECT COUNT(*) FROM " . tablename('heka_list') . " WHERE weid = $weid");
+
+        $where = ' WHERE `weid` = :weid';
+        $params = array(':weid' => $_W['uniacid']);
+        $sql = 'SELECT COUNT(*) FROM ' . tablename('heka_list') . $where;
+        $total = pdo_fetchcolumn($sql, $params);
+
+        if ($total > 0) {
+            $pindex = max(1, intval($_GPC['page']));
+            $psize = 15;
+
+            $sql = 'SELECT * FROM ' . tablename('heka_list') . $where . ' ORDER BY `create_time` DESC LIMIT ' .
+                    ($pindex - 1) * $psize . ',' . $psize;
+            $list = pdo_fetchall($sql, $params);
+
             $pager = pagination($total, $pindex, $psize);
         }
+
+        if (checksubmit('export')) {
+            /* 输入到CSV文件 */
+            $html = "\xEF\xBB\xBF";
+
+            /* 输出表头 */
+            $filter = array(
+                'id' => '编号',
+                'title' => '标题',
+                'author' => '署名',
+                'hits' => '点击数',
+                'share' => '分享数',
+                'create_time' => '创建时间',
+            );
+
+
+            foreach ($filter as $key => $value) {
+                $html .= $value . "\t,";
+            }
+            $html .= "\n";
+
+            foreach ($list as $key => $value) {
+                foreach ($filter as $index => $title) {
+                    if ($index != 'create_time') {
+                        $html .= $value[$index] . "\t, ";
+                    } else {
+                        $html .= date('Y-m-d H:i:s', $value[$index]) . "\t, ";
+                    }
+                }
+                $html .= "\n";
+            }
+
+            /* 输出CSV文件 */
+            header("Content-type:text/csv");
+            header("Content-Disposition:attachment; filename=全部数据.csv");
+            echo $html;
+            exit();
+        }
+
         include $this->template('list');
     }
 

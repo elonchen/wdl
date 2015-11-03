@@ -2,7 +2,7 @@
 /**
  * 好声音模块定义
  *
- * @url http://www.wdlcms.com
+ * @url http://www.012wz.com
  */
 defined('IN_IA') or exit('Access Denied');
 

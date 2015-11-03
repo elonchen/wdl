@@ -4,6 +4,11 @@
 	margin: 0 auto;
 	max-width: 500px;
 }
+.wrapper{
+	text-align: center;
+	min-height: 100%;
+}
+
 
 .bg {
 	position: absolute;
@@ -11,6 +16,7 @@
 	left: 0;
 	width: 100%;
 	z-index: -1;
+	height: 100%;
 }
 
 .next-btn {
@@ -61,7 +67,7 @@
 .loading-mask .content {
 	position: absolute;
 	text-align: center;
-	width: 100%;
+	width: 80%;
 	top: 70px;
 }
 

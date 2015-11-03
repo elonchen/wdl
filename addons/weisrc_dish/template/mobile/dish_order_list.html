@@ -72,17 +72,17 @@
             /* #container>section>*:nth-of-type(n+2){
             margin-top:3px;
         }*/
-            #container > div > section.on {
-                -webkit-animation-name: slideDown;
-            }
+        #container > div > section.on {
+            -webkit-animation-name: slideDown;
+        }
 
-                #container > div > section.on .arrow:after {
-                    -webkit-transform: rotate(90deg);
-                }
+        #container > div > section.on .arrow:after {
+            -webkit-transform: rotate(90deg);
+        }
 
-            #container > div > section.off {
-                -webkit-animation-name: slideUp;
-            }
+        #container > div > section.off {
+            -webkit-animation-name: slideUp;
+        }
 
         .yuyue {
             margin-top: 35px;
@@ -252,19 +252,7 @@
                         订单号:{$items['ordersn']}
                     </label>
                     <label style="margin-top: 0;">
-                        {if $items['sign']==1}
-                            <span style="background-color:green;color: #fff;border-radius: 5px;padding: 2px;">
-                                已处理
-                            </span>
-                        {elseif $items['sign']==-1}
-                            <span style="background-color: #f00;color: #fff;border-radius: 5px;padding: 2px;">
-                                已拒绝
-                            </span>
-                        {else}
-                            <span style="background-color:#b7b7b7;color: #fff;border-radius: 5px;padding: 2px;">
-                                未处理
-                            </span>
-                        {/if}
+                        {$storelist[$items['storeid']]['title']}
                     </label>
                 </header>
                 <ul class="shot_orderInfo">
@@ -283,9 +271,9 @@
                         <a href="javascript:;" style="color: #888; display: block;">
                             <p style="font-size: 12px;">
                                 支付类型:
-                                    <span style="color:#f00;">
-                                        {if $items['paytype']==0}线下支付{elseif $items['paytype']==1}余额支付{elseif  $items['paytype']==2}在线支付{/if}
-                                    </span>
+                                <span style="color:#f00;">
+                                    {if $items['paytype']==0}未支付{elseif $items['paytype']==1}余额支付{elseif  $items['paytype']==2}在线支付{elseif  $items['paytype']==3}现金支付{/if}
+                                </span>
                             </p>
                         </a>
                     </li>
@@ -297,12 +285,18 @@
                     {loop $items['goods'] $item}
                     <li>
                         <span class="dishName">{$item['title']}</span>
-                        <i>{$item['price']}元/{$item['unitname']}</i>
+                        <i>{$item['price']}元/份</i>
                         <section class="bbox">
                             <input class="numBox" name="numBox" type="text" value="{$item['total']}" readonly="readonly">
                         </section>
                     </li>
                     {/loop}
+                    {if $items['dispatchprice'] != '0.00' && $items['dining_mode']==2}
+                    <li>
+                        <span class="dishName">配送费用</span>
+                        <i>{$items['dispatchprice']}元/份</i>
+                    </li>
+                    {/if}
                 </ul>
                 {if $items['dining_mode']==3}
                 <div class="yuyue">
@@ -356,19 +350,7 @@
                         订单号:{$items['ordersn']}
                     </label>
                     <label style="margin-top: 0;">
-                        {if $items['sign']==1}
-                            <span style="background-color:green;color: #fff;border-radius: 5px;padding: 2px;">
-                                已处理
-                            </span>
-                        {elseif $items['sign']==-1}
-                            <span style="background-color: #f00;color: #fff;border-radius: 5px;padding: 2px;">
-                                已拒绝
-                            </span>
-                        {else}
-                            <span style="background-color:#b7b7b7;color: #fff;border-radius: 5px;padding: 2px;">
-                                未处理
-                            </span>
-                        {/if}
+                        {$storelist[$items['storeid']]['title']}
                     </label>
                 </header>
                 <ul class="shot_orderInfo">
@@ -388,7 +370,7 @@
                             <p style="font-size: 12px;">
                                 支付类型:
                                     <span style="color:#f00;">
-                                        {if $items['paytype']==0}线下支付{elseif $items['paytype']==1}余额支付{elseif  $items['paytype']==2}在线支付{/if}
+                                        {if $items['paytype']==0}未支付{elseif $items['paytype']==1}余额支付{elseif  $items['paytype']==2}在线支付{elseif  $items['paytype']==3}现金支付{/if}
                                     </span>
                             </p>
                         </a>
@@ -448,7 +430,7 @@
                     {/if}
                 </div>
                 <div style="padding-top: 10px; ">
-                    <a href="{php echo $this->createMobileUrl('OrderConfirm', array('orderid' => $items['id'], 'storeid' => $item['storeid'], 'from_user' => $from_user), true)}" class="btn_2">确认订单</a>
+                    <a href="{php echo $this->createMobileUrl('pay', array('orderid' => $items['id']), true)}" class="btn_2">确认订单</a>
                 </div>
             </article>
         </section>
@@ -463,19 +445,7 @@
                         订单号:{$items['ordersn']}
                     </label>
                     <label style="margin-top: 0;">
-                        {if $items['sign']==1}
-                            <span style="background-color:green;color: #fff;border-radius: 5px;padding: 2px;">
-                                已处理
-                            </span>
-                        {elseif $items['sign']==-1}
-                            <span style="background-color: #f00;color: #fff;border-radius: 5px;padding: 2px;">
-                                已拒绝
-                            </span>
-                        {else}
-                            <span style="background-color:#b7b7b7;color: #fff;border-radius: 5px;padding: 2px;">
-                                未处理
-                            </span>
-                        {/if}
+                        {$storelist[$items['storeid']]['title']}
                     </label>
                 </header>
                 <ul class="shot_orderInfo">
@@ -495,7 +465,7 @@
                             <p style="font-size: 12px;">
                                 支付类型:
                                     <span style="color:#f00;">
-                                        {if $items['paytype']==0}线下支付{elseif $items['paytype']==1}余额支付{elseif  $items['paytype']==2}在线支付{/if}
+                                        {if $items['paytype']==0}未支付{elseif $items['paytype']==1}余额支付{elseif  $items['paytype']==2}在线支付{elseif  $items['paytype']==3}现金支付{/if}
                                     </span>
                             </p>
                         </a>
@@ -567,19 +537,7 @@
                         订单号:{$items['ordersn']}
                     </label>
                     <label style="margin-top: 0;">
-                        {if $items['sign']==1}
-                            <span style="background-color:green;color: #fff;border-radius: 5px;padding: 2px;">
-                                已处理
-                            </span>
-                        {elseif $items['sign']==-1}
-                            <span style="background-color: #f00;color: #fff;border-radius: 5px;padding: 2px;">
-                                已拒绝
-                            </span>
-                        {else}
-                            <span style="background-color:#b7b7b7;color: #fff;border-radius: 5px;padding: 2px;">
-                                未处理
-                            </span>
-                        {/if}
+                        {$storelist[$items['storeid']]['title']}
                     </label>
                 </header>
                 <ul class="shot_orderInfo">
@@ -599,7 +557,7 @@
                             <p style="font-size: 12px;">
                                 支付类型:
                                     <span style="color:#f00;">
-                                        {if $items['paytype']==0}线下支付{elseif $items['paytype']==1}余额支付{elseif  $items['paytype']==2}在线支付{/if}
+                                        {if $items['paytype']==0}未支付{elseif $items['paytype']==1}余额支付{elseif  $items['paytype']==2}在线支付{elseif  $items['paytype']==3}现金支付{/if}
                                     </span>
                             </p>
                         </a>
@@ -612,7 +570,7 @@
                     {loop $items['goods'] $item}
                     <li>
                         <span class="dishName">{$item['title']}</span>
-                        <i>{$item['price']}元/{$item['unitname']}</i>
+                        <i>{$item['price']}元/份</i>
                         <section class="bbox">
                             <input class="numBox" name="numBox" type="text" value="{$item['total']}" readonly="readonly">
                         </section>
@@ -662,11 +620,6 @@
         </section>
         {/loop}
     </div>
-    <!--<footer class="footFix footLeft">-->
-        <!--<a onclick="location.href='{php echo create_url('mobile/module', array('do' => 'waprestlist', 'from_user' => $page_from_user, 'name' => 'weisrc_dish', 'weid' => $weid, 'storeid' => $storeid))}'">门店列表</a>-->
-        <!--<a onclick="location.href='{php echo create_url('mobile/module', array('do' => 'waplist', 'from_user' => $page_from_user, 'name' => 'weisrc_dish', 'weid' => $weid, 'storeid' => $storeid))}'">菜品列表</a>-->
-    <!--</footer>-->
-
     </div>
     <div style="margin-top: 60px;"></div>
     {php include $this->template('_footer');}

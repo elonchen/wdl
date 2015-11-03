@@ -32,7 +32,7 @@
     <div class="panel-footer">
         <div class="contact-info" style="float: right;
 width: 36%;">
-            <p><small>感谢您使用WDLCMS营销平台</small></p>
+            <p><small>感谢您使用IDCLA营销平台</small></p>
 
         </div>
     </div>
@@ -71,10 +71,6 @@ width: 36%;">
                 <a href="{url 'account/display'}"><span class="fa fa-comments"></span> <span class="xn-text">公众号管理</span></a>
             </li>
             {if $_W['isfounder']}
-            
-            <li>
-                <a href="{url 'system/welcome'}"><span class="fa fa-cog"></span> <span class="xn-text">系统设置</span></a>
-            </li>
             <li>
                 <a href="{url 'profile/module'}"><span class="fa fa-cogs"></span> <span class="xn-text">扩展功能管理</span></a>
             </li>
@@ -82,7 +78,9 @@ width: 36%;">
             <li>
                 <a href="{url 'utility/emulator'}"><span class="fa fa-edit"></span> <span class="xn-text">模拟测试</span></a>
             </li>
-            
+            <li>
+                <a href="{url 'system/welcome'}"><span class="fa fa-cog"></span> <span class="xn-text">系统设置</span></a>
+            </li>
 
 
             {/if}
@@ -108,7 +106,7 @@ width: 36%;">
             <a href="{url 'home/welcome/ext'}"><span class="fa fa-file-text-o"></span> <span class="xn-text">继续管理公众号（{$_W['account']['name']}）</span></a>
             </li>
 <li>
-			<a href="./themes/default/wx/index.html" target="_blank"><i class="fa fa-file-text"></i>编辑微信图文</a>
+			<a href="./themes/wdlcms/wx/index.html" target="_blank"><i class="fa fa-file-text"></i>编辑微信图文</a>
 		</li>
             <li class="xn-openable pull-right">
                 <a href="{url 'user/logout'}" class="mb-control" data-box="#mb-signout"><i class="fa fa-sign-out"></i> 退出</a>

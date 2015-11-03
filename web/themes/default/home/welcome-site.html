@@ -1,152 +1,189 @@
-{template 'common/header-base'}
-
-{if defined('IN_MESSAGE')}
-<div class="col-md-6" style="margin: 0 auto; float: none;padding-top:5%; width: 38%;">
-    <div class="panel panel-primary">
-        <div class="panel-heading ui-draggable-handle">
-            {if is_array($msg)}
-            <h3 class="panel-title">MYSQL 错误：</h3>
-        </div>
-        <div class="panel-body">
-            <h3>{php echo cutstr($msg['sql'], 300, 1);}</h3>
-            <p><b>{$msg['error'][0]} {$msg['error'][1]}：</b>{$msg['error'][2]}</p>
-        </div>
-        {else}
-        <h3 class="panel-title">{$caption}</h3>
-
-        <div class="panel-body">
-            <h3>{$msg}</h3>
-            {/if}
-            {if $redirect}
-            <h4><a href="{$redirect}" class="alert-link">如果你的浏览器没有自动跳转，请点击此链接</a></h4>
-            <script type="text/javascript">
-                setTimeout(function () {
-                    location.href = "{$redirect}";
-                }, 3000);
-            </script>
-            {else}
-            <h4>[<a href="javascript:history.go(-1);" class="alert-link">点击这里返回上一页</a>] &nbsp; [<a href="./?refresh" class="alert-link">首页</a>]</h4>
-            {/if}</div></div>
-    <div class="panel-footer">
-        <div class="contact-info" style="float: right;
-width: 36%;">
-            <p><small>感谢您使用WDLCMS营销平台</small></p>
-
-        </div>
-    </div>
+<style>
+	.template .item{position:relative;display:block;float:left;border:1px #ddd solid;border-radius:5px;background-color:#fff;padding:5px;width:190px;margin:0 10px 10px 0;}
+	.template .title{margin:5px auto;line-height:2em;}
+	.template .item img{width:178px;height:270px;}
+	.clear{clear:both;}
+	.home-container{width:100%; overflow:hidden; margin:.6em .3em;}
+	.home-container .tile{float:left; display:block; text-decoration:none; outline:none; width:6em; height:6em; margin:.4em;-webkit-box-shadow:none; box-shadow: none;}
+	.home-container i{display:block; color:#333; height:1em; overflow: hidden; font-size:2em; margin:.25em .2em;}
+	.home-container span{display:block; width:100%; overflow:hidden;}
+	.modal-dialog{width:330px !important;}
+</style>
+<div class="page-header">
+	<h4><i class="fa fa-comments"></i> 当前站点</h4>
+</div>
+<div class="panel panel-default row">
+	<div class="table-responsive panel-body">
+	<table class="table">
+		<tr>
+			<td style="width:200px; border-top:none;">
+				<div class="">
+					<div class="item">
+						<div class="title">
+							<img src="../app/themes/{$template['name']}/preview.jpg" class="img-rounded" />
+						</div>
+					</div>
+				</div>
+			</td>
+			<td style="border-top:none;">
+				<p>
+					<strong>微站入口触发关键字 : </strong>
+					{loop $keywords $keyword}
+						<span class="label label-success">{$keyword['content']}</span>
+					{/loop}
+				</p>
+				<p><a href="javascript:;" onclick="preview_home('{$setting['styleid']}', '{$setting['id']}');return false;" class="btn btn-default">预览</a></p>
+			</td>
+		</tr>
+	</table>
+	</div>
+</div>
+<div class="page-header">
+	<h4><i class="fa fa-android"></i> 站点导航图标</h4>
+</div>
+<div class="panel panel-default">
+	<div class="panel-body table-responsive">
+	<table class="table">
+		<thead>
+			<tr>
+				<th style="width:200px">导航及菜单</th>
+				<th>概况</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>微站首页导航图标</td>
+				<td>
+					<div class="home-container">
+						{loop $home_navs $nav}
+						<a href="javascript:viod(0);" class="tile text-center btn btn-default">
+							{if !empty($nav['icon'])}
+							<i style="display: block;color: #333;height: 1em;overflow: hidden;font-size: 2em;margin: .25em .2em;line-height: 43px;"></i>
+							{else}
+							<i class="fa {$nav['css']['icon']['icon']}" style="display: block;color: #333;height: 1em;overflow: hidden;font-size: 2em;margin: .25em .2em;line-height: 43px;"></i>
+							{/if}
+							<span style="{$nav['css']['name']}; color:#333" title="{$nav['name']}" >{$nav['name']}</span>
+						</a>
+						{/loop}
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td>个人中心导航条目</td>
+				<td>
+					<div class="home-container">
+						{loop $profile_navs $nav}
+						<a href="javascript:viod(0);" class="tile text-center btn btn-default">
+							{if !empty($nav['icon'])}
+							<i style="background:url({$_W['attachurl']}{$nav['icon']}) no-repeat;background-size:cover;{$nav['css']['icon']['style']}"></i>
+							{else}
+							<i class="fa {$nav['css']['icon']['icon']}"></i>
+							{/if}
+							<span style="{$nav['css']['name']}" title="{$nav['name']}">{$nav['name']}</span>
+						</a>
+						{/loop}
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td>快捷菜单</td>
+				<td>
+					<div class="home-container">
+						{loop $shortcut_navs $nav}
+						<a href="javascript:viod(0);" class="tile text-center btn btn-default">
+							{if !empty($nav['icon'])}
+							<i style="background:url({$_W['attachurl']}{$nav['icon']}) no-repeat;background-size:cover;{$nav['css']['icon']['style']}"></i>
+							{else}
+							<i class="fa {$nav['css']['icon']['icon']}"></i>
+							{/if}
+							<span style="{$nav['css']['name']}" title="{$nav['name']}">{$nav['name']}</span>
+						</a>
+						{/loop}
+					</div>
+					<p style="padding-left:7px"><strong>当前使用的快捷菜单模板 : </strong><span class="label label-success">{$quickmenu['template']}</span>
+					<a href="javascript:;" onclick="preview_quick('{$quickmenu['template']}', '{$setting['id']}');return false;" class="btn btn-default">预览快捷菜单</a></p>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
 </div>
 
-{/if}
+<div class="page-header">
+	<h4><i class="fa fa-cogs"></i> 幻灯片设置</h4>
+</div>
+<div class="panel panel-default row">
+	<div class="panel-body table-responsive">
+	<table class="table">
+		<tr>
+			<td style="border-top:0;">
+				{if !empty($slides)}
+					<div id="carousel-example-generic" class="carousel slide" style="width:600px" data-ride="carousel">
+						<ol class="carousel-indicators">
+						{loop $slides $a $slide} 
+							<li data-target="#carousel-example-generic" data-slide-to="0"  {if $a == 0}class="active"{/if}></li>
+						{/loop}
+						</ol>
+						<div class="carousel-inner">
+							{loop $slides $a $slide} 
+							<div class="item {if $a == 0}active{/if}">
+								<img src="{$slide['thumb']}" alt="{$slide['title']}" style="height:300px; margin-left:auto; margin-right: auto;">
+								<div class="carousel-caption">
+									<h5>{$slide['title']}</h5>
+								</div>
+							</div>
+							{/loop}
+						</div>
+						<a class="left carousel-control" href="#carousel-example-generic" data-slide="prev">
+							<span class="glyphicon glyphicon-chevron-left"></span>
+						</a>
+						<a class="right carousel-control" href="#carousel-example-generic" data-slide="next">
+							<span class="glyphicon glyphicon-chevron-right"></span>
+						</a>
+					</div>
+				{/if}
+			</td>
+		</tr>
+	</table>
+</div>
+</div>
+<script type="text/javascript">
+	function preview_home(styleid, multiid) {
+		require(['jquery', 'util'], function($, u){
+			var content = '<iframe width="320" scrolling="yes" height="480" frameborder="0" src="about:blank"></iframe>';
+			var footer =
+								'<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>';
+			var dialog = u.dialog('预览模板', content, footer);
+			dialog.find('iframe').on('load', function(){
+				$('a', this.contentWindow.document.body).each(function(){
+					if ($(this).attr('href').substr(0, 4) != 'http') {
+						if ($(this).attr('href').substr(0, 2) == './') {
+							$(this).attr('href', $(this).attr('href') + 's=' + styleid);
+						} else {
+							$(this).attr('href', 'http://' + $(this).attr('href'));
+						}
+					}
+				});
+			});
+			var url = '../app/{php echo murl('home')}&s=' + styleid + 't=' + multiid;
+			dialog.find('iframe').attr('src', url);
+			dialog.find('.modal-dialog').css({'width': '322px'});
+			dialog.find('.modal-body').css({'padding': '0', 'height': '480px'});
+			dialog.modal('show');
+		});
+	}
+	function preview_quick(name, multiid) {
+		require(['jquery', 'util'], function($, u){
+			var content = '<iframe width="320" scrolling="yes" height="480" frameborder="0" src="about:blank"></iframe>';
+			var footer =
+					'			<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>';
+			var dialog = u.dialog('预览快捷菜单', content, footer);
+			var url = "../app/{php echo murl('utility/preview/shortcut')}file=" + name + "&t=" + multiid;
+			dialog.find('iframe').attr('src', url);
+			dialog.find('.modal-dialog').css({'width': '322px'});
+			dialog.find('.modal-body').css({'padding': '0', 'height': '480px'});
+			dialog.modal('show');
+		});
+	}
+</script>
 
- <div class="page-container page-navigation-top-fixed">
-    <ul class="x-navigation x-navigation-horizontal"  style="z-index: 8;position: fixed;" >
-        <li class="xn-logo" style="background: #0D708F;">
-            <a href="javascript:;"></a>
-            
-        </li>
-        <li class="xn-openable pull-left">
-            <a href="{url 'home/welcome/ext'}" ><i class="fa fa-dedent"></i>功能管理首页</a>
-        </li>
-		<li>
-			<a href="./themes/default/wx/index.html" target="_blank"><i class="fa fa-file-text"></i>编辑微信图文</a>
-		</li>
-        <li class="xn-openable pull-right">
-            <a href="{url 'user/logout'}" class="mb-control" data-box="#mb-signout"><i class="fa fa-sign-out"></i> 退出</a>
-        </li>
-        <li class="pull-right xn-openable">
-            <a href="javascript:;" >
-                <i class="fa fa-user"></i> {$_W['user']['username']}</a>
-        </li>
-        <li class="xn-openable pull-right" >
-            <a href="javascript:;" ><i class="fa fa-comments-o"></i> {$_W['account']['name']}</a>
-        </li>
-
-    </ul>
-
-   
-
-        <div class="page-sidebar page-sidebar-fixed" id="sidebarn" style="top: 50px" >
-            <!-- START X-NAVIGATION -->
-
-            <ul class="x-navigation" id="navexp" >
-
-                <li class="xn-profile">
-                    <div class="profile">
-
-                        <div class="profile-image">
-                            <img src="{$_W['attachurl']}headimg_{$_W['uniacid']}.jpg?$acid={$_W['uniacid']}" class="" onerror="this.src='resource/wdlcms/assets/images/users/568.jpg'" />
-                        </div>
-                        <script>
-                            $(document).ready(function(){
-                                $(".profile-data-title").load("{url 'home/welcome/ext'} .profile-data-title") });  </script>
-                        <div class="profile-data">
-                            <div class="profile-data-name">{$_W['user']['username']}</div>
-                            <div class="profile-data-title"></div>
-                        </div>
-
-                    </div>
-                </li>
-                {php $frames = empty($frames) ? $GLOBALS['frames'] : $frames; _calc_current_frames($frames);}
-                {if !empty($frames)}
-                {loop $frames $k $frame}
-                <li class="xn-openable active">
-
-                    <a data-toggle="collapse"  data-parent="#frame-{$k}" href="#frame-{$k}"><span class="xn-text">{$frame['title']}</span></a>
-
-                    <ul id="frame-{$k}" class="panel-collapse collapse in">
-                        <li>
-                            {loop $frame['items'] $link}
-                            {if !empty($link['append'])}
-                            <a class="list-group-item1{$link['active']}" onclick="window.location.href = '{$link['url']}';" style="cursor:pointer;">
-                                {$link['title']}
-                            </a></li>
-                        {else}
-                        <li>  <a class="list-group-item1{$link['active']}" href="{$link['url']}" >{$link['title']}</a>
-                            {/if}
-                            {/loop}</li>
-                    </ul>
-
-                </li>
-                {/loop}{/if}</ul>
-
-           
-        </div>
-
-
-        <div class="page-content">
-
-            <div class="page-content-wrap" >
-
-
-                <div id="row" style="margin-top: 10px;">
-                    <div class="col-md-12">
-                        
-                            
-<!--内容-->
-
-
-	{loop $frames $k $frame}
-	<div class="row" >
-        <div class="page-title">
-            <h2 style="margin-bottom: 0px; font-size: 15px;"><span class="fa fa-arrow-circle-o-left"></span> {$frame['title']}</h2>
-        </div>
-		{loop $frame['items'] $link}
-
-		<div class="col-md-mm" style="float: left;min-width: 130px;">
-            <a href="{$link['url']}" class="tile tile-primary">
-                <i class="fa fa-cloud-download" style="font-size: 35px; line-height: normal;"></i>
-				
-                <p>{$link['title']}</p>
-				
-                <div class="informer informer-default dir-tr"><span class="fa fa-cloud-download"></span></div>
-            </a>
-        </div>
-								{/loop}
-		</div>
-{/loop}
-		
-
-
-
-
-{template 'common/footer'}

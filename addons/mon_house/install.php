@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS " . tablename('mon_house') . " (
 `cover_img` varchar(200) NOT NULL,
   `overview_img` varchar(200) NOT NULL,
   `intro_img` varchar(200) NOT NULL,
-  `intro` varchar(1000) ,
+  `intro` varchar(2000) DEFAULT NULL,
 `order_title`  varchar(50) NOT NULL ,
 `order_remark` varchar(100) NOT NULL,
 

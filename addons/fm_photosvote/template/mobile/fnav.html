@@ -128,8 +128,8 @@ text-decoration: none;
   z-index:220;
   bottom:60px;
   left:5%;
-  width:100px;
-  margin-left:-50px;
+  width:150px;
+  margin-left:-70px;
   /*min-height:100px;*/
  
   /*border:1px solid #afaeaf;*/
@@ -150,14 +150,14 @@ text-decoration: none;
   position:absolute;
   z-index:240;
   bottom:0;
-  left:80%;
+  left:60%;
   /*width:0;
   height:0;
   border:8px solid red;
   border-color:#afaeaf transparent transparent transparent;
   margin-left:-8px;
   margin-bottom:-16px;*/
-  width:10px;
+  width:150px;
   height:8px;
   background: url(../addons/fm_photosvote/template/mobile/photos/imgs/1.svg#2) no-repeat center -55px;
   -webkit-background-size: 10px auto;
@@ -256,9 +256,15 @@ text-decoration: none;
 						{if (!empty($reply['sharename']))}
 							<dd ><a href="javascript:;" id="share" onclick="button2()"><!--<img src="{php echo 	toimage($reply['sharename'])}">--><span>{$reply['sharename']}</span></a></dd>
 						 {/if}
-						 {if ($reply['ishuodong'] == 1 && !empty($reply['huodongurl']))}
-							<dd><a href="{$reply['huodongurl']}"><span>{php echo cutstr($reply['huodongname'], '5')}</span></a></dd>
-						 {/if}
+						 <!--
+             {if ($reply['ishuodong'] == 1 && !empty($reply['huodongurl']))}
+              <dd>
+              <div style="width:30px;height:30px;overflow:hidden;margin-right:0px;margin-left:5px;float:left;">
+                  <img src="{php echo toimage($reply['hhhdpicture'])}" width="30" style="">
+                </div>    
+              </dd>
+							<dd><a href="{$reply['huodongurl']}&from=fm_photosvote&oid={$from_user}"><span>{php echo cutstr($reply['huodongname'], '5')}</span></a></dd>
+						 {/if}-->
 						 <dd><a href="{php echo $this->createMobileUrl('des', array('rid' => $rid))}"><span>活动简介</span></a></dd>
 						
 					 </dl>
@@ -325,5 +331,5 @@ var nav4 =(function(){
 })();
  
  
-        nav4.bindClick(document.getElementById("nav4_ul").querySelectorAll("li>a"), document.getElementById("nav4_masklayer"));
-      </script>
+  nav4.bindClick(document.getElementById("nav4_ul").querySelectorAll("li>a"), document.getElementById("nav4_masklayer"));
+</script>

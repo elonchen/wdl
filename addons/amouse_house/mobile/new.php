@@ -29,6 +29,7 @@ $data = array(
     'recommed'=>0,
     'contacts'=> $_GPC['contacts'],
     'phone'=> $_GPC['phone'],
+    'jjrphone'=> $_GPC['jjrphone'],
     'introduction'=> $_GPC['introduction'],
     'openid'=> $wxid,
     'thumb1' => $_GPC['thumb1'],

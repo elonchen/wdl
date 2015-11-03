@@ -87,7 +87,7 @@ line-height: 18px;
 						
 						<dd style="text-align:center;  text-decoration: none;"><strong >{php echo cutstr($user['photoname'], '20')}</strong></dd>
 						<dd style="text-decoration: none;">
-							<img src="{php echo toimage($user['avatar'])}" width="35" style="border-radius: 35px;margin-right:10px;"><strong >{php echo cutstr($user['nickname'], '10')}{if ($tfrom_user == $from_user)}<span> [<a href="{php echo $this->createMobileUrl('reg', array('rid' => $rid, 'from_user' => $from_user))}"><i class="fa fa-edit"></i> 编辑</a>]</span>{if $reply['mediatypem']}<span class="pull-right label label-info"><a href="{php echo $this->createMobileUrl('tregs', array('rid' => $rid, 'from_user' => $from_user))}" style="color:#fff;font-size:15px;"><i class="fa fa-youtube-play"></i>  录音室</a></span>{/if}{/if}</strong>
+							<img src="{php echo toimage($user['avatar'])}" width="35" style="border-radius: 35px;margin-right:10px;"><strong >{if empty($user['realname'])}{php echo cutstr($user['nickname'], '6')}{else}{php echo cutstr($user['realname'], '6')}{/if} {if ($tfrom_user == $from_user)}<span> [<a href="{php echo $this->createMobileUrl('reg', array('rid' => $rid, 'from_user' => $from_user))}"><i class="fa fa-edit"></i> 编辑</a>]</span>{if $reply['mediatypem']}<span class="pull-right label label-info"><a href="{php echo $this->createMobileUrl('tregs', array('rid' => $rid, 'from_user' => $from_user))}" style="color:#fff;font-size:15px;"><i class="fa fa-youtube-play"></i>  录音室</a></span>{/if}{/if}</strong>
 						</dd>
 						<dd>
 						<strong ><i class="fa fa-list-ul"></i> 编号 ID： <strong class="bnum"> <span class="label " style="font-size:15px;">{$user['id']}</span> </strong>
@@ -131,7 +131,7 @@ line-height: 18px;
 									<dd style="  text-align: center;  margin: 0 auto; ">
 										<strong style="  float: left;"><i class="fa fa-volume-up"></i> 录音室： </strong>
 										<audio controls="controls" width="100%">
-											<source src="{php echo toimage($user['voice'])}">
+											<source src="{php echo tomedia($user['voice'])}">
 											您的浏览器不支持 audio tag.
 										</audio>
 									</dd>
@@ -140,7 +140,7 @@ line-height: 18px;
 									<dd style="  text-align: center;  margin: 0 auto; ">
 										<strong style="  float: left;"><i class="fa fa-volume-up"></i> 好声音： </strong>
 										<audio controls="controls" width="100%">
-											<source src="{php echo toimage($user['music'])}">
+											<source src="{php echo tomedia($user['music'])}">
 											您的浏览器不支持 audio tag.
 										</audio>
 									</dd>

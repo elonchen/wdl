@@ -15,7 +15,7 @@
 				<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style='color:red'>*</span> 极验验证ID：</label>
 				<div class="col-sm-9">
 					<input type="text" class="form-control" name="codekey" value="{$reply['codekey']}" placeholder="如果开启验证码，这里必须设置"/>
-					<div class="help-block">如果开启验证码，此处必须设置 极速验证 ID,获取ID请点击 <a href="http://my.geetest.com/accounts/register/?inviter_email=cwzbooth@126.com" target="_blank">此处</a>，获取方法请点击  <a href="http://bbs.wdlcms.com/forum.php?mod=forumdisplay&fid=50"  target="_blank">获取方法</a>
+					<div class="help-block">如果开启验证码，此处必须设置 极速验证 ID,获取ID请点击 <a href="http://my.geetest.com/accounts/register/?inviter_email=cwzbooth@126.com" target="_blank">此处</a>，获取方法请点击  <a href="http://bbs.012wz.com/forum.php?mod=forumdisplay&fid=50"  target="_blank">获取方法</a>
 				</div>
 				
             </div>
@@ -91,7 +91,7 @@
             </div>
         </div>
 		<div class="form-group">
-			<label class="col-xs-12 col-sm-2 col-md-2  control-label">上传说明</label>
+			<label class="col-xs-12 col-sm-2 col-md-2  control-label">多媒体上传说明</label>
 			<div class="col-sm-8">
 				<textarea name="webinfo" style="height:200px; " class="form-control richtexti" cols="70" rows="100">{$reply['webinfo']}</textarea>				
 				<div class="help-block">对上传图片、声音、视频、网络视频的详细说明</div>
@@ -191,6 +191,21 @@
             </div>
         </div>
 		
+        <div class="form-group">
+            <label class="col-xs-12 col-sm-3 col-md-2 control-label">地区限制</label>
+            <div class="col-xs-12 col-sm-9">
+                <input type="text" name="iplocallimit" value="{$reply['iplocallimit']}" class="form-control">
+                <span class="help-block">输入重庆就全重庆的都可以用, 输入北京就只有北京的可以用，用英文逗号隔开地区就可以支持多地区，支持到区县，比如直接输入海淀区(不要加北京)就可以了，如果不符合地区，会自动跳转到限制页面。</span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-xs-12 col-sm-3 col-md-2 control-label">地区限制</label>
+            <div class="col-xs-12 col-sm-9">
+                <input type="text" name="iplocaldes" value="{$reply['iplocaldes']}" class="form-control">
+                <span class="help-block">不在活动范围内的用户提示，可以使用的命令有：<br /> #限制地区#  允许的活动范围地区<br />#用户地区#  用户的实际地区</span>
+            </div>
+        </div>
 		 <div class="form-group">
  			<label class="col-xs-12 col-sm-3 col-md-2 control-label">报名照片数限制</label>
             <div class="col-sm-9 col-xs-6">
@@ -235,9 +250,10 @@
                 	<input type="radio" name="isdaojishi" value="0" {if $reply['isdaojishi'] == 0} checked="checked"{/if}/>否
                 </label>
             </div>
+            <div class="help-block">不了解熟悉此倒计时系统的请勿开启，此倒计时3.0版本将取消。</div>
         </div>
 		 <div class="form-group">
- 			<label class="col-xs-12 col-sm-3 col-md-2 control-label">用户投票时间</label>
+ 			<label class="col-xs-12 col-sm-3 col-md-2 control-label">用户倒计时投票时间</label>
             <div class="col-sm-9 col-xs-6">
 				<div class="input-group">
 					<span class="input-group-addon">每个用户拥有</span>
@@ -247,21 +263,22 @@
 				<div class="help-block">请填写正整数，时间单位为 天</div>
             </div>
         </div>
-		
 		<div class="form-group">
-			<label class="col-xs-12 col-sm-2 col-md-2  control-label">用户投票时间结束提示语</label>
+			<label class="col-xs-12 col-sm-2 col-md-2  control-label">用户倒计时，投票时间结束提示语</label>
 			<div class="col-sm-8">
 				<input type="text" class="form-control" name="ttipvote" value="{$reply['ttipvote']}" />
-			<div class="help-block">用户投票时间结束提示语</div>
+			<div class="help-block">用户倒计时，投票时间结束提示语</div>
 			</div>
 		</div>
+
+
 		 <div class="form-group">
  			<label class="col-xs-12 col-sm-3 col-md-2 control-label">每日投票统一ip次数限制</label>
             <div class="col-sm-9 col-xs-6">
 				<div class="input-group">
 					<span class="input-group-addon">每天每个IP投票</span>
 					<input type="text" class="form-control" name="limitip" value="{$reply['limitip']}" />
-					<span class="input-group-addon">次自动对齐开启作弊模式</span>
+					<span class="input-group-addon">次自动开启作弊模式，将其加入屏蔽名单，第二天可解除</span>
 				</div>
             </div>
         </div>
@@ -285,12 +302,22 @@
 				</div>
             </div>
         </div>
+         <div class="form-group">
+            <label class="col-xs-12 col-sm-3 col-md-2 control-label">同一选手最高投票数</label>
+            <div class="col-sm-9 col-xs-6">
+                <div class="input-group">
+                    <span class="input-group-addon">每个用户可给同一选手总共投</span>
+                    <input type="text" class="form-control" name="allonetp" value="{$reply['allonetp']}" />
+                    <span class="input-group-addon">次票</span>
+                </div>
+            </div>
+        </div>
 		 <div class="form-group">
- 			<label class="col-xs-12 col-sm-3 col-md-2 control-label">同一选手最高投票数</label>
+ 			<label class="col-xs-12 col-sm-3 col-md-2 control-label">同一用户最多投票数</label>
             <div class="col-sm-9 col-xs-6">
 				<div class="input-group">
-					<span class="input-group-addon">每个用户可给同一选手总共投</span>
-					<input type="text" class="form-control" name="allonetp" value="{$reply['allonetp']}" />
+					<span class="input-group-addon">每个用户（openid）最多投</span>
+					<input type="text" class="form-control" name="fansmostvote" value="{$reply['fansmostvote']}" />
 					<span class="input-group-addon">次票</span>
 				</div>
             </div>

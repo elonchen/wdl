@@ -34,7 +34,7 @@
 	</script>	
     <!-- <meta name="viewport" content="width=640, user-scalable=no, target-densitydpi=device-dpi"> -->
     <link rel="stylesheet" type="text/css" href="../addons/stonefish_planting/template/css/reset.css"/>
-    <link rel="stylesheet" type="text/css" href="../addons/stonefish_planting/template/css/mobile.css?20150303"/>
+    <link rel="stylesheet" type="text/css" href="../addons/stonefish_planting/template/css/mobile.css?20150312"/>
 	<script type="text/javascript" src="../addons/stonefish_planting/template/js/zepto.js"></script>
 </head>
 <body><!--  -->
@@ -51,12 +51,16 @@
 			<p style="text-align:center; margin:10px;">
 			{if $row['status']==1}
 			    {if $reply['tickettype']>=2}
-				<a class="btnduihuan" style="margin:0px 10%;" onclick="showdiv({$row['id']})">{if $reply['tickettype']==2}店员{else}商家网点{/if}点击兑换</a>
+				    {if $row['ticketid']}
+				    <a class="btnduihuan" style="margin:0px 10%;" onclick="showdiv({$row['id']},{$row['ticketid']},'{$row['ticketname']}')">{$row['ticketname']}点击兑换</a>
+				    {else}
+				    <a class="btnduihuankehu" style="margin:0px 10%;" onclick="showdivkehu({$row['id']})">选择{if $reply['tickettype']==2}门店{else}商家网点{/if}兑换奖品</a>
+				    {/if}
 			    {else}
 			    等待审核
 			    {/if}
 			{/if}
-			{if $row['status']==2}<span class="btn_duihuan" style="margin:0px 10%;">{if $reply['tickettype']==2}店员{else}商家网点{/if}已确认兑换</span>{/if}
+			{if $row['status']==2}<span class="btn_duihuan" style="margin:0px 10%;">{if $reply['tickettype']==2}门店{else}商家网点{/if}已确认兑换</span>{/if}
 			</p>
         {/loop}
     	</div>
@@ -67,23 +71,39 @@
 		</div>
     </div>
 	<div class="panel-box" id="panel_box">
-        <div class="panel-content" id="panel-content" style="height:520px;">
+        <div class="panel-content" id="panel-content" style="height:460px;">
             <div class="panel-close" id="panel-close"></div>
             <span><img src="../addons/stonefish_planting/template/images/duijiang.png" height="90"></span>
 			<div id="result_info">
-			<div id="isfans">请选择你的账号输入兑奖密码<br/>确认给客户兑奖</div>
+			<div id="isfans"><span id="ticketname"></span>请输入兑奖密码<br/>确认给客户兑奖</div>
 			    <hr class="common-hr" />
                 <input name="awardid" id="awardid" type="hidden" value="奖品">
-				<div style="float: left;width:100%;"><label>{if $reply['tickettype']==2}店员账号{else}商家网点{/if}</label><select name="dianmian" id="dianmian" class="form-control">
-						<option value="0" selected>选择{if $reply['tickettype']==2}店员账号{else}商家网点{/if}</option>
+				<input name="dianmian" id="dianmian" type="hidden" value="兑奖店面">
+				<div style="float: left;width:100%;"><input style="width:100%;" name="mima" class="px" id="mima" type="password" placeholder="请输入兑奖密码"></div>
+                <div id="result_info_tip"></div>
+				<div class="btn-layout">
+					<input class="btn-confirm" name="确定" id="save-btn" type="button" value="确认兑奖">
+                </div>
+            </div>			
+        </div>
+    </div>
+	<div class="panel-box" id="panel_box_kehu">
+        <div class="panel-content" id="panel-content" style="height:460px;">
+            <div class="panel-close" id="panel-close-kehu"></div>
+            <span><img src="../addons/stonefish_planting/template/images/duijiangkehu.png" height="90"></span>
+			<div id="result_info_kehu">
+			<div id="isfans">请选择你要兑奖的{if $reply['tickettype']==2}门店{else}商家网点{/if}<br/>选择后直接联系{if $reply['tickettype']==2}门店{else}商家网点{/if}兑奖</div>
+			    <hr class="common-hr" />
+                <input name="award_id" id="award_id" type="hidden" value="奖品">
+				<div style="float: left;width:100%;"><select name="dian_mian" id="dian_mian" class="px" style="width:100%;">
+						<option value="" selected>点击选择{if $reply['tickettype']==2}门店{else}商家网点{/if}</option>
 						{loop $shangjia $shangjias}
 						<option value="{$shangjias['id']}">{$shangjias['shangjianame']}</option>
 						{/loop}
 					</select></div>
-				<div style="float: left;width:100%;"><label>兑奖密码</label><input name="mima" class="px" id="mima" type="text" placeholder="请输入兑奖密码"></div>
-                <div id="result_info_tip"></div>
+                <div id="result_info_tip_kehu"></div>
 				<div class="btn-layout">
-					<input class="btn-confirm" name="确定" id="save-btn" type="button" value="确认兑奖">
+					<input class="btn-confirm" name="确定" id="save-btn-kehu" type="button" value="确认选择">
                 </div>
             </div>			
         </div>
@@ -93,28 +113,29 @@
 $("#panel-close").click(function(){
 	$("#panel_box").hide();
 });
+$("#panel-close-kehu").click(function(){
+	$("#panel_box_kehu").hide();
+});
 {if $reply['tickettype']>=2}
-function showdiv(id){
+function showdiv(id,dianmian,ticketname){
 	$("#panel_box").show();
 	$("#awardid").val(id);
+	$("#dianmian").val(dianmian);
+	$("#ticketname").text(ticketname);
+}
+function showdivkehu(id){
+	$("#panel_box_kehu").show();
+	$("#award_id").val(id);
 }
 $("#save-btn").bind("click",function () {
     var btn = $(this);
 	var awardid = $("#awardid").val();
+	var dianmian = $("#dianmian").val();
 	var mima = $("#mima").val();
     if (mima == '') {
 		$("#result_info_tip").text("请输入兑奖密码");
         return
     }
-	var dianmian = $("#dianmian").val();
-    if (dianmian == '0') {
-	    {if $reply['tickettype']==2}
-		$("#result_info_tip").text("请选择店员账号");
-		{else}
-		$("#result_info_tip").text("请选择商家网点");
-		{/if}        
-        return
-    }	
     var submitData = {
         mima: mima,
 		dianmian: dianmian,
@@ -131,6 +152,37 @@ $("#save-btn").bind("click",function () {
 			return
 		} else {
 			$("#result_info_tip").text(data.msg);
+			return
+		}
+	},"json")
+});
+$("#save-btn-kehu").bind("click",function () {
+    var btn = $(this);
+	var awardid = $("#award_id").val();
+	var dianmian = $("#dian_mian").val();
+    if (dianmian == '0') {
+	    {if $reply['tickettype']==2}
+		$("#result_info_tip").text("请选择店员");
+		{else}
+		$("#result_info_tip").text("请选择商家网点");
+		{/if}        
+        return
+    }
+    var submitData = {
+		dianmian: dianmian,
+		awardid: awardid,
+    };
+    $.post('{php echo $this->createMobileUrl('exchange', array('rid' => $rid,'uid' => $uid,'kehu' => 'kehu'))}', submitData, function(data) {
+		if (data.success == 1) {
+			$("#result_info_kehu").html("<br/><br/>" + data.msg + "<br/><div id='share_miao'>3秒后自动关闭</div>");
+			djstime(3);
+			setTimeout(function () {
+				$("#panel_box_kehu").hide();
+				location.reload();
+			},4000)
+			return
+		} else {
+			$("#result_info_tip_kehu").text(data.msg);
 			return
 		}
 	},"json")

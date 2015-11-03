@@ -1,13 +1,7 @@
-<!doctype html>
-<html>
-<head>
-   <meta charset="utf-8">
-   <meta name="viewport" content="initial-scale=1.0,user-scalable=no">
-   <title>{$reply['title']}制作器</title>
+{template 'common/header'}
    <link href="{$_W['siteroot']}/addons/hx_alert/template/style/css/main.min.css" rel="stylesheet" type="text/css">
    <script src="{$_W['siteroot']}/addons/hx_alert/template/style/js/main.m.js"></script>
    <script src="{$_W['siteroot']}/addons/hx_alert/template/style/js/wxtools.min.js"></script>
-</head>
    <style>.input-area select {
    border: 0px;
    font-size: 16px;
@@ -47,34 +41,17 @@
    font-size: 26px;
 }
 </style>
-   <script>var _host = "http://" + window.location.host;
-function attention_wx()
-{
-   //alert("关注微信“整蛊专家”，朋友圈整人利器！更多朋友圈整人游戏等你来玩！");
-   location.href='{$reply[gzurl]}';
+<script>
+sharedata = {
+    'title' : "{$reply['title']}", // 
+    'desc' : "{$reply['description']}",  //
+    'link' :  "{$_W['siteroot']}app/index.php?i={$_W['uniacid']}&c=entry&do=index&m=hx_alert&rid={$reply['rid']}",
+    'imgUrl' : "{php echo tomedia($reply['picture'])}",
 }
-function attention_wx2()
-{
-   //alert("关注微信“整蛊之霸”，发现身边小伙伴的小心思！进阶的整人指南！");
-   location.href='{$reply[gzurl]}';
+ 
+sharedata.success = function(){
+    location.href='{$reply[gzurl]}';
 }
-var dataForWeixin = {
-      appId : "",
-      MsgImg : "{$_W['attachurl']}{$reply['picture']}",
-      TLImg : "{$_W['attachurl']}{$reply['picture']}",
-      shareurl : "{$_W['siteurl']}",
-      title : "{$reply['title']}",
-      desc : "{$reply['description']}",
-      fakeid : "",
-      before_share : function()
-      {
-
-      },
-      callback : function() {
-         setTimeout(function(){
-            attention_wx();
-       },500);    }
-};
 </script>
 <body>
    <div class="tip-area2">用一种TA无法拒绝的方式跟TA对话！定制“弹框整蛊”，发给好友，弹死TA！</div>
@@ -177,8 +154,8 @@ var _model={
    _ok:function(json){
       _mid = json.mid;
       console.log(_mid);
-      dataForWeixin.title = _title;
-      dataForWeixin.shareurl = "{$_W['siteroot']}app/index.php?i={$_W['weid']}&c=entry&do=alert&m=hx_alert&mid=" + _mid;
+      sharedata.title = _title;
+      sharedata.link = "{$_W['siteroot']}app/index.php?i={$_W['weid']}&c=entry&do=alert&m=hx_alert&mid=" + _mid;
       document.getElementById('sbg').style.display = 'block';
     }
 };
@@ -201,8 +178,7 @@ var _model={
          <span class="strong">好友点击进入就会中招！</span>
       </p>
    </div>
-   <style>
-.ad_bottom {
+   <style>.ad_bottom {
    text-align: center;
    left:0px;
    right:0px;
@@ -220,5 +196,4 @@ border-radius:10px;background:rgba(0,0,0,0.6);color:#fff;font-size:16px;font-fam
    <div style="display:none">
       <!--统计代码-->
    </div>
-</body>
-</html>
+{template 'common/footer'}

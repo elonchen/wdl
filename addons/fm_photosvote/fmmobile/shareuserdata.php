@@ -3,7 +3,7 @@
  * 女神来了模块定义
  *
  * @author 微赞科技
- * @url http://bbs.wdlcms.com/
+ * @url http://bbs.012wz.com/
  */
 defined('IN_IA') or exit('Access Denied');
 		$isvisits = $_GPC['isvisits'];//是否互访
@@ -89,7 +89,9 @@ defined('IN_IA') or exit('Access Denied');
 				if ($_GPC['duli'] == '1') {
 					$gifturl = $_W['siteroot'] .'app/'.$this->createMobileUrl('tuser', array('rid' => $rid,'fromuser' => $fromuser,'tfrom_user' => $tfrom_user));
 				}elseif ($_GPC['duli'] == '2') {
-					$gifturl = $_W['siteroot'] .'app/'.$this->createMobileUrl('tuserphotos', array('rid' => $rid,'fromuser' => $fromuser,'tfrom_user' => $tfrom_user));					
+					$gifturl = $_W['siteroot'] .'app/'.$this->createMobileUrl('tuserphotos', array('rid' => $rid,'fromuser' => $fromuser,'tfrom_user' => $tfrom_user));		
+				}elseif ($_GPC['duli'] == '3') {
+					$gifturl = $_W['siteroot'] .'app/'.$this->createMobileUrl('paihang', array('rid' => $rid,'fromuser' => $fromuser,'tfrom_user' => $tfrom_user));					
 				}else {
 					$gifturl = $_W['siteroot'] .'app/'.$this->createMobileUrl('photosvoteview', array('rid' => $rid,'fromuser' => $fromuser));
 				}
@@ -116,7 +118,9 @@ defined('IN_IA') or exit('Access Denied');
 				if ($_GPC['duli'] == '1') {
 					$mygifturl = $_W['siteroot'] .'app/'.$this->createMobileUrl('tuser', array('rid' => $rid,'tfrom_user' => $tfrom_user,'fromuser' => $fromuser));
 				}elseif ($_GPC['duli'] == '2') {
-					$mygifturl = $_W['siteroot'] .'app/'.$this->createMobileUrl('tuserphotos', array('rid' => $rid,'tfrom_user' => $tfrom_user,'fromuser' => $fromuser));					
+					$mygifturl = $_W['siteroot'] .'app/'.$this->createMobileUrl('tuserphotos', array('rid' => $rid,'tfrom_user' => $tfrom_user,'fromuser' => $fromuser));	
+				}elseif ($_GPC['duli'] == '3') {
+					$gifturl = $_W['siteroot'] .'app/'.$this->createMobileUrl('paihang', array('rid' => $rid,'fromuser' => $fromuser,'tfrom_user' => $tfrom_user));							
 				}else {
 					$mygifturl = $_W['siteroot'] .'app/'.$this->createMobileUrl('photosvoteview', array('rid' => $rid));
 				}

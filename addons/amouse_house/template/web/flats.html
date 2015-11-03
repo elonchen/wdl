@@ -1,14 +1,10 @@
 {template 'common/header'}
 <div class='container' style='padding:0 5px 10px;margin:0;width:100%'>
 <ul class="nav nav-tabs">
-  <li {if $op == 'post' && empty($id)}class="active"{/if}><a href="{php echo $this->createWebUrl('premises', array('op' => 'post'));}">添加新楼盘</a>
-  </li>
-  <li {if $op == 'display'}class="active"{/if}><a href="{php echo $this->createWebUrl('premises',array('op'=>'display'));}">管理新楼盘</a>
-  </li>
+  <li {if $op == 'post' && empty($id)}class="active"{/if}><a href="{php echo $this->createWebUrl('premises', array('op' => 'post'));}">添加新楼盘</a> </li>
+  <li {if $op == 'display'}class="active"{/if}><a href="{php echo $this->createWebUrl('premises',array('op'=>'display'));}">管理新楼盘</a> </li>
   {if !empty($id) && $op == 'post'}
-  <li class="active">
-      <a href="{php echo $this->createWebUrl('premises',array('op'=>'post','id'=>$id));}">编辑新楼盘</a>
-  </li>
+  <li class="active">  <a href="{php echo $this->createWebUrl('premises',array('op'=>'post','id'=>$id));}">编辑新楼盘</a> </li>
   {/if}
 </ul>
 
@@ -506,4 +502,3 @@ $(function () {
 </script>
 {/if}	
 </div>
-{template 'common/footer'}

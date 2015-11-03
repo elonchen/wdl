@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `ims_xcommunity_property` (
   `weid` int(10) unsigned NOT NULL,
   `title` varchar(255) NOT NULL COMMENT '标题',
   `topPicture` varchar(255) NOT NULL COMMENT '照片',
-  `mcommunity` varchar(255) NOT NULL COMMENT '微社区URL',
+  `mcommunity` varchar(255) NOT NULL COMMENT '微小区URL',
   `content` varchar(2000) NOT NULL COMMENT '内容',
   `createtime` int(10) unsigned NOT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`)

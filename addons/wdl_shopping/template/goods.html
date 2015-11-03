@@ -1,7 +1,6 @@
 {template 'common/header'}
 {template 'common'}
 
-<script type="text/javascript" src="resource/js/lib/jquery-1.11.1.min.js"></script>
 <script type="text/javascript" src="resource/js/lib/jquery-ui-1.10.3.min.js"></script>
 <ul class="nav nav-tabs">
 	<li {if $operation == 'post'}class="active"{/if}><a href="{php echo $this->createWebUrl('goods', array('op' => 'post'))}">添加商品</a></li>

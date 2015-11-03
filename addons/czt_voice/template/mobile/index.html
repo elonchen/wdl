@@ -2,7 +2,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=0" />
-<title>朋友圈发语音</title>
+<title>朋友圈语音</title>
 <link href="{MODULE_URL}template/mobile/css/bootstrap.min.css" media="screen" rel="stylesheet" type="text/css" />
 <link href="{MODULE_URL}template/mobile/css/bootstrap-theme.min.css" media="screen" rel="stylesheet" type="text/css" />
 <link href="{MODULE_URL}template/mobile/css/font-awesome.min.css" media="screen" rel="stylesheet" type="text/css" />
@@ -19,7 +19,7 @@
 <div class="container-fluid page-container">
 <div class="row">
 <div class="col-xs-12 highcol hdmain">
-<h1>朋友圈发语音</h1>
+<h1>发送一条朋友圈语音</h1>
 <div class="cibox">
 <div class="ico-rec-start"><img src="{MODULE_URL}template/mobile/images/2781214_5_99139996d4_o.png" alt="" /></div>
 <div class="ico-rec-recording hide"><img class="rc-1 hide" src="{MODULE_URL}template/mobile/images/2781334_5_2a4e35b4e8_o.png" alt="" /><!-- 2 -->
@@ -79,18 +79,18 @@
    // 激活下一步按钮
 
    // 保存serverId到服务器
-   $.ajax({
-     url:"{php echo $_W['siteroot'].'app/'.$this->createMobileUrl('saverecord',array(),1);}",
-     //dateType:"jsonp",
-     type:"POST",
-     data:{serverId:serverId,timeLength:voice_record_time}
-   }).done(function(data){
-     if(data && data.ret === 0){
-       var serverId = data.serverId;
+   // $.ajax({
+   //   url:"{php echo $_W['siteroot'].'app/'.$this->createMobileUrl('saverecord',array(),1);}",
+   //   //dateType:"jsonp",
+   //   type:"POST",
+   //   data:{serverId:serverId,timeLength:voice_record_time}
+   // }).done(function(data){
+   //   if(data && data.ret === 0){
+   //     var serverId = data.serverId;
 // alert(serverId);
-       $('.btn-next').show();
+       // $('.btn-next').show();
 
-       wxShareDataArray[isAndroid ? 3 : 2][3] = "{php echo $_W['siteroot'].'app/'.$this->createMobileUrl('index',array(),1);}" +'&serverId=' + serverId;
+       wxShareDataArray[isAndroid ? 3 : 2][3] = "{php echo $_W['siteroot'].'app/'.$this->createMobileUrl('index',array(),1);}" +'&serverId=' + serverId+'&time=' + voice_record_time;
        changeWeixinShareData(isAndroid ? 3 : 2);
 
 
@@ -101,15 +101,15 @@
 
        switchBtnTo(["restart","share"]);
        
-     }else{
-       //失败
-       alert("语音保存失败，请重新录制!");
-     }
-   }).complete(function(){
+   //   }else{
+   //     //失败
+   //     alert("语音保存失败，请重新录制!");
+   //   }
+   // }).complete(function(){
 
-     //alert("complete");
+   //   //alert("complete");
 
-   });
+   // });
    
  }
 
@@ -168,6 +168,10 @@
        var serverId = res.serverId; // 返回音频的服务器端ID
        //alert("upload done: " + serverId);
        onUploadDone(serverId);
+     },
+     fail:function() {
+       alert('上传失败');
+       $('.btn-rec-preshare').addClass('hide');
      }
    });
  }
@@ -194,7 +198,7 @@
    
    setTimeout(function(){
      uploadVoice(localId);
-   },2000);
+   },1000);
 
    playVoice(localId);
    
@@ -263,9 +267,9 @@
  }
 
  $(function(){
-   $('.btn-rec-start .hdbtn').on('touchstart',function(){
-     startRecord();
-   });
+   // $('.btn-rec-start .hdbtn').on('touchstart',function(){
+   //   startRecord();
+   // });
    $('.btn-rec-start .hdbtn').on('click',function(){
      startRecord();
    });

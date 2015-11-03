@@ -41,7 +41,7 @@ if(empty($rid)){
         unset($row);
         	**/				 
 
-$tableheader = array('排名',  '姓名', '手机号','微信号' ,'QQ号', '邮箱','地址' , '宣言','参赛照片' , '真实票数', '虚拟票数', '真实人气', '虚拟人气', '分享数', 'IP', '报名时间', '简介');
+$tableheader = array('ID', '排名',  '姓名', '手机号','微信号' ,'QQ号', '邮箱','地址' , '宣言','参赛照片' , '真实票数', '虚拟票数', '真实人气', '虚拟人气', '分享数', 'IP', '报名时间', '简介');
 $html = "\xEF\xBB\xBF";
 foreach ($tableheader as $value) {
 	$html .= $value . "\t ,";
@@ -60,6 +60,7 @@ foreach ($list as $mid => $value) {
 		$value['weixin']=$value['weixin'];
 	}
 	$p = $mid + 1;
+	$html .= $value['id'] . "\t ,";	
 	$html .= $p . "\t ,";	
 	$html .= $value['realname'] . "\t ,";	
 	$html .= $value['mobile'] . "\t ,";	

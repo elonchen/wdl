@@ -320,7 +320,7 @@
 {if $_GPC['do'] == 'home'}
 <div class="panel panel-warning">
 	<div class="panel-body">
-		当前使用的风格为：{$style['name']}，模板文件为：{$template['title']}（/app/themes/{$template['name']}）。{if !empty($template['sections'])}此模板提供{$template['sections']}个导航位置，您添加导航可以指定显示显示位置{else}此模板未提供导航位置功能{/if}
+		当前使用的风格为：{$style['name']}，模板文件为：{$template['title']}（/app/themes/{$template['name']}）。{if !empty($template['sections'])}此模板提供 <span class="label label-warning">{$template['sections']}</span> 个导航位置，您可以指定导航在特定的位置显示，未指位置的导航将无法显示{else}此模板未提供导航位置功能{/if}
 	</div>
 </div>
 {/if}

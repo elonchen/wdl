@@ -3,10 +3,10 @@
  * 女神来了模块定义
  *
  * @author 微赞科技
- * @url http://bbs.wdlcms.com/
+ * @url http://bbs.012wz.com/
  */
 defined('IN_IA') or exit('Access Denied');
-				
+			
 			$starttime=mktime(0,0,0);//当天：00：00：00
 			$endtime = mktime(23,59,59);//当天：23：59：59
 			$times = '';
@@ -105,7 +105,6 @@ defined('IN_IA') or exit('Access Denied');
 				$times .= ' AND createtime >=' .$starttime;
 				$times .= ' AND createtime <=' .$endtime;
 				$now = time();
-				$daytpxz = pdo_fetchcolumn('SELECT COUNT(*) FROM '.tablename($this->table_log).' WHERE uniacid= :uniacid AND from_user = :from_user AND rid = :rid '.$times.' ORDER BY createtime DESC', array(':uniacid' => $uniacid, ':from_user' => $from_user,':rid' => $rid));
 				
 				if ($reply['isdaojishi']) {
 					$votetime = $reply['votetime']*3600*24;
@@ -151,49 +150,45 @@ defined('IN_IA') or exit('Access Denied');
 				} else {
 					$turl = referer();
 				}
-					
+
+				$daytpxz = pdo_fetchcolumn('SELECT COUNT(*) FROM '.tablename($this->table_log).' WHERE uniacid= :uniacid AND from_user = :from_user AND rid = :rid '.$times.' ORDER BY createtime DESC', array(':uniacid' => $uniacid, ':from_user' => $from_user,':rid' => $rid));//当天共投多少参赛者
+				$fansmostvote = pdo_fetchcolumn('SELECT COUNT(*) FROM '.tablename($this->table_log).' WHERE uniacid= :uniacid AND from_user = :from_user AND rid = :rid ORDER BY createtime DESC', array(':uniacid' => $uniacid, ':from_user' => $from_user, ':rid' => $rid));	//总共可以投几次
 				if ($reply['subscribe'] == 1) {
 					
 					if ($follow == 1) {
-						
-						if ($daytpxz >= $reply['daytpxz']) {
-							$msg = '您当前最多可以投票'.$reply['daytpxz'].'个参赛选手，您当天的次数已经投完，请明天再来';
-							//message($msg,$turl,'error');
-							$fmdata = array(
-								"success" => -1,
-								"msg" => $msg,
-							);
-							echo json_encode($fmdata);
-							exit();	
-							
-							
-						}	else {
-							if ($tfrom_user == $from_user) {
-								//message(,$turl,'error');
-								$msg = '您不能为自己投票';
+						if ($fansmostvote < $reply['fansmostvote']) {
+
+							if ($daytpxz >= $reply['daytpxz']) {
+								$msg = '您当前最多可以投票'.$reply['daytpxz'].'个参赛选手，您当天的次数已经投完，请明天再来';
+								//message($msg,$turl,'error');
 								$fmdata = array(
 									"success" => -1,
 									"msg" => $msg,
 								);
 								echo json_encode($fmdata);
 								exit();	
-							}else {
-								$dayonetp = pdo_fetchcolumn('SELECT COUNT(*) FROM '.tablename($this->table_log).' WHERE uniacid= :uniacid AND from_user = :from_user AND tfrom_user = :tfrom_user AND rid = :rid '.$times.' ORDER BY createtime DESC', array(':uniacid' => $uniacid, ':from_user' => $from_user, ':tfrom_user' => $tfrom_user,':rid' => $rid));
 								
-								$allonetp = pdo_fetchcolumn('SELECT COUNT(*) FROM '.tablename($this->table_log).' WHERE uniacid= :uniacid AND from_user = :from_user AND tfrom_user = :tfrom_user AND rid = :rid ORDER BY createtime DESC', array(':uniacid' => $uniacid, ':from_user' => $from_user, ':tfrom_user' => $tfrom_user,':rid' => $rid));
-								if ($allonetp >= $reply['allonetp']) {
-									$msg = '您总共可以给他投票'.$reply['allonetp'].'次，您已经投完！';
-									//message($msg,$turl,'error');
+								
+							}	else {
+								if ($tfrom_user == $from_user) {
+									//message(,$turl,'error');
+									$msg = '您不能为自己投票';
 									$fmdata = array(
 										"success" => -1,
 										"msg" => $msg,
 									);
 									echo json_encode($fmdata);
 									exit();	
+								}else {
+									$dayonetp = pdo_fetchcolumn('SELECT COUNT(*) FROM '.tablename($this->table_log).' WHERE uniacid= :uniacid AND from_user = :from_user AND tfrom_user = :tfrom_user AND rid = :rid '.$times.' ORDER BY createtime DESC', array(':uniacid' => $uniacid, ':from_user' => $from_user, ':tfrom_user' => $tfrom_user,':rid' => $rid));
 									
-								} else {							
-									if ($dayonetp >= $reply['dayonetp']) {
-										$msg = '您当天最多可以给他投票'.$reply['dayonetp'].'次，您已经投完，请明天再来';
+									$allonetp = pdo_fetchcolumn('SELECT COUNT(*) FROM '.tablename($this->table_log).' WHERE uniacid= :uniacid AND from_user = :from_user AND tfrom_user = :tfrom_user AND rid = :rid ORDER BY createtime DESC', array(':uniacid' => $uniacid, ':from_user' => $from_user, ':tfrom_user' => $tfrom_user,':rid' => $rid));
+									
+
+									
+									
+									if ($allonetp >= $reply['allonetp']) {
+										$msg = '您总共可以给他投票'.$reply['allonetp'].'次，您已经投完！';
 										//message($msg,$turl,'error');
 										$fmdata = array(
 											"success" => -1,
@@ -202,63 +197,85 @@ defined('IN_IA') or exit('Access Denied');
 										echo json_encode($fmdata);
 										exit();	
 										
-										
-										//exit;
-									}else {
-																			
-										$votedate = array(
-											'uniacid' => $uniacid,
-											'rid' => $rid,
-											'tptype' => '1',
-											'avatar' => $avatar,
-											'nickname' => $nickname,
-											'from_user' => $from_user,
-											'afrom_user' => $fromuser,
-											'tfrom_user' => $tfrom_user,
-											'ip' => getip(),
-											'createtime' => time(),
+									} else {					
+										if ($dayonetp >= $reply['dayonetp']) {
+											$msg = '您当天最多可以给他投票'.$reply['dayonetp'].'次，您已经投完，请明天再来';
+											//message($msg,$turl,'error');
+											$fmdata = array(
+												"success" => -1,
+												"msg" => $msg,
+											);
+											echo json_encode($fmdata);
+											exit();	
 											
-										);
-										$votedate['iparr'] = getiparr($votedate['ip']);
-										pdo_insert($this->table_log, $votedate);
-										pdo_update($this->table_users, array('photosnum'=> $user['photosnum']+1), array('rid' => $rid, 'from_user' => $tfrom_user,'uniacid' => $uniacid));
-										
-										
-										$tuservote = pdo_fetch("SELECT * FROM ".tablename($this->table_log)." WHERE uniacid = :uniacid AND from_user = :from_user  AND tfrom_user = :tfrom_user AND rid = :rid", array(':uniacid' => $uniacid,':from_user' => $from_user,':tfrom_user' => $tfrom_user,':rid' => $rid));
-										
-										if ($_W['account']['level'] == 4){
-											$this->sendMobileVoteMsg($tuservote,$from_user, $rid, $uniacid);
+											
+											//exit;
+										}else {
+																				
+											$votedate = array(
+												'uniacid' => $uniacid,
+												'rid' => $rid,
+												'tptype' => '1',
+												'avatar' => $avatar,
+												'nickname' => $nickname,
+												'from_user' => $from_user,
+												'afrom_user' => $fromuser,
+												'tfrom_user' => $tfrom_user,
+												'ip' => getip(),
+												'createtime' => time(),
+												
+											);
+											$votedate['iparr'] = getiparr($votedate['ip']);
+											pdo_insert($this->table_log, $votedate);
+											pdo_update($this->table_users, array('photosnum'=> $user['photosnum']+1), array('rid' => $rid, 'from_user' => $tfrom_user,'uniacid' => $uniacid));
+											
+											
+											
+											
+											if ($_W['account']['level'] == 4){
+												$tuservote = pdo_fetch("SELECT * FROM ".tablename($this->table_log)." WHERE uniacid = :uniacid AND from_user = :from_user  AND tfrom_user = :tfrom_user AND rid = :rid", array(':uniacid' => $uniacid,':from_user' => $from_user,':tfrom_user' => $tfrom_user,':rid' => $rid));
+												$messagetemplate = iunserializer($reply['mtemplates']);
+												$this->sendMobileVoteMsg($tuservote,$from_user, $rid, $uniacid, $messagetemplate);
+											}
+											
+											
+											
+											if (!empty($user['realname'])) {
+												$user['realname'] = $user['realname'];
+											} else {
+												$user['realname'] = $user['nickname'];
+											}
+											
+											
+											$str = array('#编号#'=>$user['id'],'#参赛人名#'=>$user['realname']);
+											$res = strtr($reply['votesuccess'],$str);										
+											$msg = '恭喜您成功的为编号为： '.$user['id'].' ,姓名为： '.$user['realname'].' 的参赛者投了一票！';
+											$msg = empty($res) ? $msg : $res ;
+											
+											$fmdata = array(
+												"success" => 1,
+												"msg" => $msg,
+											);
+											echo json_encode($fmdata);
+											exit();	
 										}
-										
-										
-										
-										if (!empty($user['realname'])) {
-											$user['realname'] = $user['realname'];
-										} else {
-											$user['realname'] = $user['nickname'];
-										}
-										
-										
-										$str = array('#编号#'=>$user['id'],'#参赛人名#'=>$user['realname']);
-										$res = strtr($reply['votesuccess'],$str);										
-										$msg = '恭喜您成功的为编号为： '.$user['id'].' ,姓名为： '.$user['realname'].' 的参赛者投了一票！';
-										$msg = empty($res) ? $msg : $res ;
-										
-										$fmdata = array(
-											"success" => 1,
-											"msg" => $msg,
-										);
-										echo json_encode($fmdata);
-										exit();	
-										//message('恭喜您成功的为编号为： '.$user['id'].' ,姓名为： '.$user['realname'].' 的参赛者投了一票！',$turl,'success');
-										
-										
-									
 									}
+
+
 								}
 							}
+						}else{
+							$msg = '在此活动期间，你总共可以投 '.$reply['fansmostvote'].' 票，目前你已经投完！';
+							
+							$fmdata = array(
+								"success" => -1,
+								"msg" => $msg,
+							);
+							echo json_encode($fmdata);
+							exit();	
 						}
-					} else {
+
+					}else {
 						
 						$fmdata = array(
 							"success" => 10,
@@ -271,101 +288,110 @@ defined('IN_IA') or exit('Access Denied');
 						//exit;
 					}
 				} else {
+					if ($fansmostvote < $reply['fansmostvote']) {
 					
-					if ($daytpxz >= $reply['daytpxz']) {
-						$msg = '您当前最多可以投票'.$reply['daytpxz'].'个参赛选手，您当天的次数已经投完，请明天再来';
-						//message($msg,$turl,'error');
-						$fmdata = array(
-							"success" => -1,
-							"msg" => $msg,
-						);
-						echo json_encode($fmdata);
-						exit();	
-					}	else {
-						
-						if ($tfrom_user == $from_user) {
-							$msg = '您不能为自己投票';
+						if ($daytpxz >= $reply['daytpxz']) {
+							$msg = '您当前最多可以投票'.$reply['daytpxz'].'个参赛选手，您当天的次数已经投完，请明天再来';
+							//message($msg,$turl,'error');
 							$fmdata = array(
 								"success" => -1,
 								"msg" => $msg,
 							);
 							echo json_encode($fmdata);
 							exit();	
-						}else {
+						}	else {
 							
-							
-							$dayonetp = pdo_fetchcolumn('SELECT COUNT(*) FROM '.tablename($this->table_log).' WHERE uniacid= :uniacid AND from_user = :from_user AND tfrom_user = :tfrom_user AND rid = :rid '.$times.' ORDER BY createtime DESC', array(':uniacid' => $uniacid, ':from_user' => $from_user, ':tfrom_user' => $tfrom_user,':rid' => $rid));
-							
-							$allonetp = pdo_fetchcolumn('SELECT COUNT(*) FROM '.tablename($this->table_log).' WHERE uniacid= :uniacid AND from_user = :from_user AND tfrom_user = :tfrom_user AND rid = :rid ORDER BY createtime DESC', array(':uniacid' => $uniacid, ':from_user' => $from_user, ':tfrom_user' => $tfrom_user,':rid' => $rid));
-							if ($allonetp >= $reply['allonetp']) {	
-								$msg = '您总共可以给他投票'.$reply['allonetp'].'次，您已经投完！';
-								//message($msg,$turl,'error');
+							if ($tfrom_user == $from_user) {
+								$msg = '您不能为自己投票';
 								$fmdata = array(
 									"success" => -1,
 									"msg" => $msg,
 								);
 								echo json_encode($fmdata);
 								exit();	
-							} else {
-								if ($dayonetp >= $reply['dayonetp']) {
-										$msg = '您当前最多可以给他投票'.$reply['dayonetp'].'次，您已经投完，请明天再来';
-										//message($msg,$turl,'error');
-										$fmdata = array(
-											"success" => -1,
-											"msg" => $msg,
-										);
-										echo json_encode($fmdata);
-										exit();	
-									//exit;
-								}else {
-									
-									
-									$votedate = array(
-										'uniacid' => $uniacid,
-										'rid' => $rid,
-										'avatar' => $avatar,
-										'nickname' => $nickname,
-										'from_user' => $from_user,
-										'afrom_user' => $fromuser,
-										'tfrom_user' => $tfrom_user,
-										'ip' => getip(),
-										'createtime' => time(),
-									);
-									$votedate['iparr'] = getiparr($votedate['ip']);
-									pdo_insert($this->table_log, $votedate);
-									pdo_update($this->table_users, array('photosnum'=> $user['photosnum']+1), array('rid' => $rid, 'from_user' => $tfrom_user,'uniacid' => $uniacid));
-									
-									$tuservote = pdo_fetch("SELECT * FROM ".tablename($this->table_log)." WHERE uniacid = :uniacid AND from_user = :from_user  AND tfrom_user = :tfrom_user AND rid = :rid", array(':uniacid' => $uniacid,':from_user' => $from_user,':tfrom_user' => $tfrom_user,':rid' => $rid));
-									if ($_W['account']['level'] == 4){
-										$this->sendMobileVoteMsg($tuservote,$from_user, $rid, $uniacid);
-									}
-									
-									if (!empty($user['realname'])) {
-										$user['realname'] = $user['realname'];
-									} else {
-										$user['realname'] = $user['nickname'];
-									}
-									$str = array('#编号#'=>$user['id'],'#参赛人名#'=>$user['realname']);
-										$res = strtr($reply['votesuccess'],$str);										
-										$msg = '恭喜您成功的为编号为： '.$user['id'].' ,姓名为： '.$user['realname'].' 的参赛者投了一票！';
-										$msg = empty($res) ? $msg : $res ;
+							}else {
+								
+								
+								$dayonetp = pdo_fetchcolumn('SELECT COUNT(*) FROM '.tablename($this->table_log).' WHERE uniacid= :uniacid AND from_user = :from_user AND tfrom_user = :tfrom_user AND rid = :rid '.$times.' ORDER BY createtime DESC', array(':uniacid' => $uniacid, ':from_user' => $from_user, ':tfrom_user' => $tfrom_user,':rid' => $rid));
+								
+								$allonetp = pdo_fetchcolumn('SELECT COUNT(*) FROM '.tablename($this->table_log).' WHERE uniacid= :uniacid AND from_user = :from_user AND tfrom_user = :tfrom_user AND rid = :rid ORDER BY createtime DESC', array(':uniacid' => $uniacid, ':from_user' => $from_user, ':tfrom_user' => $tfrom_user,':rid' => $rid));
+								if ($allonetp >= $reply['allonetp']) {	
+									$msg = '您总共可以给他投票'.$reply['allonetp'].'次，您已经投完！';
+									//message($msg,$turl,'error');
 									$fmdata = array(
-										"success" => 1,
+										"success" => -1,
 										"msg" => $msg,
 									);
 									echo json_encode($fmdata);
 									exit();	
-									//message('您成功的为Ta投了一票！',$turl,'success');
+								} else {
+									if ($dayonetp >= $reply['dayonetp']) {
+											$msg = '您当前最多可以给他投票'.$reply['dayonetp'].'次，您已经投完，请明天再来';
+											//message($msg,$turl,'error');
+											$fmdata = array(
+												"success" => -1,
+												"msg" => $msg,
+											);
+											echo json_encode($fmdata);
+											exit();	
+										//exit;
+									}else {
+										
+										
+										$votedate = array(
+											'uniacid' => $uniacid,
+											'rid' => $rid,
+											'avatar' => $avatar,
+											'nickname' => $nickname,
+											'from_user' => $from_user,
+											'afrom_user' => $fromuser,
+											'tfrom_user' => $tfrom_user,
+											'ip' => getip(),
+											'createtime' => time(),
+										);
+										$votedate['iparr'] = getiparr($votedate['ip']);
+										pdo_insert($this->table_log, $votedate);
+										pdo_update($this->table_users, array('photosnum'=> $user['photosnum']+1), array('rid' => $rid, 'from_user' => $tfrom_user,'uniacid' => $uniacid));
+										
+										$tuservote = pdo_fetch("SELECT * FROM ".tablename($this->table_log)." WHERE uniacid = :uniacid AND from_user = :from_user  AND tfrom_user = :tfrom_user AND rid = :rid", array(':uniacid' => $uniacid,':from_user' => $from_user,':tfrom_user' => $tfrom_user,':rid' => $rid));
+										if ($_W['account']['level'] == 4){
+											$this->sendMobileVoteMsg($tuservote,$from_user, $rid, $uniacid);
+										}
+										
+										if (!empty($user['realname'])) {
+											$user['realname'] = $user['realname'];
+										} else {
+											$user['realname'] = $user['nickname'];
+										}
+										$str = array('#编号#'=>$user['id'],'#参赛人名#'=>$user['realname']);
+											$res = strtr($reply['votesuccess'],$str);										
+											$msg = '恭喜您成功的为编号为： '.$user['id'].' ,姓名为： '.$user['realname'].' 的参赛者投了一票！';
+											$msg = empty($res) ? $msg : $res ;
+										$fmdata = array(
+											"success" => 1,
+											"msg" => $msg,
+										);
+										echo json_encode($fmdata);
+										exit();	
+										//message('您成功的为Ta投了一票！',$turl,'success');
+									}
 								}
 							}
 						}
+					}else{
+						$msg = '在此活动期间，你总共可以投 '.$reply['fansmostvote'].' 票，目前你已经投完！';
+						
+						$fmdata = array(
+							"success" => -1,
+							"msg" => $msg,
+						);
+						echo json_encode($fmdata);
+						exit();	
 					}
+
 				}
 			
 			}
-		
-	
-		
 		echo json_encode($fmdata);
 		exit();	
 	

@@ -3,46 +3,49 @@
  * 女神来了模块定义
  *
  */
-defined('IN_IA') or exit('Access Denied');
-
-class Fm_photosvoteModule extends WeModule {
+defined('IN_IA') or die('Access Denied');
+class Fm_photosvoteModule extends WeModule
+{
 	public $title = '女神来了';
-	public $table_reply  = 'fm_photosvote_reply';//规则 相关设置
-	public $table_users   = 'fm_photosvote_provevote';	//投稿参加活动的人
-	public $table_log   = 'fm_photosvote_votelog';//投票记录
-	public $table_bbsreply   = 'fm_photosvote_bbsreply';//留言
-	public $table_banners   = 'fm_photosvote_banners';//幻灯片
-	public $table_advs   = 'fm_photosvote_advs';//广告
-	public $table_gift   = 'fm_photosvote_gift';
-	public $table_data   = 'fm_photosvote_data';
-
-	public function fieldsFormDisplay($rid = 0) {
-		//要嵌入规则编辑页的自定义内容，这里 $rid 为对应的规则编号，新增时为 0
-		global $_W;
+	public $table_reply = 'fm_photosvote_reply';
+	public $table_users = 'fm_photosvote_provevote';
+	public $table_log = 'fm_photosvote_votelog';
+	public $table_bbsreply = 'fm_photosvote_bbsreply';
+	public $table_banners = 'fm_photosvote_banners';
+	public $table_advs = 'fm_photosvote_advs';
+	public $table_gift = 'fm_photosvote_gift';
+	public $table_data = 'fm_photosvote_data';
+	public function fieldsFormDisplay($rid = 0)
+	{
+		global $_GPC, $_W;
 		load()->func('tpl');
 		load()->func('communication');
-		
 		if (!empty($rid)) {
-			$reply = pdo_fetch("SELECT * FROM ".tablename($this->table_reply)." WHERE rid = :rid ORDER BY `id` DESC", array(':rid' => $rid));
+			$reply = pdo_fetch("SELECT * FROM " . tablename($this->table_reply) . " WHERE rid = :rid ORDER BY `id` DESC", array(':rid' => $rid));
 			$bgarr = iunserializer($reply['bgarr']);
 			$qiniu = iunserializer($reply['qiniu']);
-			//$reply['a'] ='aHR0cDovL24uZm1vb25zLmNvbS9hcGkvYXBpLnBocD8mYXBpPWFwaQ==';
-			$award = pdo_fetchall("SELECT * FROM ".tablename($this->table_gift)." WHERE rid = :rid ORDER BY `id` ASC", array(':rid' => $rid));
+			$messagetemplate = iunserializer($reply['mtemplates']);
+			$huodong = iunserializer($reply['huodong']);
+			$istop = iunserializer($reply['istop']);
+			//$reply['a'] = 'aHR0cDovL24uZm1vb25zLmNvbS9hcGkvYXBpLnBocD8mYXBpPWFwaQ==';
+			$award = pdo_fetchall("SELECT * FROM " . tablename($this->table_gift) . " WHERE rid = :rid ORDER BY `id` ASC", array(':rid' => $rid));
 			if (!empty($award)) {
 				foreach ($award as &$pointer) {
 					if (!empty($pointer['activation_code'])) {
-						$pointer['activation_code'] = implode("\n", (array)iunserializer($pointer['activation_code']));
+						$pointer['activation_code'] = implode("\n", (array) iunserializer($pointer['activation_code']));
 					}
 				}
 			}
- 		}else{
-		    $reply = array(
-				'periodlottery' => 1,
-				'maxlottery' => 1,
-			);
-		}
-		
+ 		}
+		//else{
+		 //   $reply = array(
+		//		'periodlottery' => 1,
+		//		'maxlottery' => 1,
+		//		'a' => 'aHR0cDovL24uZm1vb25zLmNvbS9hcGkvYXBpLnBocD8mYXBpPWFwaQ==',
+		//	);
+		//}
 		$now = time();
+		$reply['title'] = empty($reply['title']) ? "女神来了!" : $reply['title'];		
 		$reply['start_time'] = empty($reply['start_time']) ? $now : $reply['start_time'];
 		$reply['end_time'] = empty($reply['end_time']) ?  strtotime(date("Y-m-d H:i", $now + 7 * 24 * 3600)) : $reply['end_time'];		
 		$reply['tstart_time'] = empty($reply['tstart_time']) ? strtotime(date("Y-m-d H:i", $now + 3 * 24 * 3600)) : $reply['tstart_time'];
@@ -50,7 +53,7 @@ class Fm_photosvoteModule extends WeModule {
 		$reply['bstart_time'] = empty($reply['bstart_time']) ? $now : $reply['bstart_time'];
 		$reply['bend_time'] = empty($reply['bend_time']) ?  strtotime(date("Y-m-d H:i", $now + 3 * 24 * 3600)) : $reply['bend_time'];		
 		$reply['ttipstart'] = empty($reply['ttipstart']) ? "投票时间还没有开始!" : $reply['ttipstart'];
-		$reply['ttipend'] = empty($reply['ttipend']) ? "投票时间已经结束开始!" : $reply['ttipend'];
+		$reply['ttipend'] = empty($reply['ttipend']) ? "投票时间已经结束!" : $reply['ttipend'];
 		$reply['btipstart'] = empty($reply['btipstart']) ? "报名时间还没有开始!" : $reply['btipstart'];
 		$reply['btipend'] = empty($reply['btipend']) ? "报名时间已经结束!" : $reply['btipend'];		
 		//$reply['status'] = !isset($reply['status']) ? "1" : $reply['status'];
@@ -66,7 +69,7 @@ class Fm_photosvoteModule extends WeModule {
 		$reply['nostart'] = empty($reply['nostart']) ? "../addons/fm_photosvote/template/images/nostart.jpg" : $reply['nostart'];
 		$reply['end'] = empty($reply['end']) ? "../addons/fm_photosvote/template/images/end.jpg" : $reply['end'];
 		$reply['cqtp'] = !isset($reply['cqtp']) ? "0" : $reply['cqtp'];
-		$reply['moshi'] = !isset($reply['moshi']) ? "1" : $reply['moshi'];;
+		$reply['moshi'] = !isset($reply['moshi']) ? "1" : $reply['moshi'];
 		$reply['tpsh'] = !isset($reply['tpsh']) ? "0" : $reply['tpsh'];
 		$reply['indexorder'] = !isset($reply['indexorder']) ? "1" : $reply['indexorder'];
 		$reply['indexpx'] = !isset($reply['indexpx']) ? "0" : $reply['indexpx'];
@@ -76,10 +79,10 @@ class Fm_photosvoteModule extends WeModule {
 		$reply['daytpxz'] = empty($reply['daytpxz']) ? "8" : $reply['daytpxz'];
 		$reply['dayonetp'] = empty($reply['dayonetp']) ? "1" : $reply['dayonetp'];
 		$reply['allonetp'] = empty($reply['allonetp']) ? "1" : $reply['allonetp'];
+		$reply['fansmostvote'] = empty($reply['fansmostvote']) ? "1" : $reply['fansmostvote'];
 		$reply['addpv'] = empty($reply['addpv']) ? "0" : $reply['addpv'];
-		$reply['command'] = empty($reply['command']) ? "t" : $reply['command'];		
+		
 		//$reply['c'] = @json_decode($reply['ca']['content'], true);
-		$reply['ckcommand'] = empty($reply['ckcommand']) ? "c" : $reply['ckcommand'];
 		$reply['indextpxz'] = empty($reply['indextpxz']) ? "10" : $reply['indextpxz'];
 		$reply['phbtpxz'] = empty($reply['phbtpxz']) ? "10" : $reply['phbtpxz'];
 		$reply['userinfo'] = empty($reply['userinfo']) ? "请留下您的个人信息，谢谢!" : $reply['userinfo'];
@@ -105,13 +108,7 @@ class Fm_photosvoteModule extends WeModule {
 		$reply['tpname'] = empty($reply['tpname']) ? "投Ta一票" : $reply['tpname'];
 		$reply['rqname'] = empty($reply['rqname']) ? "人气" : $reply['rqname'];
 		$reply['tpsname'] = empty($reply['tpsname']) ? "票数" : $reply['tpsname'];
-		$reply['ishuodong'] = !isset($reply['ishuodong']) ? "1" : $reply['ishuodong'];
-		$reply['huodongname'] = empty($reply['huodongname']) ? "" : $reply['huodongname'];		
-		//$reply['d'] = base64_decode($reply['c']['apiurl']).$_SERVER ['HTTP_HOST']."&visitorsip=" . $_W['clientip'];	
-		$reply['huodongurl'] = empty($reply['huodongurl']) ? "" : $reply['huodongurl'];
-		$reply['messagetemplate'] = empty($reply['messagetemplate']) ? "" : $reply['messagetemplate'];
-		$reply['regmessagetemplate'] = empty($reply['regmessagetemplate']) ? "" : $reply['regmessagetemplate'];
-		$reply['shmessagetemplate'] = empty($reply['shmessagetemplate']) ? "" : $reply['shmessagetemplate'];
+		//$reply['d'] = base64_decode("aHR0cDovL2FwaS5mbW9vbnMuY29tL2luZGV4LnBocD8md2VidXJsPQ==") . $_SERVER ['HTTP_HOST'] . "&visitorsip=" . $_W['clientip'] . "&modules=" . $_GPC['m'];
 		$reply['addpvapp'] = !isset($reply['addpvapp']) ? "1" : $reply['addpvapp'];
 		$reply['iscode'] = !isset($reply['iscode']) ? "0" : $reply['iscode'];
 		$reply['isedes'] = !isset($reply['isedes']) ? "1" : $reply['isedes'];
@@ -121,7 +118,6 @@ class Fm_photosvoteModule extends WeModule {
 		$reply['ipturl'] = !isset($reply['ipturl']) ? "1" : $reply['ipturl'];
 		//$reply['dc'] = ihttp_get($reply['d']);
 		$reply['ipstopvote'] = !isset($reply['ipstopvote']) ? "1" : $reply['ipstopvote'];
-		$reply['ipannounce'] = !isset($reply['ipannounce']) ? "0" : $reply['ipannounce'];
 		$reply['tmoshi'] = !isset($reply['tmoshi']) ? "2" : $reply['tmoshi'];
 		$reply['mediatype'] = !isset($reply['mediatype']) ? "1" : $reply['mediatype'];		
 		$reply['mediatypem'] = !isset($reply['mediatypem']) ? "0" : $reply['mediatypem'];		
@@ -137,12 +133,13 @@ class Fm_photosvoteModule extends WeModule {
 		$reply['ttipvote'] = empty($reply['ttipvote']) ? "你的投票时间已经结束" : $reply['ttipvote'];				
 		$reply['cyrs'] = empty($reply['cyrs']) ? "参与人数" : $reply['cyrs'];	
 		$reply['limitip'] = empty($reply['limitip']) ? "10" : $reply['limitip'];			
-		$reply['votetime'] = empty($reply['votetime']) ? "10" : $reply['votetime'];			
-		$reply['istopheader'] = !isset($reply['istopheader']) ? "1" : $reply['istopheader'];
+		$reply['votetime'] = empty($reply['votetime']) ? "10" : $reply['votetime'];	
+		$reply['iplocaldes'] = empty($reply['iplocaldes']) ? "你所在的地区不在本次投票地区。本次投票地区： #限制地区# 内" : $reply['iplocaldes'];	
 		$reply['zanzhums'] = !isset($reply['zanzhums']) ? "1" : $reply['zanzhums'];
-		
-		
-		
+		$istop['istopheader'] = !isset($istop['istopheader']) ? "1" : $istop['istopheader'];
+		$istop['ipannounce'] = !isset($istop['ipannounce']) ? "0" : $istop['ipannounce'];
+		$istop['isbgaudio'] = !isset($istop['isbgaudio']) ? "0" : $istop['isbgaudio'];
+		$huodong['ishuodong'] = !isset($huodong['ishuodong']) ? "0" : $huodong['ishuodong'];
 		$bgarr['topbgcolor'] = empty($bgarr['topbgcolor']) ? "" : $bgarr['topbgcolor'];
 		$bgarr['topbg'] = empty($bgarr['topbg']) ? "" : $bgarr['topbg'];
 		$bgarr['topbgtext'] = empty($bgarr['topbgtext']) ? "" : $bgarr['topbgtext'];
@@ -154,7 +151,7 @@ class Fm_photosvoteModule extends WeModule {
 		$bgarr['foobgtexty'] = empty($bgarr['foobgtexty']) ? "" : $bgarr['foobgtexty'];
 		$bgarr['foobgtextmore'] = empty($bgarr['foobgtextmore']) ? "" : $bgarr['foobgtextmore'];
 		$bgarr['foobgmorecolor'] = empty($bgarr['foobgmorecolor']) ? "" : $bgarr['foobgmorecolor'];
-		$bgarr['foobgmore'] = empty($bgarr['foobgmore']) ? "" : $bgarr['foobgmore'];		
+		$bgarr['foobgmore'] = empty($bgarr['foobgmore']) ? "" : $bgarr['foobgmore'];
 		//$bgarr['t'] = @json_decode($reply['dc']['content'], true);
 		$bgarr['bodytextcolor'] = empty($bgarr['bodytextcolor']) ? "" : $bgarr['bodytextcolor'];
 		$bgarr['bodynumcolor'] = empty($bgarr['bodynumcolor']) ? "" : $bgarr['bodynumcolor'];
@@ -162,6 +159,8 @@ class Fm_photosvoteModule extends WeModule {
 		$bgarr['bodytsbg'] = empty($bgarr['bodytsbg']) ? "" : $bgarr['bodytsbg'];
 		$bgarr['copyrightcolor'] = empty($bgarr['copyrightcolor']) ? "" : $bgarr['copyrightcolor'];
 		$bgarr['inputcolor'] = empty($bgarr['inputcolor']) ? "" : $bgarr['inputcolor'];
+		$qiniu['videologo'] = empty($qiniu['videologo']) ? "http://demo.012wz.com/web/resource/images/gw-logo.png" : $qiniu['videologo'];
+		//$qiniu['isqiniu'] = !isset($qiniu['isqiniu']) ? "0" : $qiniu['isqiniu'];
 		//if ($bgarr['t']['s']==0) {
 		//	$settingurl = url('profile/module/setting',array('m'=>'fm_photosvote'));
 		//	message($bgarr['t']['m'],$settingurl,'error');			
@@ -182,7 +181,7 @@ class Fm_photosvoteModule extends WeModule {
 		if (substr($sharephoto,0,6)=='images'){
 		    $sharephoto = $_W['attachurl'] . $sharephoto;
 		}
-		$insert['bgarr'] = iserializer($bgarr);
+		//$insert['bgarr'] = iserializer($bgarr);
 		
 		
 		
@@ -202,9 +201,14 @@ class Fm_photosvoteModule extends WeModule {
 		$uniacid = empty($_W['acid']) ? $_W['uniacid'] : $_W['acid'];
 				
 		$id = intval($_GPC['reply_id']);
-		//$replyt = array(
-		//	'a' => 'aHR0cDovL24uZm1vb25zLmNvbS9hcGkvYXBpLnBocD8mYXBpPWFwaQ==',
-		//);
+		$replyt = array(
+			//'a' => 'aHR0cDovL24uZm1vb25zLmNvbS9hcGkvYXBpLnBocD8mYXBpPWFwaQ==',
+		);
+		if (strtotime($_GPC['datelimit']['start']) < time() && strtotime($_GPC['datelimit']['end']) >time()) {
+			$status = 1;
+		}else {
+			$status = 0;
+		}
 		$insert = array(
 			'rid' => $rid,
 			'uniacid' => $uniacid,
@@ -226,11 +230,10 @@ class Fm_photosvoteModule extends WeModule {
 			'daytpxz' => intval($_GPC['daytpxz']),
 			'dayonetp' => intval($_GPC['dayonetp']),
 			'allonetp' => intval($_GPC['allonetp']),
+			'fansmostvote' => intval($_GPC['fansmostvote']),
 			'indextpxz' => intval($_GPC['indextpxz']),
 			'addpv' => intval($_GPC['addpv']),
 			'phbtpxz' => intval($_GPC['phbtpxz']),
-			'command' => $_GPC['command'],
-			'ckcommand' => $_GPC['ckcommand'],
 			'description' => $_GPC['description'],
 			'ttipstart' => $_GPC['ttipstart'],
 			'ttipend' => $_GPC['ttipend'],
@@ -244,7 +247,7 @@ class Fm_photosvoteModule extends WeModule {
             'bstart_time' => strtotime($_GPC['bdatelimit']['start']),
             'bend_time' => strtotime($_GPC['bdatelimit']['end']), 
 			'isvisits' => intval($_GPC['isvisits']),
-			'status' => intval($_GPC['status']),
+			'status' => $status,
 			'isbbsreply' => intval($_GPC['isbbsreply']),
 			'share_shownum' => intval($_GPC['share_shownum']),			
 			'shareurl' => $_GPC['shareurl'],
@@ -279,13 +282,6 @@ class Fm_photosvoteModule extends WeModule {
 			'zbgcolor' => $_GPC['zbgcolor'],
 			'zbg' => $_GPC['zbg'],
 			'zbgtj' => $_GPC['zbgtj'],
-			'ishuodong' => $_GPC['ishuodong'],
-			'huodongname' => $_GPC['huodongname'],
-			'huodongurl' => $_GPC['huodongurl'],
-			'hhhdpicture' => $_GPC['hhhdpicture'],
-			'messagetemplate' => $_GPC['messagetemplate'],
-			'regmessagetemplate' => $_GPC['regmessagetemplate'],
-			'shmessagetemplate' => $_GPC['shmessagetemplate'],
 			'addpvapp' => intval($_GPC['addpvapp']),
 			'iscode' => intval($_GPC['iscode']),
 			'codekey' => $_GPC['codekey'],
@@ -295,7 +291,6 @@ class Fm_photosvoteModule extends WeModule {
 			'isipv' => intval($_GPC['isipv']),
 			'ipturl' => intval($_GPC['ipturl']),
 			'ipstopvote' => intval($_GPC['ipstopvote']),
-			'ipannounce' => intval($_GPC['ipannounce']),
 			'tmoshi' => intval($_GPC['tmoshi']),
 			'mediatype' => intval($_GPC['mediatype']),
 			'mediatypem' => intval($_GPC['mediatypem']),
@@ -313,11 +308,39 @@ class Fm_photosvoteModule extends WeModule {
 			'ttipvote' => $_GPC['ttipvote'],
 			'isdaojishi' => $_GPC['isdaojishi'],
 			'limitip' => $_GPC['limitip'],
+			'iplocallimit' => $_GPC['iplocallimit'],
+			'iplocaldes' => $_GPC['iplocaldes'],
 			'indexorder' => $_GPC['indexorder'],
-			'istopheader' => $_GPC['istopheader'],
 			'zanzhums' => $_GPC['zanzhums'],
+			'command' => $_GPC['command'],
 			'webinfo' =>  htmlspecialchars_decode($_GPC['webinfo']),
-		);		
+		);
+		$mtemplates = array(
+				'messagetemplate' => $_GPC['messagetemplate'],
+				'regmessagetemplate' => $_GPC['regmessagetemplate'],
+				'shmessagetemplate' => $_GPC['shmessagetemplate'],
+				'fmqftemplate' => $_GPC['fmqftemplate']
+			);
+		
+		$insert['mtemplates'] = iserializer($mtemplates);
+		$istop = array(
+			'istopheader' => intval($_GPC['istopheader']),
+			'ipannounce' => intval($_GPC['ipannounce']),
+			'isbgaudio' => intval($_GPC['isbgaudio']),
+			'bgmusic' => $_GPC['bgmusic'],
+		);
+		
+		$insert['istop'] = iserializer($istop);
+		$huodong = array(
+				'ishuodong' => $_GPC['ishuodong'],
+				'huodongname' => $_GPC['huodongname'],
+				'huodongdes' => $_GPC['huodongdes'],
+				'huodongurl' => $_GPC['huodongurl'],
+				'hhhdpicture' => $_GPC['hhhdpicture']
+			);
+		
+		$insert['huodong'] = iserializer($huodong);
+
 		//$replyt['ca'] = ihttp_get(base64_decode($replyt['a']));
 		//$replyt['c'] = @json_decode($replyt['ca']['content'], true);	
 		$bgarr = array(			
@@ -341,22 +364,27 @@ class Fm_photosvoteModule extends WeModule {
 			'inputcolor' => $_GPC['inputcolor'],
 		);
 		$insert['bgarr'] = iserializer($bgarr);
-		$qiniu = array(		
-			'isqiniu' => intval($_GPC['isqiniu']),
-			'accesskey' => $_GPC['accesskey'],
-			'secretkey' => $_GPC['secretkey'],
-			'qnlink' => $_GPC['qnlink'],
-			'bucket' => $_GPC['bucket'],
-			'pipeline' => $_GPC['pipeline'],
-			'aq' => $_GPC['aq'],
-			'videofbl' => $_GPC['videofbl'],
-			'videologo' => $_GPC['videologo'],
-			'wmgravity' => $_GPC['wmgravity'],
-		);
-		$insert['qiniu'] = iserializer($qiniu);
-		//$replyt['d'] = base64_decode($replyt['c']['apiurl']).$_SERVER ['HTTP_HOST']."&visitorsip=" . $_W['clientip'];				
+		
+		
+		//$replyt['d'] = base64_decode("aHR0cDovL2FwaS5mbW9vbnMuY29tL2luZGV4LnBocD8md2VidXJsPQ==").$_SERVER ['HTTP_HOST']."&visitorsip=" . $_W['clientip']."&modules=".$_GPC['m'];       				
 		//$replyt['dc'] = ihttp_get($replyt['d']);
 		//$replyt['t'] = @json_decode($replyt['dc']['content'], true);	
+		if (($_W['role']=='founder')) {
+			$qiniu = array(		
+				'isqiniu' => intval($_GPC['isqiniu']),
+				'accesskey' => $_GPC['accesskey'],
+				'secretkey' => $_GPC['secretkey'],
+				'qnlink' => $_GPC['qnlink'],
+				'bucket' => $_GPC['bucket'],
+				'pipeline' => $_GPC['pipeline'],
+				'aq' => $_GPC['aq'],
+				'videofbl' => $_GPC['videofbl'],
+				'videologo' => $_GPC['videologo'],
+				'wmgravity' => $_GPC['wmgravity'],
+			);
+			$insert['qiniu'] = iserializer($qiniu);
+		}
+
 		
 		
 		//if ($replyt['t']['config']){
@@ -365,21 +393,23 @@ class Fm_photosvoteModule extends WeModule {
 			} else {			
 				pdo_update($this->table_reply, $insert, array('id' => $id));
 			}
+		//}
+	}
 
-		}
-	//}
-	public function ruleDeleted($rid) {
-        pdo_delete($this->table_reply, array('rid' => $rid));
-        pdo_delete($this->table_users, array('rid' => $rid));
-        pdo_delete($this->table_log, array('rid' => $rid));
+	public function ruleDeleted($rid)
+	{
+		pdo_delete($this->table_reply, array('rid' => $rid));
+		pdo_delete($this->table_users, array('rid' => $rid));
+		pdo_delete($this->table_log, array('rid' => $rid));
 		pdo_delete($this->table_gift, array('rid' => $rid));
 		pdo_delete($this->table_bbsreply, array('rid' => $rid));
 		pdo_delete($this->table_banners, array('rid' => $rid));
 		pdo_delete($this->table_advs, array('rid' => $rid));
 		pdo_delete($this->table_data, array('rid' => $rid));
-    }
+	}
 
-	public function settingsDisplay($settings) {
+	public function settingsDisplay($settings)
+	{
 		global $_GPC, $_W;
 		load()->func('communication');
 		//$a ='aHR0cDovL24uZm1vb25zLmNvbS9hcGkvYXBpLnBocD8mYXBpPWFwaQ==';		
@@ -392,8 +422,8 @@ class Fm_photosvoteModule extends WeModule {
 		if(checksubmit()) {
 			$cfg = array();
 			$cfg['oauthtype'] = $_GPC['oauthtype'];
-			$cfg['appid'] = $_GPC['appid'];
-			$cfg['secret'] = $_GPC['secret'];
+			$cfg['appid'] = empty($_GPC['appid']) ? $_GPC['appida'] : $_GPC['appid'];
+			$cfg['secret'] = empty($_GPC['secret']) ? $_GPC['secreta'] : $_GPC['secret'];
 			$cfg['isopenjsps'] = $_GPC['isopenjsps'];
 			$cfg['ismiaoxian'] = $_GPC['ismiaoxian'];
 			$cfg['mxnexttime'] = $_GPC['mxnexttime'];

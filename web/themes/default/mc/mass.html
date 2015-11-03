@@ -236,6 +236,8 @@
 				});
 			});
 		});
+
+
 	</script>
 </script>
 <script>
@@ -347,6 +349,7 @@
 				params.formdata = formdata;
 				params.content = content;
 			}
+
 			var url = "{php echo url('mc/mass/post')}";
 			$.post(url, params, function(data){
 				if(data == 'success') {

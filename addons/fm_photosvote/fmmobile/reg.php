@@ -3,13 +3,16 @@
  * 女神来了模块定义
  *
  * @author 微赞科技
- * @url http://bbs.wdlcms.com/
+ * @url http://bbs.012wz.com/
  */
 defined('IN_IA') or exit('Access Denied');
 
-		if ($reply['ipannounce'] == 1) {
-			$announce = pdo_fetchall("SELECT * FROM " . tablename($this->table_announce) . " WHERE uniacid= '{$uniacid}' AND rid= '{$rid}' ORDER BY id DESC");		
+		if ($istop['ipannounce'] == 1) {
+			$announce = pdo_fetchall("SELECT * FROM " . tablename($this->table_announce) . " WHERE uniacid= '{$uniacid}' AND rid= '{$rid}' ORDER BY id DESC");
+			
 		}
+				
+		
 		//赞助商
 		if ($reply['isreg'] == 1) {
 			$advs = pdo_fetchall("SELECT * FROM " . tablename($this->table_advs) . " WHERE enabled=1 AND ismiaoxian = 0  AND uniacid= '{$uniacid}'  AND rid= '{$rid}' ORDER BY displayorder ASC");

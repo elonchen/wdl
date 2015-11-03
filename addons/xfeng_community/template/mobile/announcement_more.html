@@ -29,13 +29,9 @@
             <div class="author">{php echo $this->module['config']['cname']}</div>
             <div class="time">{php echo date('Y-m-d', $item[createtime]);}</div>
         </div>
-        {if $item['img']}
-        <div class="notice_img">
-            <img src="" />
-        </div>
-        {/if}
         <div class="notice_content">
-        	{$item['content']}
+        	{$item['datetime']}{$item['location']}{$item['reason']}
+        	{$item['remark']}
         </div>
         <div class="notice_all">
 

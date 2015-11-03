@@ -2,76 +2,87 @@
 /**
  * 微信墙模块
  *
- * [WeEngine System] Copyright (c) 2013 wdlcms.com
+ * [WeEngine System] Copyright (c) 2013 012wz.com
  */
 defined('IN_IA') or exit('Access Denied');
+
 class We7_wxwallModuleSite extends WeModuleSite {
+
 	/**
 	 * 内容管理
 	 */
 	public function doWebManage() {
 		global $_GPC, $_W;
-		/**** 0.6 ****/
-		checklogin();
 
 		$id = intval($_GPC['id']);
-		$isshow = isset($_GPC['isshow']) ? intval($_GPC['isshow']) : 0;
+		$isshow = intval($_GPC['isshow']);
 
 		if (checksubmit('verify') && !empty($_GPC['select'])) {
 			foreach ($_GPC['select'] as &$row) {
 				$row = intval($row);
 			}
-			$sql = 'UPDATE '.tablename('wxwall_message')." SET isshow=1 WHERE rid=:rid AND id  IN  ('".implode("','", $_GPC['select'])."')";
+			$sql = 'UPDATE ' . tablename('wxwall_message') . " SET isshow=1 WHERE rid=:rid AND id  IN  ('" . implode("','", $_GPC['select']) . "')";
 			pdo_query($sql, array(':rid' => $id));
-			message('审核成功！', $this->createWebUrl('manage', array('id' => $id, 'isshow'=>$isshow, 'page' => $_GPC['page'])));
+			message('微信墙信息审核成功！', $this->createWebUrl('manage', array('id' => $id, 'isshow' => $isshow, 'page' => $_GPC['page'])));
 		}
+
 		if (checksubmit('delete') && !empty($_GPC['select'])) {
 			foreach ($_GPC['select'] as &$row) {
 				$row = intval($row);
 			}
-			$sql = 'DELETE FROM'.tablename('wxwall_message')." WHERE rid=:rid AND id  IN  ('".implode("','", $_GPC['select'])."')";
+			$sql = 'DELETE FROM' . tablename('wxwall_message') . " WHERE rid=:rid AND id  IN  ('" . implode("','", $_GPC['select']) . "')";
 			pdo_query($sql, array(':rid' => $id));
-			message('删除成功！', $this->createWebUrl('manage', array('id' => $id, 'isshow'=>$isshow, 'page' => $_GPC['page'])));
+			message('微信墙信息删除成功！', $this->createWebUrl('manage', array('id' => $id, 'isshow' => $isshow, 'page' => $_GPC['page'])));
 		}
 
-		$condition = '';
-		if($isshow == 0) {
-			$condition .= 'AND isshow = '.$isshow;
-		} else {
-			$condition .= 'AND isshow > 0';
+		$condition = ' WHERE `ms`.`rid` = :rid';
+		$params = array(':rid' => intval($_GPC['id']));
+
+		$sql = 'SELECT `id`, `isshow`, `rid` FROM ' . tablename('wxwall_reply') . ' AS `ms` ' . $condition;
+		$wall = pdo_fetch($sql, $params);
+		if (empty($wall)) {
+			message('微信墙活动不存在或已经被删除');
 		}
-		$pindex = max(1, intval($_GPC['page']));
-		$psize = 20;
-		$wall = pdo_fetch("SELECT id, isshow, rid FROM ".tablename('wxwall_reply')." WHERE rid = '{$id}' LIMIT 1");
-		$list = pdo_fetchall("SELECT * FROM ".tablename('wxwall_message')." WHERE rid = '{$wall['rid']}' {$condition} ORDER BY createtime DESC LIMIT ".($pindex - 1) * $psize.",{$psize}");
-		if (!empty($list)) {
-			$total = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename('wxwall_message') . " WHERE rid = '{$wall['rid']}' {$condition}");
+
+		$condition .= ' AND `me`.`rid` = :rid';
+		$params[':isshow'] = intval($_GPC['isshow']);
+		if ($params[':isshow'] < 1) {
+			$condition .= ' AND `isshow` = :isshow';
+		} else {
+			$condition .= ' AND `isshow` > :isshow';
+			$params[':isshow'] = 0;
+		}
+
+		$sql = 'SELECT COUNT(*) FROM ' . tablename('wxwall_message') . ' AS `ms` JOIN ' . tablename('wxwall_members') .
+				' AS `me` ON `ms`.`from_user` = `me`.`from_user` ' . $condition;
+		$total = pdo_fetchcolumn($sql, $params);
+
+		if ($total > 0) {
+			$pindex = max(1, intval($_GPC['page']));
+			$psize = 15;
+
+			$sql = 'SELECT `ms`.*, `isblacklist`, `avatar` FROM ' . tablename('wxwall_message') . ' AS `ms` JOIN ' .
+				tablename('wxwall_members') . ' AS `me` ON `ms`.`from_user` = `me`.`from_user` ' . $condition .
+				' ORDER BY `createtime` DESC LIMIT ' . ($pindex - 1) * $psize . ',' . $psize;
+			$list = pdo_fetchall($sql, $params);
+
 			$pager = pagination($total, $pindex, $psize);
+
 			foreach ($list as &$row) {
-				if ($row['type'] == 'link') {
-					$row['content'] = iunserializer($row['content']);
-					$row['content'] = '<a href="'.$row['content']['link'].'" target="_blank" title="'.$row['content']['description'].'">'.$row['content']['title'].'</a>';
-				} elseif ($row['type'] == 'image') {
-					$row['content'] = '<img src="'.$_W['attachurl'] . $row['content'].'" />';
+				if ($row['type'] == 'image') {
+					$row['content'] = '<a href="' . tomedia($row['content']) . '" target="_blank"><img src="' .
+						tomedia($row['content']) . '"style="width:50px;height:50px;" /></a>';
 				} else {
 					$row['content'] = emotion($row['content']);
 				}
-				$userids[] = $row['from_user'];
+
+				// 获取粉丝信息
+				$sql = 'SELECT `nickname` FROM ' . tablename('mc_mapping_fans') . ' WHERE `openid` = :openid';
+				$row['nickname'] = pdo_fetchcolumn($sql, array(':openid' => $row['from_user']));
 			}
 			unset($row);
-			if (!empty($userids)) {
-				$userids = array_unique($userids);
-
-				/**** 0.6 ****/
-				load()->model('mc');
-				$member = mc_fetch($userids, array('nickname','avatar'));
-				$blacklist = pdo_fetchall("SELECT from_user, isblacklist FROM ".tablename('wxwall_members')." WHERE rid=:rid AND from_user IN ('".implode("','", $userids)."')", array(':rid'=>$id), 'from_user');
-				foreach ($member as $key => &$row) {
-					$row['isblacklist'] = $blacklist[$key]['isblacklist'];
-				}
-				unset($row);
-			}
 		}
+
 		include $this->template('manage');
 	}
 
@@ -81,18 +92,18 @@ class We7_wxwallModuleSite extends WeModuleSite {
 	public function doWebIncoming() {
 		global $_GPC, $_W;
 		$id = intval($_GPC['id']);
-
 		$lastmsgtime = intval($_GPC['lastmsgtime']);
-		$sql = "SELECT id, content, from_user, type, createtime FROM ".tablename('wxwall_message')." WHERE rid = :rid ";
-		$params = array(':rid'=>$id);
+
+		$sql = "SELECT * FROM " . tablename('wxwall_message') . " WHERE rid = :rid";
+		$params = array(':rid' => $id);
 		$page = max(1, intval($_GPC['page']));
 		if (!empty($lastmsgtime)) {
-			$sql .= " AND createtime >= :createtime AND isshow > 0 ORDER BY id ASC LIMIT ".($page-1).", 1";
+			$sql .= " AND createtime >= :createtime AND isshow > 0 ORDER BY id ASC LIMIT " . ($page - 1) . ", 1";
 			$params[':createtime'] = $lastmsgtime;
 		} else {
 			$sql .= " AND isshow = '1' ORDER BY createtime ASC  LIMIT 1";
 		}
-		$list = pdo_fetchall($sql,$params);
+		$list = pdo_fetchall($sql, $params);
 		if (!empty($list)) {
 			$this->formatMsg($list);
 			$row = $list[0];
@@ -109,29 +120,39 @@ class We7_wxwallModuleSite extends WeModuleSite {
 		global $_W, $_GPC;
 		$id = intval($_GPC['id']);
 
-		if (checksubmit('delete') && isset($_GPC['select']) && !empty($_GPC['select'])) {
+		if (checksubmit('delete') && !empty($_GPC['select'])) {
 			foreach ($_GPC['select'] as &$row) {
 				$row = intval($row);
 			}
-			$sql = 'UPDATE ' . tablename('wxwall_members') . " SET isblacklist=0 WHERE rid=:rid AND id  IN ('".implode("','", $_GPC['select'])."')";
-			pdo_query($sql, array(':rid'=>$id));
+			$sql = 'UPDATE ' . tablename('wxwall_members') . " SET isblacklist=0 WHERE rid=:rid AND id  IN ('" . implode("','", $_GPC['select']) . "')";
+			pdo_query($sql, array(':rid' => $id));
 			message('黑名单解除成功！', $this->createWebUrl('blacklist', array('id' => $id, 'page' => $_GPC['page'])));
 		}
+
 		if (!empty($_GPC['from_user'])) {
-			$isshow = isset($_GPC['isshow']) ? intval($_GPC['isshow']) : 0;
-			pdo_update('wxwall_members', array('isblacklist' => intval($_GPC['switch'])), array('from_user' => $_GPC['from_user'], 'rid'=>$id));
-			message('黑名单操作成功！', $this->createWebUrl('manage', array('id' => $id, 'isshow' => $isshow)));
+			pdo_update('wxwall_members', array('isblacklist' => intval($_GPC['switch'])), array('from_user' => $_GPC['from_user'], 'rid' => $id));
+			message('黑名单操作成功！', $this->createWebUrl('manage', array('id' => $id, 'isshow' => intval($_GPC['isshow']))));
 		}
 
-		$pindex = max(1, intval($_GPC['page']));
-		$psize = 20;
-		$list = pdo_fetchall("SELECT id, from_user, lastupdate FROM ".tablename('wxwall_members')." WHERE isblacklist = '1' AND rid=:rid ORDER BY lastupdate DESC LIMIT ".($pindex - 1) * $psize.",{$psize}", array(':rid' => $id), 'from_user');
-		$total = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename('wxwall_members') . " WHERE isblacklist = '1' AND rid=:rid ", array(':rid' => $id));
-		$pager = pagination($total, $pindex, $psize);
+		$where = ' WHERE `rid` = :rid AND `isblacklist` = :isblacklist';
+		$params = array(':rid' => intval($_GPC['id']), ':isblacklist' => 1);
+		$sql = 'SELECT COUNT(*) FROM ' . tablename('wxwall_members') . $where;
+		$total = pdo_fetchcolumn($sql, $params);
 
-		/**** 0.6 ****/
-		load()->model('mc');
-		$member = mc_fetch(array_keys($list), array('nickname', 'avatar'));
+		if ($total > 0) {
+			$pindex = max(1, intval($_GPC['page']));
+			$psize = 15;
+
+			$sql = 'SELECT `id`, `from_user`, `lastupdate` FROM ' . tablename('wxwall_members') . $where . ' ORDER BY
+					`lastupdate` DESC LIMIT ' . ($pindex - 1) * $psize . ',' . $psize;
+			$list = pdo_fetchall($sql, $params);
+
+			foreach ($list as &$row) {
+				$sql = 'SELECT `nickname` FROM ' . tablename('mc_mapping_fans') . ' WHERE `openid` = :openid';
+				$row['nickname'] = pdo_fetchcolumn($sql, array(':openid' => $row['from_user']));
+			}
+			unset($row);
+		}
 
 		include $this->template('blacklist');
 	}
@@ -151,10 +172,6 @@ class We7_wxwallModuleSite extends WeModuleSite {
 	 */
 	public function doWebLottery() {
 		global $_GPC, $_W;
-
-		/**** 0.6 ****/
-		checklogin();
-
 		$id = intval($_GPC['id']);
 		$type = intval($_GPC['type']);
 		$wall = $this->getWall($id);
@@ -172,11 +189,7 @@ class We7_wxwallModuleSite extends WeModuleSite {
 	 */
 	public function doWebAward() {
 		global $_GPC, $_W;
-
-		/**** 0.6 ****/
-		checklogin();
-
-		$message = pdo_fetch("SELECT * FROM ".tablename('wxwall_message')." WHERE id = :id LIMIT 1", array(':id'=>intval($_GPC['mid'])));
+		$message = pdo_fetch("SELECT * FROM " . tablename('wxwall_message') . " WHERE id = :id LIMIT 1", array(':id' => intval($_GPC['mid'])));
 		if (empty($message)) {
 			message('抱歉，参数不正确！', '', 'error');
 		}
@@ -196,29 +209,41 @@ class We7_wxwallModuleSite extends WeModuleSite {
 	public function doWebAwardlist() {
 		global $_GPC, $_W;
 		$id = intval($_GPC['id']);
+
 		if (checksubmit('delete') && !empty($_GPC['select'])) {
-			pdo_delete('wxwall_award', " id  IN  ('".implode("','", $_GPC['select'])."')");
+			pdo_delete('wxwall_award', " id  IN  ('" . implode("','", $_GPC['select']) . "')");
 			message('删除成功！', $this->createWebUrl('awardlist', array('id' => $id, 'page' => $_GPC['page'])));
 		}
+
 		if (!empty($_GPC['wid'])) {
 			$wid = intval($_GPC['wid']);
 			pdo_update('wxwall_award', array('status' => intval($_GPC['status'])), array('id' => $wid));
 			message('标识领奖成功！', $this->createWebUrl('awardlist', array('id' => $id, 'page' => $_GPC['page'])));
 		}
 
-		$pindex = max(1, intval($_GPC['page']));
-		$psize = 20;
-		$sql = "SELECT * FROM ".tablename('wxwall_award')." WHERE rid = :rid ORDER BY status, `createtime` DESC LIMIT ".($pindex - 1) * $psize.",{$psize}";
-		$list = pdo_fetchall($sql, array(':rid'=>$id));
-		if (!empty($list)) {
-			$total = pdo_fetchcolumn("SELECT COUNT(*) FROM ".tablename('wxwall_award')." WHERE rid = :rid", array(':rid'=>$id));
-			$pager = pagination($total, $pindex, $psize);
-			foreach ($list as $row) {
-				$users[$row['from_user']] = $row['from_user'];
+		$where = ' WHERE `rid` = :rid';
+		$params = array(':rid' => $id);
+		$sql = 'SELECT COUNT(*) FROM ' . tablename('wxwall_award') . $where;
+		$total = pdo_fetchcolumn($sql, $params);
+
+		if ($total > 0) {
+			$pindex = max(1, intval($_GPC['page']));
+			$psize = 15;
+
+			$sql = 'SELECT * FROM ' . tablename('wxwall_award') . $where . ' ORDER BY `status`, `createtime` DESC LIMIT '
+				. ($pindex - 1) * $psize . ',' . $psize;
+			$list = pdo_fetchall($sql, $params);
+
+			foreach ($list as &$row) {
+				// 获取粉丝信息
+				$sql = 'SELECT `nickname` FROM ' . tablename('mc_mapping_fans') . ' WHERE `openid` = :openid';
+				$row['nickname'] = pdo_fetchcolumn($sql, array(':openid' => $row['from_user']));
 			}
-			load()->model('mc');
-			$users = mc_fetch($users, array('nickname', 'avatar'));
+			unset($row);
+
+			$pager = pagination($total, $pindex, $psize);
 		}
+
 		include $this->template('awardlist');
 	}
 
@@ -228,19 +253,29 @@ class We7_wxwallModuleSite extends WeModuleSite {
 	 * @return array
 	 */
 	public function getWall($id) {
-		$wall = pdo_fetch("SELECT id, acid, isshow, rid, syncwall, logo, background FROM ".tablename('wxwall_reply')." WHERE rid = :rid LIMIT 1", array(':rid'=>$id));
+		$sql = 'SELECT `id`, `acid`, `isshow`, `rid`, `syncwall`, `logo`, `background` FROM ' . tablename('wxwall_reply')
+			. ' WHERE `rid` = :rid';
+		$params = array(':rid' => $id);
+		$wall = pdo_fetch($sql, $params);
 		$wall['syncwall'] = unserialize($wall['syncwall']);
-		$wall['rule'] = pdo_fetch("SELECT name, uniacid FROM ".tablename('rule')." WHERE id = :rid LIMIT 1", array(':rid'=>$id));
+
+		$sql = 'SELECT `name`, `uniacid` FROM ' . tablename('rule') . ' WHERE `id` = :rid';
+		$wall['rule'] = pdo_fetch($sql, $params);
+
 		load()->model('account');
 		$accounts = uni_accounts();
 		$wall['account'] = $accounts[$wall['acid']];
-		$wall['keyword'] = pdo_fetchall("SELECT content FROM ".tablename('rule_keyword')." WHERE rid = :rid ", array(':rid'=>$id));
+
+		$sql = 'SELECT `content` FROM ' . tablename('rule_keyword') . ' WHERE rid = :rid';
+		$wall['keyword'] = pdo_fetchall($sql, $params);
+
 		return $wall;
 	}
 
 	/**
 	 * 格式化输出微信墙信息
-	 * @param array $list 消息集合
+	 * @param $list 消息集合
+	 * @return boolean
 	 */
 	public function formatMsg(&$list) {
 		global $_W;
@@ -248,37 +283,27 @@ class We7_wxwallModuleSite extends WeModuleSite {
 			return false;
 		}
 
-		$uids = $members = array();
 		foreach ($list as &$row) {
-			$uids[$row['from_user']] = $row['from_user'];
-			if ($row['type'] == 'link') {
-				$row['content'] = iunserializer($row['content']);
-				$row['content'] = '<a href="'.$row['content']['link'].'" target="_blank" title="'.$row['content']['description'].'">'.$row['content']['title'].'</a>';
-			} elseif ($row['type'] == 'image') {
-				$row['content'] = '<img src="'.$_W['attachurl'] . $row['content'].'" />';
+			if ($row['type'] == 'image') {
+				$row['content'] = '<img src="' . tomedia($row['content']) . '" target="_blank" />';
 			} elseif ($row['type'] == 'txwall') {
-				$content = unserialize($row['content']);
+				$content = iunserializer($row['content']);
 				$row['content'] = $content['content'];
 				$row['avatar'] = $content['avatar'];
 				$row['nickname'] = $content['nickname'];
 			}
 			$row['content'] = emotion($row['content'], '48px');
+
+			// 获取粉丝信息
+			if ($row['type'] != 'txwall') {
+				$sql = 'SELECT `nickname` FROM ' . tablename('mc_mapping_fans') . ' WHERE `openid` = :openid';
+				$params = array(':openid' => $row['from_user']);
+				$row['nickname'] = pdo_fetchcolumn($sql, $params);
+				$sql = 'SELECT `avatar` FROM ' . tablename('wxwall_members') . ' WHERE `from_user` = :openid';
+				$row['avatar'] = pdo_fetchcolumn($sql, $params);
+			}
 		}
 		unset($row);
-		if (!empty($uids)) {
-			load()->model('mc');
-			$members = mc_fetch($uids, array('nickname', 'avatar'));
-		}
-		if (!empty($members)) {
-			foreach ($list as $index => &$row) {
-				if ($row['type'] == 'txwall') {
-					continue;
-				}
-				$row['nickname'] = $members[$row['from_user']]['nickname'];
-				$row['avatar'] = $members[$row['from_user']]['avatar'];
-			}
-			unset($row);
-		}
 	}
 
 	/**
@@ -291,26 +316,29 @@ class We7_wxwallModuleSite extends WeModuleSite {
 		$result = array('status' => 0);
 		$lastmsgtime = intval($_GPC['lastmsgtime']);
 		$lastuser = '';
-		$wall = pdo_fetchcolumn("SELECT syncwall FROM ".tablename('wxwall_reply')." WHERE rid = :rid LIMIT 1", array(':rid'=>$id));
+		$wall = pdo_fetchcolumn("SELECT syncwall FROM " . tablename('wxwall_reply') . " WHERE rid = :rid LIMIT 1", array(':rid' => $id));
 		if (empty($wall)) {
 			message($result, '', 'ajax');
 		}
-		$wall = unserialize($wall);
+		$wall = iunserializer($wall);
 		if (empty($wall['tx']['status'])) {
 			message($result, '', 'ajax');
 		}
-		$response = ihttp_request('http://wall.v.t.qq.com/index.php?c=wall&a=topic&ak=801424380&t='.$wall['tx']['subject'].'&fk=&fn=&rnd='.TIMESTAMP);
+
+		load()->func('communication');
+		$response = ihttp_request('http://wall.v.t.qq.com/index.php?c=wall&a=topic&ak=801424380&t=' . $wall['tx']['subject'] . '&fk=&fn=&rnd=' . TIMESTAMP);
 		if (empty($response['content'])) {
 			$result['status'] = -1;
 			message($result, '', 'ajax');
 		}
-		$last = pdo_fetch("SELECT createtime, from_user FROM ".tablename('wxwall_message')." WHERE createtime >= :createtime AND type = 'txwall' AND rid = :rid ORDER BY createtime DESC LIMIT 1", array(':createtime'=>$lastmsgtime, ':rid'=>$id));
+		$last = pdo_fetch("SELECT createtime, from_user FROM " . tablename('wxwall_message') . " WHERE createtime >= :createtime AND type = 'txwall' AND rid = :rid ORDER BY createtime DESC LIMIT 1", array(':createtime' => $lastmsgtime, ':rid' => $id));
 		if (!empty($last)) {
 			$lastmsgtime = $last['createtime'];
 			$lastuser = $last['from_user'];
 		}
 		$list = json_decode($response['content'], true);
 		if (!empty($list['data']['info'])) {
+			$insert = array();
 			foreach ($list['data']['info'] as $row) {
 				if ($row['timestamp'] < $lastmsgtime || ($lastmsgtime == $row['timestamp'] && !empty($lastuser) && $lastuser == $row['name'])) {
 					break;
@@ -318,17 +346,19 @@ class We7_wxwallModuleSite extends WeModuleSite {
 				$content = array('nickname' => $row['nick'], 'avatar' => !empty($row['head']) ? $row['head'] . '/120' : '', 'content' => $row['text']);
 				$insert[] = array(
 					'rid' => $id,
-					'content' => serialize($content),
+					'content' => iserializer($content),
 					'from_user' => $row['name'],
 					'type' => 'txwall',
 					'isshow' => 1,
-					'createtime' => $row['timestamp'],
+					'createtime' => $row['timestamp']
 				);
 			}
 			unset($row);
-			$insert = array_reverse($insert);
-			foreach ($insert as $row) {
-				pdo_insert('wxwall_message', $row);
+			if (!empty($insert)) {
+				$insert = array_reverse($insert);
+				foreach ($insert as $row) {
+					pdo_insert('wxwall_message', $row);
+				}
 			}
 			$lastmsgtime = $row['timestamp'];
 			$result = array(
@@ -341,9 +371,6 @@ class We7_wxwallModuleSite extends WeModuleSite {
 		}
 	}
 
-	/**
-	 * 腾讯墙信息登记
-	 */
 	public function doMobileRegister() {
 		global $_GPC, $_W;
 		$title = '微信墙登记';
@@ -374,7 +401,7 @@ class We7_wxwallModuleSite extends WeModuleSite {
 				$data['avatar'] = 'images/global/noavatar_middle.gif';
 			}
 			mc_update($_W['member']['uid'], $data);
-			die('<script type="text/javascript">alert("登记成功，系统会自动跳转，如果未成功请手动退回微信界面。");require(["WeixinApi"], function(WeixinApi){WeixinApi.ready(function(Api){setTimeout(function(){Api.closeWindow();}, 2000)});});</script>');
+			message('登记成功，系统会自动跳转，如果未成功请手动退回微信界面。<script type="text/javascript">wx.ready(function(){wx.closeWindow();});</script>');
 		}
 
 		/**** 0.6 ****/
@@ -384,7 +411,7 @@ class We7_wxwallModuleSite extends WeModuleSite {
 			$member['avatar'] = 'images/global/noavatar_middle.gif';
 			include $this->template('register');
 		} else {
-			message('个人信息已经自动获取到，系统会自动跳转，如果未成功请手动退回微信界面。<script type="text/javascript">require(["WeixinApi"], function(WeixinApi){WeixinApi.ready(function(Api){setTimeout(function(){Api.closeWindow();}, 2000)});});</script>', '', 'success');
+			message('个人信息已经自动获取到，系统会自动跳转，如果未成功请手动退回微信界面。<script type="text/javascript">wx.ready(function(){wx.closeWindow();});</script>', '', 'success');
 		}
 	}
 }

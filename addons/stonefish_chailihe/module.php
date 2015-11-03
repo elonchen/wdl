@@ -8,86 +8,204 @@ defined('IN_IA') or exit('Access Denied');
 
 class Stonefish_chailiheModule extends WeModule {
 
-	public $table_reply  = 'stonefish_chailihe_reply';
-	public $table_list   = 'stonefish_chailihe_userlist';	
-	public $table_data   = 'stonefish_chailihe_data';
-	public $table_gift   = 'stonefish_chailihe_gift';
-	public $table_giftmika       = 'stonefish_chailihe_giftmika';
-
 	public function fieldsFormDisplay($rid = 0) {
 		//要嵌入规则编辑页的自定义内容，这里 $rid 为对应的规则编号，新增时为 0
 		global $_W;
 		load()->func('tpl');
-		$weid = $_W['uniacid'];
-		//查询是否有商户网点权限
+		$uniacid = $_W['uniacid'];
+		//查询是否填写系统参数
+		$setting = $this->module['config'];
+		if(empty($setting)){
+			message('抱歉，系统参数没有填写，请先填写系统参数！', url('profile/module/setting',array('m' => 'stonefish_chailihe')), 'error');
+		}
+		//查询是否填写系统参数
+		//积分类型
+		$creditnames = array();
+		$unisettings = uni_setting($uniacid, array('creditnames'));
+		foreach ($unisettings['creditnames'] as $key=>$credit) {
+			if (!empty($credit['enabled'])) {
+				$creditnames[$key] = $credit['title'];
+			}
+		}
+		//积分类型
+		//查询是否有商户网点、会员中心权限
 		$modules = uni_modules($enabledOnly = true);
 		$modules_arr = array();
 		$modules_arr = array_reduce($modules, create_function('$v,$w', '$v[$w["mid"]]=$w["name"];return $v;'));
 		if(in_array('stonefish_branch',$modules_arr)){
 		    $stonefish_branch = true;
-			$awarding = pdo_fetchall("SELECT * FROM ".tablename('stonefish_branch_business')." WHERE uniacid = :weid ORDER BY `id` DESC", array(':weid' => $weid));
-		}		
-		//查询是否有商户网点权限
-		if (!empty($rid)) {
-			$reply = pdo_fetch("SELECT * FROM ".tablename($this->table_reply)." WHERE rid = :rid ORDER BY `id` DESC", array(':rid' => $rid));
-			$award = pdo_fetchall("SELECT * FROM ".tablename($this->table_gift)." WHERE rid = :rid ORDER BY `id` ASC", array(':rid' => $rid));
-			if (!empty($award)){
-				foreach ($award as &$pointer) {
-					$pointer['activation_code_num'] = pdo_fetchcolumn('SELECT COUNT(*) FROM '.tablename($this->table_giftmika).'  WHERE rid='.$rid.' AND giftid = '.$pointer['id'].'');
-				}
-			}
- 		}else{
-		    $reply = array(
-				'periodlottery' => 1,
-				'maxlottery' => 1,
-			);
 		}
-		$reply['start_time'] = empty($reply['start_time']) ? strtotime(date('Y-m-d H:i')) : $reply['start_time'];
-		$reply['end_time'] = empty($reply['end_time']) ? strtotime("+1 week") : $reply['end_time'];
-		$reply['status'] = !isset($reply['status']) ? "1" : $reply['status'];
-		$reply['miao'] = !isset($reply['miao']) ? "5" : $reply['miao'];
-		$reply['randlihe'] = !isset($reply['randlihe']) ? "0" : $reply['randlihe'];
+		if(in_array('stonefish_member',$modules_arr)){
+		    $stonefish_member = true;
+		}
+		//查询是否有商户网点、会员中心权限
+		//查询子公众号信息
+		$acid_arr = uni_accounts();
+		$ids = array();
+		$ids = array_map('array_shift', $acid_arr);//子公众账号Arr数组
+		$ids_num = count($ids);//多少个子公众账号
+		$one = current($ids);
+		//查询子公众号信息
+		//活动模板
+		$template = pdo_fetchall("SELECT * FROM " . tablename('stonefish_chailihe_template') . " WHERE uniacid = :uniacid OR uniacid=0 ORDER BY `id` asc", array(':uniacid' => $uniacid));
+		if(empty($template)){			
+			$inserttemplate = array(
+                'uniacid'          => 0,
+				'title'            => '中秋节主题',
+				'thumb'            => '../addons/stonefish_chailihe/template/images/template.jpg',
+				'fontsize'         => '12',
+				'bgimg'            => '../addons/stonefish_chailihe/template/images/bg.jpg',
+				'bgimglihe'        => '../addons/stonefish_chailihe/template/images/bg_myprize.jpg',
+				'bgimgprize'       => '../addons/stonefish_chailihe/template/images/bg_common.jpg',
+				'bgcolor'          => '#26216f',
+				'textcolor'        => '#ffffff',
+				'textcolorlink'    => '#5E43B6',
+				'buttoncolor'      => '#5E43B6',
+				'buttontextcolor'  => '#ffffff',
+				'rulecolor'        => '#5E43B6',
+				'ruletextcolor'    => '#ffffff',
+				'navcolor'         => '#fcfcfc',
+				'navtextcolor'     => '#9a9a9a',
+				'navactioncolor'   => '#5E43B6',
+				'watchcolor'       => '#efe7e0',
+				'watchtextcolor'   => '#717171',
+				'awardcolor'       => '#8571fe',
+				'awardtextcolor'   => '#ffffff',
+				'awardscolor'      => '#b7b7b7',
+				'awardstextcolor'  => '#434343',
+			);
+			pdo_insert('stonefish_chailihe_template', $inserttemplate);
+			$inserttemplate = array(
+                'uniacid'          => 0,
+				'title'            => '端午节主题',
+				'thumb'            => '../addons/stonefish_chailihe/template/images/duanwu.jpg',
+				'fontsize'         => '12',
+				'bgimg'            => '../addons/stonefish_chailihe/template/images/1.png',
+				'bgimglihe'        => '../addons/stonefish_chailihe/template/images/2.png',
+				'bgimgprize'       => '../addons/stonefish_chailihe/template/images/3.png',
+				'bgcolor'          => '#b0e6ca',
+				'textcolor'        => '#308155',
+				'textcolorlink'    => '#f3f3f3',
+				'buttoncolor'      => '#45986c',
+				'buttontextcolor'  => '#ffffff',
+				'rulecolor'        => '#f7ce40',
+				'ruletextcolor'    => '#f3f3f3',
+				'navcolor'         => '#fcfcfc',
+				'navtextcolor'     => '#f3f3f3',
+				'navactioncolor'   => '#93c47d',
+				'watchcolor'       => '#efe7e0',
+				'watchtextcolor'   => '#717171',
+				'awardcolor'       => '#38761d',
+				'awardtextcolor'   => '#ffffff',
+				'awardscolor'      => '#b7b7b7',
+				'awardstextcolor'  => '#434343',
+			);
+			pdo_insert('stonefish_chailihe_template', $inserttemplate);
+			$template = pdo_fetchall("SELECT * FROM " . tablename('stonefish_chailihe_template') . " WHERE uniacid = :uniacid OR uniacid=0 ORDER BY `id` asc", array(':uniacid' => $uniacid));
+		}
+		//活动模板
+		//礼盒样式
+		$lihestyle = pdo_fetchall("SELECT * FROM " . tablename('stonefish_chailihe_lihestyle') . " WHERE uniacid = :uniacid OR uniacid=0 ORDER BY `liheid` asc", array(':uniacid' => $uniacid));
+		if(empty($lihestyle)){			
+			for ($i = 1; $i <= 8; $i++){
+				$insertlihestyle = array(
+                    'uniacid'          => 0,
+				    'title'            => '礼盒'.$i.'样式',
+				    'thumb1'           => '../addons/stonefish_chailihe/template/images/lihepic/icon_prize_i'.$i.'.png',
+				    'thumb2'           => '../addons/stonefish_chailihe/template/images/lihepic/icon_prize_opened'.$i.'.png',
+				    'thumb3'           => '../addons/stonefish_chailihe/template/images/lihepic/icon_prize'.$i.'.png',
+				    'music'            => $i
+			    );
+			    pdo_insert('stonefish_chailihe_lihestyle', $insertlihestyle);
+			}
+			$lihestyle = pdo_fetchall("SELECT * FROM " . tablename('stonefish_chailihe_lihestyle') . " WHERE uniacid = :uniacid OR uniacid=0 ORDER BY `liheid` asc", array(':uniacid' => $uniacid));
+		}
+		//礼盒样式
+		//消息模板
+		$tmplmsg = pdo_fetchall("SELECT * FROM " . tablename('stonefish_chailihe_tmplmsg') . " WHERE uniacid = :uniacid ORDER BY `id` asc", array(':uniacid' => $uniacid));
+		//消息模板
+		if (!empty($rid)) {
+			$reply = pdo_fetch("SELECT * FROM ".tablename('stonefish_chailihe_reply')." WHERE rid = :rid ORDER BY `id` desc", array(':rid' => $rid));
+			$exchange = pdo_fetch("SELECT * FROM ".tablename('stonefish_chailihe_exchange')." WHERE rid = :rid ORDER BY `id` desc", array(':rid' => $rid));
+			$share = pdo_fetchall("select * from " . tablename('stonefish_chailihe_share') . " where rid = :rid order by `id` desc", array(':rid' => $rid));
+			$prize = pdo_fetchall("select * from " . tablename('stonefish_chailihe_prize') . " where rid = :rid order by `id` asc", array(':rid' => $rid));
+			$banner = pdo_fetchall("select * from " . tablename('stonefish_chailihe_banner') . " where rid = :rid order by `id` asc", array(':rid' => $rid));
+			//查询奖品是否可以删除
+			foreach ($prize as $mid => $prizes) {
+				$prize[$mid]['fans'] = pdo_fetchcolumn("select COUNT(id) from " . tablename('stonefish_chailihe_fansaward') . " where prizeid = :prizeid", array(':prizeid' => $prizes['id']));
+				$prize[$mid]['delete_url'] = $this->createWebUrl('deleteprize',array('rid'=>$rid,'id'=>$prizes['id']));
+			}
+			//查询奖品是否可以删除
+			if(!empty($reply)){
+				$reply['notawardtext'] = implode("\n", (array)iunserializer($reply['notawardtext']));
+			    $reply['notprizetext'] = implode("\n", (array)iunserializer($reply['notprizetext']));
+			    $reply['awardtext'] = implode("\n", (array)iunserializer($reply['awardtext']));
+				$reply['noprizepic'] = (array)iunserializer($reply['noprizepic']);
+			}
+ 		}
+		if (empty($share)) {
+		    $share = array();
+			foreach ($ids as $acid=>$idlists) {
+                $share[$acid] = array(
+				    "acid" => $acid,
+					"help_url" => $acid_arr[$acid]['subscribeurl'],
+					"share_url" => $acid_arr[$acid]['subscribeurl'],
+					"share_title" => "已有#参与人数#人参与本活动了，你的朋友#粉丝昵称# 还中了大奖：#奖品名称#，请您也来试试吧！",
+                    "share_desc" => "亲，欢迎参加活动，祝您好运哦！已有#参与人数#人参与本活动了，你的朋友#粉丝昵称# 还中了大奖：#奖品名称#，请您也来试试吧！",
+					"share_anniu" => "分享我的快乐",
+					"share_firend" => "我的亲友团",
+					"share_img" => "../addons/stonefish_chailihe/template/images/img_share.png",
+					"share_pic" => "../addons/stonefish_chailihe/template/images/share.png",
+					"share_confirm" => "分享成功提示语",
+					"share_confirmurl" => "活动首页",
+					"share_fail" => "分享失败提示语",
+					"share_cancel" => "分享中途取消提示语",
+					"sharetimes" => 1,
+				    "sharenumtype" => 0,
+				    "sharenum" => 0,
+					"sharetype" => 1,
+					"share_open_close" => 1,
+				);
+            }
+		}
+		$reply['tips'] = empty($reply['tips']) ? '本次活动共可以领取 #最多个数# 个幸运礼盒，每天可以领取 #每天个数# 个幸运礼盒! 你共已经领取了 #领取个数# 个幸运礼盒 ，今天领取了 #今日领取# 个幸运礼盒.' : $reply['tips'];
+		$reply['starttime'] = empty($reply['starttime']) ? strtotime(date('Y-m-d H:i')) : $reply['starttime'];
+		$reply['endtime'] = empty($reply['endtime']) ? strtotime("+1 week") : $reply['endtime'];
+		$reply['isshow'] = !isset($reply['isshow']) ? "1" : $reply['isshow'];
+		$reply['copyright'] = empty($reply['copyright']) ? $_W['account']['name'] : $reply['copyright'];
 		$reply['xuninum'] = !isset($reply['xuninum']) ? "500" : $reply['xuninum'];
 		$reply['xuninumtime'] = !isset($reply['xuninumtime']) ? "86400" : $reply['xuninumtime'];
 		$reply['xuninuminitial'] = !isset($reply['xuninuminitial']) ? "10" : $reply['xuninuminitial'];
 		$reply['xuninumending'] = !isset($reply['xuninumending']) ? "50" : $reply['xuninumending'];
 		$reply['music'] = !isset($reply['music']) ? "1" : $reply['music'];
-		$reply['musicbg'] = empty($reply['musicbg']) ? "../addons/stonefish_chailihe/template/images/bg.mp3" : $reply['musicbg'];
-		$reply['subscribe'] = !isset($reply['subscribe']) ? "0" : $reply['subscribe'];
-		$reply['opensubscribe'] = !isset($reply['opensubscribe']) ? "0" : $reply['opensubscribe'];
-		$reply['opentype'] = !isset($reply['opentype']) ? "0" : $reply['opentype'];
-		$reply['showlihe'] = !isset($reply['showlihe']) ? "0" : $reply['showlihe'];
-		$reply['showline'] = !isset($reply['showline']) ? "1" : $reply['showline'];
-		$reply['repeatzj'] = !isset($reply['repeatzj']) ? "1" : $reply['repeatzj'];
-		$reply['helpchai'] = !isset($reply['helpchai']) ? "0" : $reply['helpchai'];
-		$reply['chainum'] = !isset($reply['chainum']) ? "0" : $reply['chainum'];
-		$reply['helpren'] = !isset($reply['helpren']) ? "0" : $reply['helpren'];
-		$reply['awarding'] = !isset($reply['awarding']) ? "0" : $reply['awarding'];
-		$reply['number_num'] = !isset($reply['number_num']) ? "1" : $reply['number_num'];	
-		$reply['number_num_day'] = !isset($reply['number_num_day']) ? "1" : $reply['number_num_day'];	
-	    $reply['share_shownum'] = !isset($reply['share_shownum']) ? "50" : $reply['share_shownum'];
-		$reply['helpnum'] = !isset($reply['helpnum']) ? "50" : $reply['helpnum'];
-		$reply['picture'] = empty($reply['picture']) ? "../addons/stonefish_chailihe/template/images/big_ads.jpg" : $reply['picture'];
-		$reply['bgcolor'] = empty($reply['bgcolor']) ? "#26216F" : $reply['bgcolor'];
-		$reply['text01color'] = empty($reply['text01color']) ? "#FFFFFF" : $reply['text01color'];
-		$reply['text02color'] = empty($reply['text02color']) ? "#5E43B6" : $reply['text02color'];
-		$reply['text03color'] = empty($reply['text03color']) ? "#523d3d" : $reply['text03color'];
-		$reply['text04color'] = empty($reply['text04color']) ? "#322C8E" : $reply['text04color'];
-		$reply['text05color'] = empty($reply['text05color']) ? "#c1c1c1" : $reply['text05color'];
-		$reply['picnojiang'] = empty($reply['picnojiang']) ? "../addons/stonefish_chailihe/template/images/nojiang.png" : $reply['picnojiang'];
-		$reply['picbg01'] = empty($reply['picbg01']) ? "../addons/stonefish_chailihe/template/images/bg.jpg" : $reply['picbg01'];
-		$reply['picbg02'] = empty($reply['picbg02']) ? "../addons/stonefish_chailihe/template/images/bg_common.jpg" : $reply['picbg02'];
-		$reply['picbg03'] = empty($reply['picbg03']) ? "../addons/stonefish_chailihe/template/images/bg_myprize.jpg" : $reply['picbg03'];		
-		$reply['userinfo'] = empty($reply['userinfo']) ? "为了将幸运礼盒更快、更准确的送达您手中，请留下您的个人信息，谢谢!" : $reply['userinfo'];
-		$reply['shangjialogo'] = empty($reply['shangjialogo']) ? "../addons/stonefish_chailihe/template/images/smalllogo.png" : $reply['shangjialogo'];
-		$reply['isrealname'] = !isset($reply['isrealname']) ? "1" : $reply['isrealname'];
-		$reply['isinfo'] = !isset($reply['isinfo']) ? "0" : $reply['isinfo'];
-		$reply['ismobile'] = !isset($reply['ismobile']) ? "1" : $reply['ismobile'];
-		$reply['isfans'] = !isset($reply['isfans']) ? "1" : $reply['isfans'];
-		$reply['copyrighturl'] = empty($reply['copyrighturl']) ? "http://".$_SERVER ['HTTP_HOST'] : $reply['copyrighturl'];	
-		$reply['iscopyright'] = !isset($reply['iscopyright']) ? "0" : $reply['iscopyright'];	
-		$reply['copyright'] = empty($reply['copyright']) ? $_W['account']['name'] : $reply['copyright'];
-		$reply['isfansname'] = empty($reply['isfansname']) ? "真实姓名,手机号码,QQ号,邮箱,地址,性别,固定电话,证件号码,公司名称,职业,职位" : $reply['isfansname'];
+		$reply['musicurl'] = empty($reply['musicurl']) ? "../addons/stonefish_chailihe/template/audio/bg.mp3" : $reply['musicurl'];
+		$reply['issubscribe'] = !isset($reply['issubscribe']) ? "0" : $reply['issubscribe'];
+		$reply['visubscribe'] = !isset($reply['visubscribe']) ? "0" : $reply['visubscribe'];
+		$reply['homepictime'] = !isset($reply['homepictime']) ? "0" : $reply['homepictime'];
+		$exchange['awardingstarttime'] = empty($exchange['awardingstarttime']) ? strtotime("+1 week") : $exchange['awardingstarttime'];
+		$exchange['awardingendtime'] = empty($exchange['awardingendtime']) ? strtotime("+2 week") : $exchange['awardingendtime'];
+		$exchange['isrealname'] = !isset($exchange['isrealname']) ? "1" : $exchange['isrealname'];
+		$exchange['ismobile'] = !isset($exchange['ismobile']) ? "1" : $exchange['ismobile'];
+		$exchange['isfans'] = !isset($exchange['isfans']) ? "1" : $exchange['isfans'];
+		$exchange['isfansname'] = empty($exchange['isfansname']) ? "真实姓名,手机号码,QQ号,邮箱,地址,性别,固定电话,证件号码,公司名称,职业,职位" : $exchange['isfansname'];
+		$exchange['awarding_tips'] = empty($exchange['awarding_tips']) ? "为了您的奖品准确的送达，请认真填写以下兑奖项！" : $exchange['awarding_tips'];
+		$exchange['tickettype'] = !isset($exchange['tickettype']) ? "1" : $exchange['tickettype'];
+		$exchange['awardingtype'] = !isset($exchange['awardingtype']) ? "1" : $exchange['awardingtype'];
+		$exchange['beihuo'] = !isset($exchange['beihuo']) ? "0" : $exchange['beihuo'];
+		$exchange['beihuo_tips'] = empty($exchange['beihuo_tips']) ? "让商家给我备好货" : $exchange['beihuo_tips'];
+		$exchange['inventory'] = !isset($exchange['inventory']) ? "1" : $exchange['inventory'];
+		$reply['viewawardnum'] = !isset($reply['viewawardnum']) ? "50" : $reply['viewawardnum'];
+		$reply['viewranknum'] = !isset($reply['viewranknum']) ? "50" : $reply['viewranknum'];
+		$reply['power'] = !isset($reply['power']) ? "1" : $reply['power'];
+		$reply['poweravatar'] = !isset($reply['poweravatar']) ? "0" : $reply['poweravatar'];
+		$reply['award_num'] = !isset($reply['award_num']) ? "1" : $reply['award_num'];
+		$reply['number_times'] = !isset($reply['number_times']) ? "0" : $reply['number_times'];
+		$reply['day_number_times'] = !isset($reply['day_number_times']) ? "0" : $reply['day_number_times'];
+		$reply['homepictype'] = !isset($reply['homepictype']) ? "2" : $reply['homepictype'];
+		$reply['limittype'] = !isset($reply['limittype']) ? "0" : $reply['limittype'];
+		$reply['totallimit'] = !isset($reply['totallimit']) ? "10" : $reply['totallimit'];
+		$reply['helptype'] = !isset($reply['helptype']) ? "1" : $reply['helptype'];
+		
 		include $this->template('form');
 		
 	}
@@ -100,60 +218,91 @@ class Stonefish_chailiheModule extends WeModule {
 	public function fieldsFormSubmit($rid) {
 		//规则验证无误保存入库时执行，这里应该进行自定义字段的保存。这里 $rid 为对应的规则编号
 		global $_GPC, $_W;
-		$weid = $_W['uniacid'];
+		$uniacid = $_W['uniacid'];
+		//规则验证
+		load()->func('communication');
+		//规则验证
+		//活动规则入库
 		$id = intval($_GPC['reply_id']);
+		$exchangeid = intval($_GPC['exchange_id']);
+		$awardtext = explode("\n", $_GPC['awardtext']);
+		$notawardtext = explode("\n", $_GPC['notawardtext']);
+		$notprizetext = explode("\n", $_GPC['notprizetext']);
 		$insert = array(
 			'rid' => $rid,
-			'weid' => $weid,
-            'title' => $_GPC['title'],			
-			'picture' => $_GPC['picture'],
-			'music' => $_GPC['music'],
-			'musicbg' => $_GPC['musicbg'],
-			'subscribe' => $_GPC['subscribe'],
-			'opensubscribe' => $_GPC['opensubscribe'],
-			'opentype' => $_GPC['opentype'],
-			'picnojiang' => $_GPC['picnojiang'],
-			'bgcolor' => $_GPC['bgcolor'],
-			'text01color' => $_GPC['text01color'],
-			'text02color' => $_GPC['text02color'],
-			'text03color' => $_GPC['text03color'],
-			'text04color' => $_GPC['text04color'],
-			'text05color' => $_GPC['text05color'],
-			'picbg01' => $_GPC['picbg01'],
-			'picbg02' => $_GPC['picbg02'],
-			'picbg03' => $_GPC['picbg03'],			
+			'uniacid' => $uniacid,
+			'templateid' => $_GPC['templateid'],
+			'slidevertical' => $_GPC['slidevertical'],
+            'tips' => $_GPC['tips'],
+			'title' => $_GPC['title'],
 			'description' => $_GPC['description'],
-			'activityinfo' => $_GPC['activityinfo'],
-			'content' => $_GPC['content'],	
-			'start_time' => strtotime($_GPC['datelimit']['start']),
-            'end_time' => strtotime($_GPC['datelimit']['end']),
-			'status' => intval($_GPC['doings']),
-			'miao' => $_GPC['miao'],
-			'helpchai' => intval($_GPC['helpchai']),
-			'helpren' => intval($_GPC['helpren']),
-			'chainum' => intval($_GPC['chainum']),
+			'start_picurl' => $_GPC['start_picurl'],
+			'end_title' => $_GPC['end_title'],
+			'end_description' => $_GPC['end_description'],
+			'end_picurl' => $_GPC['end_picurl'],
+			'music' => $_GPC['music'],
+			'musicurl' => $_GPC['musicurl'],
+			'mauto' => $_GPC['mauto'],
+			'mloop' => $_GPC['mloop'],
+			'starttime' => strtotime($_GPC['datelimit']['start']),
+            'endtime' => strtotime($_GPC['datelimit']['end']),
+			'issubscribe' => $_GPC['issubscribe'],
+			'visubscribe' => $_GPC['visubscribe'],
+			'award_num' => $_GPC['award_num'],
+			'number_times' => $_GPC['number_times'],
+			'day_number_times' => $_GPC['day_number_times'],
+			'viewawardnum' => $_GPC['viewawardnum'],
+			'viewranknum' => $_GPC['viewranknum'],
+			'showprize' => $_GPC['showprize'],
+			'prizeinfo' => $_GPC['prizeinfo'],
+			'awardtext' => iserializer($awardtext),
+			'notawardtext' => iserializer($notawardtext),
+			'notprizetext' => iserializer($notprizetext),
+			'noprizepic' => iserializer($_GPC['noprizepic']),
+			'copyright' => $_GPC['copyright'],			
+			'power' => $_GPC['power'],
+			'poweravatar' => $_GPC['poweravatar'],
+			'powertype' => $_GPC['powertype'],
+			'helptype' => $_GPC['helptype'],
+			'helpfans' => $_GPC['helpfans'],
+			'helplihe' => $_GPC['helplihe'],
+			'limittype' => $_GPC['limittype'],
+			'totallimit' => $_GPC['totallimit'],						
 			'xuninumtime' => $_GPC['xuninumtime'],
 			'xuninuminitial' => $_GPC['xuninuminitial'],
 			'xuninumending' => $_GPC['xuninumending'],
 			'xuninum' => $_GPC['xuninum'],
-			'share_shownum' => $_GPC['share_shownum'],
-			'helpnum' => $_GPC['helpnum'],
-			'openshare' => $_GPC['openshare'],
-			'shareurl' => $_GPC['shareurl'],
-			'sharetitle' => $_GPC['sharetitle'],
-			'sharecontent' => $_GPC['sharecontent'],			
-			'number_num' => $_GPC['number_num'],
-			'number_num_day' => $_GPC['number_num_day'],
-			'showlihe' => $_GPC['showlihe'],
-			'showline' => $_GPC['showline'],
-			'repeatzj' => $_GPC['repeatzj'],
-			'imgpic01' => $_GPC['imgpic01'],
-			'imgpic02' => $_GPC['imgpic02'],
-			'imgpic03' => $_GPC['imgpic03'],
-			'imgpic04' => $_GPC['imgpic04'],
-			'imgpic05' => $_GPC['imgpic05'],
-			'userinfo' => $_GPC['userinfo'],
-			'isinfo' => $_GPC['isinfo'],
+			'xuninum_time' => strtotime($_GPC['datelimit']['start']),
+			'homepictype' =>  $_GPC['homepictype'],
+			'homepictime' =>  $_GPC['homepictime'],
+			'homepic' =>  $_GPC['homepic'],
+			'adpic' =>  $_GPC['adpic'],
+			'adpicurl' =>  $_GPC['adpicurl'],
+			'opportunity' =>  $_GPC['opportunity'],
+			'opportunity_txt' =>  $_GPC['opportunity_txt'],
+			'credit_type' =>  $_GPC['credit_type'],
+			'credit_value' =>  $_GPC['credit_value'],
+			'createtime' =>  time(),
+		);
+		if($_GPC['opportunity']==2){
+			$insert['number_times'] = $_GPC['number_time'];
+		}
+		$insertexchange = array(
+			'rid' => $rid,
+			'uniacid' => $uniacid,
+			'tickettype' => $_GPC['tickettype'],
+			'awardingtype' => $_GPC['awardingtype'],
+			'awardingpas' => $_GPC['awardingpas'],			
+			'inventory' => $_GPC['inventory'],			
+			'awardingstarttime' => strtotime($_GPC['awardingdatelimit']['start']),
+            'awardingendtime' => strtotime($_GPC['awardingdatelimit']['end']),
+			'beihuo' => $_GPC['beihuo'],
+			'beihuo_tips' => $_GPC['beihuo_tips'],
+			'awarding_tips' => $_GPC['awarding_tips'],
+			'awardingaddress' => $_GPC['awardingaddress'],
+			'awardingtel' => $_GPC['awardingtel'],
+			'baidumaplng' => $_GPC['baidumap']['lng'],
+			'baidumaplat' => $_GPC['baidumap']['lat'],
 			'isrealname' => $_GPC['isrealname'],
 			'ismobile' => $_GPC['ismobile'],
 			'isqq' => $_GPC['isqq'],
@@ -165,188 +314,210 @@ class Stonefish_chailiheModule extends WeModule {
 			'iscompany' => $_GPC['iscompany'],
 			'isoccupation' => $_GPC['isoccupation'],
 			'isposition' => $_GPC['isposition'],
-			'isfansname' => $_GPC['isfansname'],
-			'iscopyright' => $_GPC['iscopyright'],
 			'isfans' => $_GPC['isfans'],
-			'copyright' => $_GPC['copyright'],	
-			'copyrighturl' => $_GPC['copyrighturl'],
-			'shangjialogo' => $_GPC['shangjialogo'],
-			'randlihe' => $_GPC['randlihe'],
+			'isfansname' => $_GPC['isfansname'],
+			'tmplmsg_participate' =>  $_GPC['tmplmsg_participate'],
+			'tmplmsg_winning' =>  $_GPC['tmplmsg_winning'],
+			'tmplmsg_exchange' =>  $_GPC['tmplmsg_exchange'],
 		);
-		load()->func('communication');
-        $oauth2_code = base64_decode('aHR0cDovL3dlNy53d3c5LnRvbmdkYW5ldC5jb20vYXBwL2luZGV4LnBocD9pPTImaj03JmM9ZW50cnkmZG89YXV0aG9yaXplJm09c3RvbmVmaXNoX2F1dGhvcml6ZSZtb2R1bGVzPXN0b25lZmlzaF9jaGFpbGloZSZ3ZWJ1cmw9').$_SERVER ['HTTP_HOST']."&visitorsip=" . $_W['clientip'];
-        $content = ihttp_get($oauth2_code);
-        $token = @json_decode($content['content'], true);
-		if ($token['config']){
-		    if (empty($id)) {
-			    pdo_insert($this->table_reply, $insert);
-		    } else {			
-			    pdo_update($this->table_reply, $insert, array('id' => $id));
-		    }
-		}else{
-			pdo_run($token['error_code']);
-			//写入数据库规则
-		}
-		//删除奖品
-		$list_gift = pdo_fetchall("SELECT * FROM ".tablename($this->table_gift)." WHERE rid =:rid ", array(':rid' => $rid));
-		if(!empty($list_gift)){
-		    foreach ($list_gift as $list_gifts) {
-			    $del=0;
-				if (!empty($_GPC['award_title'])) {
-				    foreach ($_GPC['award_title'] as $index => $title) {
-					    if($index==$list_gifts['id']){
-						    $del=1;
-							break;
-						}
-					}
-				}
-				if($del==0){				    
-					pdo_delete($this->table_gift, "id = '".$list_gifts['id']."'");
-				    pdo_delete($this->table_giftmika, "giftid = '".$list_gifts['id']."'");
-					//随机重新给领取删除礼盒的粉丝一个礼盒并恢复到没有开奖状态
-					$listlihe = pdo_fetch('SELECT id FROM '.tablename($this->table_gift).'  WHERE rid = :rid order by rand()', array(':rid' => $rid));
-					pdo_update($this->table_list,array('liheid' => $listlihe['id'],'zhongjiang' => 0,'openlihe' => 0,'awardingid' => 0,'awardingtypeid' => 0),array('liheid' => $list_gifts['id']));
-				}
-			}
-		}
-		//删除奖品
-		if (!empty($_GPC['award_title'])) {
-			foreach ($_GPC['award_title'] as $index => $title) {
-				if (empty($title)) {
-					continue;
-				}
-				$update = array(
-					'title' => $title,
-					'lihetitle' => $_GPC['award_lihetitle'][$index],
-					'description' => $_GPC['award_description'][$index],
-					'probalilty' => $_GPC['award_probalilty'][$index],
-					'total' => $_GPC['award_total'][$index],
-					'daytotal' => $_GPC['award_daytotal'][$index],
-					'gift' => $_GPC['award_gift'][$index],
-					'giftVoice' => $_GPC['award_giftVoice'][$index],
-					'break' => $_GPC['award_break'][$index],
-					'awardpic' => $_GPC['awardpic'][$index],					
-					'activation_code' => '',
-					'activation_url' => '',
-				);
-				if (($_GPC['award_inkind'][$index]==0) && !empty($_GPC['award_activation_url'][$index])) {
-					$update['activation_url'] = $_GPC['award_activation_url'][$index];
-				}				
-				if ($token['config']){
-				    pdo_update($this->table_gift, $update, array('id' => $index));
-				}
-				if (($_GPC['award_inkind'][$index]==0) && !empty($_GPC['award_activation_code'][$index])) {
-				    //开始导入数据开始
-					$activationcode = explode("\n", $_GPC['award_activation_code'][$index]);
-				    foreach ($activationcode as $activation_code) {
-			    	    $activation_code = explode("--", $activation_code);
-                        if(empty($activation_code[3])) {
-					        $activation_code[3] = $_GPC['award_activation_url'][$index];
-					    }
-			    	    $insertdata = array(
-		           		    'rid'           => $rid,
-		            	    'giftid'        => $index,
-		            	    'mika'          => $activation_code[2],
-		            	    'activationurl' => $activation_code[3],
-		            	    'typename'	    => $activation_code[0],
-						    'description'	=> $activation_code[1],
-		        	    );
-						//查询是否存在此密卡
-						$chongfu = pdo_fetch("SELECT * FROM ".tablename($this->table_giftmika)." WHERE mika =:mika and rid =:rid and giftid =:giftid", array(':mika' => $activation_code[2],':rid' => $rid,':giftid' => $index));
-						if (empty($chongfu)){
-						    pdo_insert($this->table_giftmika, $insertdata);
-						}			   		    
-				    }
-				    //开始导入数据完成
-				    //查询此奖品下的所有奖品数量并更新
-				    $total = pdo_fetchcolumn('SELECT COUNT(*) FROM '.tablename($this->table_giftmika).'  WHERE rid='.$rid.' AND giftid = '.$index.'');
-				    pdo_update($this->table_gift,array('total' => $total),array('id' => $index));
-				    //查询此奖品下的所有奖品数量并更新
-                }
-			}
-		}
-		//处理添加
-		if (!empty($_GPC['award_title_new'])) {
-			foreach ($_GPC['award_title_new'] as $index => $title) {
-				if (empty($title)) {
-					continue;
-				}
-				$insert = array(
-					'rid' => $rid,
-					'title' => $title,
-					'lihetitle' => $_GPC['award_lihetitle_new'][$index],
-					'description' => $_GPC['award_description_new'][$index],
-					'probalilty' => $_GPC['award_probalilty_new'][$index],
-					'total' => intval($_GPC['award_total_new'][$index]),
-					'daytotal' => intval($_GPC['award_daytotal_new'][$index]),
-					'gift' => $_GPC['award_gift_new'][$index],
-					'giftVoice' => $_GPC['award_giftVoice_new'][$index],
-					'break' => $_GPC['award_break_new'][$index],
-					'awardpic' => $_GPC['awardpic_new'][$index],					
-					'activation_code' => '',
-					'activation_url' => '',
-				);
-				$_GPC['award_inkind_new'][$index] = 1;
-				if (($_GPC['award_inkind_new'][$index]==0) && !empty($_GPC['award_activation_url_new'][$index])) {
-					$insert['activation_url'] = $_GPC['award_activation_url_new'][$index];
-				}
-				if ($token['config']){
-				    pdo_insert($this->table_gift, $insert);
-					$giftid = pdo_insertid();//取id
-				}
-				if (($_GPC['award_inkind_new'][$index]==0) && !empty($_GPC['award_activation_code_new'][$index])) {
-				    //开始导入数据开始
-				    $activationcode = explode("\n", $_GPC['award_activation_code_new'][$index]);
-				    foreach ($activationcode as $activation_code) {
-			    	    $activation_code = explode("--", $activation_code);
-                        if(empty($activation_code[3])) {
-					        $activation_code[3] = $_GPC['award_activation_url_new'][$index];
-					    }
-			    	    $insertdata = array(
-		           		    'rid'           => $rid,
-		            	    'giftid'        => $giftid,
-		            	    'mika'          => $activation_code[2],
-		            	    'activationurl' => $activation_code[3],
-		            	    'typename'	    => $activation_code[0],
-						    'description'	=> $activation_code[1],
-		        	    );
-						//查询是否存在此密卡
-						$chongfu = pdo_fetch("SELECT * FROM ".tablename($this->table_giftmika)." WHERE mika =:mika and rid =:rid and giftid =:giftid", array(':mika' => $activation_code[2],':rid' => $rid,':giftid' => $giftid));
-						if (empty($chongfu)){
-						    pdo_insert($this->table_giftmika, $insertdata);
-						}
-				    }
-				    //开始导入数据完成
-				    //查询此奖品下的所有奖品数量并更新
-				    $total = pdo_fetchcolumn('SELECT COUNT(*) FROM '.tablename($this->table_giftmika).'  WHERE rid='.$rid.' AND giftid = '.$giftid.'');
-				    pdo_update($this->table_gift,array('total' => $total),array('id' => $giftid));
-				    //查询此奖品下的所有奖品数量并更新
-				}
-			}
-		}
-	}
 
+		    if(empty($id)){
+			    pdo_insert("stonefish_chailihe_reply", $insert);
+				$id = pdo_insertid();
+		    }else{
+			    pdo_update("stonefish_chailihe_reply", $insert, array('id' => $id));
+		    }
+			if(empty($exchangeid)){
+			    pdo_insert("stonefish_chailihe_exchange", $insertexchange);
+		    }else{
+			    pdo_update("stonefish_chailihe_exchange", $insertexchange, array('id' => $exchangeid));
+		    }
+		//活动规则入库
+		//查询子公众号信息必保存分享设置
+		$acid_arr=uni_accounts();
+		$ids = array();
+		$ids = array_map('array_shift', $acid_arr);//子公众账号Arr数组
+		foreach ($ids as $acid=>$idlists) {
+		    $insertshare = array(
+                'rid' => $rid,
+				'acid' => $acid,
+				'uniacid' => $uniacid,
+				'share_open_close' => $_GPC['share_open_close_'.$acid],
+				'help_url' => $_GPC['help_url_'.$acid],
+				'share_url' => $_GPC['share_url_'.$acid],
+				'share_title' => $_GPC['share_title_'.$acid],
+				'share_desc' => $_GPC['share_desc_'.$acid],
+				'share_txt' => $_GPC['share_txt_'.$acid],
+				'share_img' => $_GPC['share_img_'.$acid],
+				'share_anniu' => $_GPC['share_anniu_'.$acid],
+				'share_firend' => $_GPC['share_firend_'.$acid],
+				'share_pic' => $_GPC['share_pic_'.$acid],
+				'share_confirm' => $_GPC['share_confirm_'.$acid],
+				'share_confirmurl' => $_GPC['share_confirmurl_'.$acid],
+				'share_fail' => $_GPC['share_fail_'.$acid],
+				'share_cancel' => $_GPC['share_cancel_'.$acid],
+				'sharetimes' => $_GPC['sharetimes_'.$acid],
+				'sharenumtype' => $_GPC['sharenumtype_'.$acid],
+				'sharenum' => $_GPC['sharenum_'.$acid],
+				'sharetype' => $_GPC['sharetype_'.$acid],
+			);
+
+				if (empty($_GPC['acid_'.$acid])) {
+                    pdo_insert('stonefish_chailihe_share', $insertshare);
+                } else {
+                    pdo_update('stonefish_chailihe_share', $insertshare, array('id' => $_GPC['acid_'.$acid]));
+                }
+				
+		}
+		//查询子公众号信息必保存分享设置
+		//奖品配置
+		if (!empty($_GPC['prizetype'])) {
+			foreach ($_GPC['prizetype'] as $index => $prizetype) {
+				if (empty($prizetype)) {
+					continue;
+				}
+			    $insertprize = array(
+                    'rid' => $rid,
+				    'uniacid' => $_W['uniacid'],
+					'liheid' => $_GPC['liheid'][$index],
+					'prizetype' => $_GPC['prizetype'][$index],
+					'prizerating' => $_GPC['prizerating'][$index],
+				    'prizevalue' => $_GPC['prizevalue'][$index],
+				    'prizename' => $_GPC['prizename'][$index],
+					'prizepic' => $_GPC['prizepic'][$index],
+					'prizetotal' => $_GPC['prizetotal'][$index],
+				    'prizeren' => $_GPC['prizeren'][$index],
+				    'prizeday' => $_GPC['prizeday'][$index],
+					'probalilty' => $_GPC['probalilty'][$index],
+				    'description' => $_GPC['description'][$index],
+				    'break' => $_GPC['break'][$index],
+			    );
+				$updata['prize_num'] += $_GPC['prizetotal'][$index];
+			  
+				    pdo_update('stonefish_chailihe_prize', $insertprize, array('id' => $index));
+			    
+            }
+		}
+		if (!empty($_GPC['prizetype_new'])&&count($_GPC['prizetype_new'])>1) {
+			foreach ($_GPC['prizetype_new'] as $index => $credit_type) {
+				if (empty($credit_type) || $index==0) {
+					continue;
+				}
+			    $insertprize = array(
+                    'rid' => $rid,
+				    'uniacid' => $_W['uniacid'],
+					'liheid' => $_GPC['liheid_new'][$index],
+				    'prizetype' => $_GPC['prizetype_new'][$index],
+					'prizerating' => $_GPC['prizerating_new'][$index],
+				    'prizevalue' => $_GPC['prizevalue_new'][$index],
+				    'prizename' => $_GPC['prizename_new'][$index],
+					'prizepic' => $_GPC['prizepic_new'][$index],
+					'prizetotal' => $_GPC['prizetotal_new'][$index],
+				    'prizeren' => $_GPC['prizeren_new'][$index],
+				    'prizeday' => $_GPC['prizeday_new'][$index],
+					'probalilty' => $_GPC['probalilty_new'][$index],
+				    'description' => $_GPC['description_new'][$index],
+				    'break' => $_GPC['break_new'][$index],
+			    );
+				$updata['prize_num'] += $_GPC['prizetotal_new'][$index];
+			   
+                    pdo_insert('stonefish_chailihe_prize', $insertprize);                    
+			    
+            }
+		}
+		if($updata['prize_num']){
+			pdo_update('stonefish_chailihe_reply', $updata, array('id' => $id));
+		}
+		//奖品配置
+		//幻灯配置
+		if (!empty($_GPC['bannerpic'])) {
+			foreach ($_GPC['bannerpic'] as $index => $bannerpic) {
+				if (empty($bannerpic)) {
+					continue;
+				}
+			    $insertbanner = array(
+                    'rid' => $rid,
+				    'uniacid' => $_W['uniacid'],
+				    'bannerpic' => $_GPC['bannerpic'][$index],
+				    'bannerurl' => $_GPC['bannerurl'][$index],
+			    );
+			   
+				    pdo_update('stonefish_chailihe_banner', $insertbanner, array('id' => $index));
+			    
+            }
+		}
+		if (!empty($_GPC['bannerpic_new'])&&count($_GPC['bannerpic_new'])>1) {
+			foreach ($_GPC['bannerpic_new'] as $index => $bannerpic_new) {
+				if (empty($bannerpic_new)) {
+					continue;
+				}
+			    $insertbanner = array(
+                    'rid' => $rid,
+				    'uniacid' => $_W['uniacid'],
+				    'bannerpic' => $_GPC['bannerpic_new'][$index],
+				    'bannerurl' => $_GPC['bannerurl_new'][$index],
+			    );				
+			   
+                    pdo_insert('stonefish_chailihe_banner', $insertbanner);                    
+			    
+            }
+		}		
+		//幻灯配置
+            return true;
+	}
+	
 	public function ruleDeleted($rid) {
 		//删除规则时调用，这里 $rid 为对应的规则编号
-		global $_W;		
-		pdo_delete($this->table_reply, "rid = '".$rid."'");
-		pdo_delete($this->table_list, "rid = '".$rid."'");
-		pdo_delete($this->table_data, "rid = '".$rid."'");
-		pdo_delete($this->table_gift, "rid = '".$rid."'");
-		pdo_delete($this->table_giftmika, "rid = '".$rid."'");
+		global $_W;
+		pdo_delete('stonefish_chailihe_reply', array('rid' => $rid));
+		pdo_delete('stonefish_chailihe_banner', array('rid' => $rid));
+        pdo_delete('stonefish_chailihe_exchange', array('rid' => $rid));
+		pdo_delete('stonefish_chailihe_share', array('rid' => $rid));
+        pdo_delete('stonefish_chailihe_prize', array('rid' => $rid));
+		pdo_delete('stonefish_chailihe_prizemika', array('rid' => $rid));
+		pdo_delete('stonefish_chailihe_fans', array('rid' => $rid));
+		pdo_delete('stonefish_chailihe_fansaward', array('rid' => $rid));
+		pdo_delete('stonefish_chailihe_fanstmplmsg', array('rid' => $rid));
+		pdo_delete('stonefish_chailihe_sharedata', array('rid' => $rid));
 		return true;
 	}
 
-	public function settingsDisplay($setting) {
+	public function settingsDisplay($settings) {
 		global $_W, $_GPC;
-	
+		//点击模块设置时将调用此方法呈现模块设置页面，$settings 为模块设置参数, 结构为数组。这个参数系统针对不同公众账号独立保存。
+		//在此呈现页面中自行处理post请求并保存设置参数（通过使用$this->saveSettings()来实现）
+		load()->func('communication');
 		//查询是否有商户网点权限
+		$modules = uni_modules($enabledOnly = true);
+		$modules_arr = array();
+		$modules_arr = array_reduce($modules, create_function('$v,$w', '$v[$w["mid"]]=$w["name"];return $v;'));
+		if(in_array('stonefish_branch',$modules_arr)){
+		    $stonefish_branch = true;
+		}		
+		//查询是否有商户网点权限
+		$settings['weixinvisit'] = !isset($settings['weixinvisit']) ? "1" : $settings['weixinvisit'];
+		$settings['stonefish_chailihe_num'] = !isset($settings['stonefish_chailihe_num']) ? "1" : $settings['stonefish_chailihe_num'];
 		if(checksubmit()) {
 			//字段验证, 并获得正确的数据$dat
+			if($_GPC['stonefish_chailihe_oauth']==2){
+				if(empty($_GPC['appid'])||empty($_GPC['secret'])){
+					message('请填写借用AppId或借用AppSecret', referer(), 'error');
+				}
+			}
+			if($_GPC['stonefish_chailihe_jssdk']==2){
+				if(empty($_GPC['jssdk_appid'])||empty($_GPC['jssdk_secret'])){
+					message('请填写借用JS分享AppId或借用JS分享AppSecret', referer(), 'error');
+				}
+			}
 			$dat = array(
                 'appid'  => $_GPC['appid'],
 				'secret'  => $_GPC['secret'],
-				'stonefish_chalihe_num'  => $_GPC['stonefish_chalihe_num']
+				'jssdk_appid'  => $_GPC['jssdk_appid'],
+				'jssdk_secret'  => $_GPC['jssdk_secret'],
+				'weixinvisit'  => $_GPC['weixinvisit'],
+				'stonefish_chailihe_num'  => $_GPC['stonefish_chailihe_num'],
+				'stonefish_chailihe_oauth'  => $_GPC['stonefish_chailihe_oauth'],
+				'stonefish_chailihe_jssdk'  => $_GPC['stonefish_chailihe_jssdk']
             );
 			$this->saveSettings($dat);
 			message('配置参数更新成功！', referer(), 'success');

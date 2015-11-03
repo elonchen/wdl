@@ -30,8 +30,7 @@
 	<div class="panel-body">
 		<ul class="nav nav-tabs" id="myTab">
 			<li class="active" ><a href="#tab_basic">基本设置</a></li>
-			<li><a href="#tab_share">分享设置</a></li>
-			<li><a href="#tab_sub">关注设置</a></li>
+			<li><a href="#tab_share">关注分享</a></li>
 			<li><a href="#tab_huihua">会话设置</a></li>
 			<li><a href="#tab_display">显示设置</a></li>
 			<li><a href="#tab_vote">投票设置</a></li>
@@ -39,12 +38,11 @@
 			{if $_W['role']=='founder'}	<li><a href="#tab_savemedia">存储设置</a></li>{/if}
 		</ul>
 	<div class='alert alert-warning' style='font-size:14px'>
-        女神投票配置说明： <a href='http://bbs.wdlcms.com/forum.php?mod=viewthread&tid=1395&page=1&extra=#pid9820' target='_blank'>http://bbs.wdlcms.com/forum.php?mod=viewthread&tid=1395&page=1&extra=#pid9820</a>
+        女神投票配置说明： <a href='http://bbs.012wz.com/forum.php?mod=viewthread&tid=1395&page=1&extra=#pid9820' target='_blank'>http://bbs.012wz.com/forum.php?mod=viewthread&tid=1395&page=1&extra=#pid9820</a>
     </div>
 		<div class="tab-content">
 			<div class="tab-pane  active" id="tab_basic">{template 'form_basic'}</div>
 			<div class="tab-pane" id="tab_share">{template 'form_share'}</div>
-			<div class="tab-pane" id="tab_sub">{template 'form_sub'}</div>
 			<div class="tab-pane" id="tab_huihua">{template 'form_huihua'}</div>
 			<div class="tab-pane" id="tab_display">{template 'form_display'}</div>
 			<div class="tab-pane" id="tab_vote">{template 'form_vote'}</div>

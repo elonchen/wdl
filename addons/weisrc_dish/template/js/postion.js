@@ -31,7 +31,7 @@ $(function() {
                 var ShopLng = ShopLngLat.slice(0, InputOF);
                 var ShopLat = ShopLngLat.slice(InputOF + 1, InputOFLast);
                 var dis111 = distanceByLnglat(locLng, locLat, ShopLng, ShopLat);
-                $(this).find("#shopspostion").html("" + dis111 + " Km");
+                $(this).find("#shopspostion").html(dis111 + "千米");
             });
             $("#curlat").val(locLat);
             $("#curlng").val(locLng);

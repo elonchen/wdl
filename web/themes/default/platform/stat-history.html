@@ -42,12 +42,12 @@
 			<table class="table table-hover">
 				<thead>
 					<tr>
-						<th style="width:80px;">用户</th>
-						<th class="row-hover">内容</th>
-						<th style="width:230px;">规则</th>
-						<th style="width:250px;">模块</th>
-						<th style="width:150px;">时间</th>
-						<th style="width:60px;">操作</th>
+						<th style="width:10%;">用户</th>
+						<th style="width:20%;">内容</th>
+						<th style="width:20%;">规则</th>
+						<th style="width:20%;">模块</th>
+						<th style="width:20%;">时间</th>
+						<th style="width:10%;">操作</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -82,10 +82,10 @@
 							{/if}
 						</td>
 						<td style="font-size:12px; color:#666;">
-							{php echo date('Y-m-d <br /> H:i:s', $row[createtime]);}
+						{php echo date('Y-m-d <br /> H:i:s', $row[createtime]);}
 						</td>
 						<td>
-							<a href="{php echo url('platform/stat/del', array('op' => 'history', 'id' => $row['id']))}" onclick="return confirm('删除后不能恢复，您确定删除吗？')" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" title="删除"><i class="fa fa-times"></i></a>
+						<a href="{php echo url('platform/stat/del', array('op' => 'history', 'id' => $row['id']))}" onclick="return confirm('删除后不能恢复，您确定删除吗？')" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" title="删除"><i class="fa fa-times"></i></a>
 						</td>
 					</tr>
 					{/loop}

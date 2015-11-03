@@ -4,12 +4,13 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
     <title>{if $title} {$title} {else}  {if !empty($set['copyright'])} {$set['copyright']} {else}{$_W['account']['name']}{/if} {/if} {if $_W['account']['siteinfo']['sitename']}{$_W['account']['siteinfo']['sitename']} {/if}</title>
-    <link rel="stylesheet" href="../addons/amouse_article/template/mobile/css/base.css?v=1.0.0.0.1426898548"/>
-    <link rel="stylesheet" href="../addons/amouse_article/template/mobile/css/public.css?v=1.0.0.0.1426898548"/>
-    <link rel="stylesheet" href="../addons/amouse_article/template/mobile/css/amazeui.css?v=1.0.0.0.1426898548"/>
+    <link rel="stylesheet" href="{RES}css/base.css?v=1.0.0.0.1426898548"/>
+    <link rel="stylesheet" href="{RES}css/public.css?v=1.0.0.0.1426898548"/>
+    {php echo register_jssdk(false);}
+    <link rel="stylesheet" href="http://cdn.amazeui.org/amazeui/2.1.0/css/amazeui.css">
     <script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
-    <script src="../addons/amouse_article/template/mobile/js/jquery.min.js?v=1.0.0.0.1426898548" type="text/javascript"></script>
-    <script src="../addons/amouse_article/template/mobile/js/amazeui.min.js?v=1.0.0.0.1426898548" type="text/javascript"></script>
+    <script src="{RES}js/jquery-1.9.1.js?v=1.0.0.0.1426898548" type="text/javascript"></script>
+    <script src="{RES}js/amazeui.min.js?v=1.0.0.0.1426898548" type="text/javascript"></script>
 </head>
 <body>
 
@@ -47,14 +48,14 @@
     </div>
 </div>
 <link rel="stylesheet" type="text/css"
-      href="../addons/amouse_article/template/mobile/css/culture.css?v=1.0.0.0.1426898548"/>
+      href="{RES}css/culture.css?v=1.0.0.0.1426898548"/>
 <div class="container">
     <ul>
         <div class="bg">
             <div style="margin-top: 1px;"></div>
             {data func="amouse_article_site_category" parentid=$cid return="true" assign="navs"}
             {if empty($navs)}
-            {data module="amouse_article" func="amouse_article_site_article" cid=$cid return="true" assign="result"}
+             {data module="amouse_article" func="amouse_article_site_article" cid=$cid return="true" assign="result"}
             {loop $result['list'] $row}
             <li>
                 <a href="{php echo $this->createMobileUrl("detail",array("id" => $row['id']),true)}">
@@ -72,10 +73,10 @@
                 </a>
             </li>
             {/loop}
-            {else}
+            {else} 
             {loop $navs $nav}
             <li>
-                <a href="{php echo $this->createMobileUrl("index",array("cid" => $row['id']),true)}">
+                <a href="{php echo $this->createMobileUrl("second",array("parentid"=>$nav['parentid'],"cid" => $nav['id']),true)}">
                 {if !empty($nav['thumb'])}
                 <div style="float: left; width: 20%; height: 65px;background: url({php echo strpos($nav['thumb'],'http://')===FALSE?($_W['attachurl'].$nav['thumb']):$nav['thumb']}) center no-repeat;"></div>
                 {else}
@@ -103,32 +104,26 @@
     {/if}
 </div>
 </body>
-
 <script language='javascript'>
-    <?php
-        $jssdk = new JSSDK();
-        $signPackage = $jssdk->GetSignPackage();
-    ?>
-    wx.config({
-        debug:false,
-        appId: "{$_W['account']['appid_share']}",
-        timestamp: {$signPackage["timestamp"]},
-        nonceStr: '{$signPackage["nonceStr"]}',
-        signature: '{$signPackage["signature"]}',
-        jsApiList: [
-            'onMenuShareTimeline','onMenuShareAppMessage','onMenuShareWeibo'
-        ]
-    });
-    var shareMeta = {
-        imgUrl:"{$shareimg}",
-        link:"{$url}",
-        desc:"{if !empty($category['description'])}{$category['description']}{else}{$_W['account']['name']}的精美图文{/if}",
-        title:"{if !empty($category['title'])}{$category['title']}{else}{$_W['account']['name']}的精美图文{/if}"
-    };
-    wx.ready(function(){
+
+    wx.ready(function () {
+        shareMeta = {
+            imgUrl:"{$shareimg}",
+            link:"{$url}",
+            desc:"{if !empty($category['description'])}{$category['description']}{else}{$_W['account']['name']}的精美图文{/if}",
+            title:"{if !empty($category['title'])}{$category['title']}{else}{$_W['account']['name']}的精美图文{/if}",
+            success: function(){
+
+            },
+            cancel: function(){
+                // alert("分享失败，可能是网络问题，一会儿再试试？");
+            }
+        };
         wx.onMenuShareTimeline(shareMeta);
         wx.onMenuShareAppMessage(shareMeta);
         wx.onMenuShareWeibo(shareMeta);
+        wx.onMenuShareQQ(shareMeta);
+        wx.onMenuShareQZone(shareMeta);
     });
 </script>
 

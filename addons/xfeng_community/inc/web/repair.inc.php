@@ -21,14 +21,16 @@ defined('IN_IA') or exit('Access Denied');
 		'resolve'     => $_GPC['status'],
 		);
 	//报修来往回复提交的数据
-	$insert = array(
-		'weid'       => $_W['weid'],
-		'openid'     => $_W['fans']['from_user'],
-		'reportid'   => $id,
-		'isreply'    => 1,
-		'content'    => $_GPC['reply'],
-		'createtime' => $_W['timestamp'],
+	if ($_GPC['reply']) {
+		$insert = array(
+			'weid'       => $_W['weid'],
+			'openid'     => $_W['fans']['from_user'],
+			'reportid'   => $id,
+			'isreply'    => 1,
+			'content'    => $_GPC['reply'],
+			'createtime' => $_W['timestamp'],
 		);
+	}
 	$starttime = strtotime($_GPC['birth-start']);
 	$endtime   = strtotime($_GPC['birth-end']);
 	if (!empty($starttime) && $starttime==$endtime) {
@@ -84,7 +86,10 @@ defined('IN_IA') or exit('Access Denied');
 
 		if ($_W['ispost']) {
 			pdo_update("xcommunity_report",$data,array('id'=>$id));
-			pdo_insert("xcommunity_reply",$insert);
+			if ($_GPC['reply']) {
+				pdo_insert("xcommunity_reply",$insert);
+			}
+
 			message('更新成功!',referer(),'success');
 		}
 	}elseif ($op == 'delete') {

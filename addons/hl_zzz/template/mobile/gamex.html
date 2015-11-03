@@ -12,7 +12,7 @@
 	<script type="text/javascript">
 		window.path = '';
 		window.isSubscribe = true;
-		var MIJI ='<br/>点击右上角发送到朋友圈<br/>或发送给朋友,朋友点开进来<br/>就可以给你送体力!';
+		var MIJI ='<br> 赶快叫朋友来为你助威吧!';
 		var TILI ='没有体力了，<br/>您可以等待体力<br/>逐渐恢复，或者点击<br/>左下角求助好友送体力';
 		var introduceDes = "{$zzz['smallunit']}";
 		var helpDes = "{$zzz['title']}，抢头等奖。快进来助我一臂之力～～";
@@ -31,7 +31,7 @@
 <div class="page-load-container">
 	<div class="page-load-page index-page" data-id="indexPage" data-double="false" data-energycost="10" data-energylimit="{$energylimit}">
 		<div class="nav-type2 " onclick="pageLoad.changePage('{php echo $this->createMobileUrl('rank', array('id' => $id))}', false, false)">
-			<div class="user-head ellipsis">{$profile['nickname']} :</div>
+			<div class="user-head ellipsis">{$_W['fans']['nickname']} :</div>
 			<div class="gather-ranking">
 				<div class="gr-c1">
 					<div class="gather">
@@ -82,7 +82,7 @@
 		</div>
 		<div class="table index-buttons">
 			<div class="tr">
-				<a class="td b1 index-button" onclick="HL.COMMON.alert('<b>体力不够?</b><br/>快转发到朋友圈,让朋友来送体力!<br/>点击右上角发送到朋友圈,<br/>朋友点进来即可!');"><i class="icon index-help-icon"></i>求助好友</a>
+				<a class="td b1 index-button" onclick="HL.COMMON.alert('<b>体力不够?</b><br/>赶快叫朋友来为你助威吧!');"><i class="icon index-help-icon"></i>求助好友</a>
 				<a data-page="false" data-ajax="false" class="td b2 index-button" href="{$zzz['guzhuurl']}"><i class="icon index-introduce-icon"></i>我也要玩</a>
 				<a data-page="false" data-ajax="false" class="td b3 index-button" href="{php echo $this->createMobileUrl('introduce', array('id' => $id))}"><i class="icon index-friend-icon"></i>活动说明</a>
 			</div>

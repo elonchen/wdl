@@ -31,7 +31,7 @@
     <div class="panel-footer">
         <div class="contact-info" style="float: right;
 width: 36%;">
-            <p><small>感谢您使用WDLCMS营销平台</small></p>
+            <p><small>感谢您使用IDCLA营销平台</small></p>
 
         </div>
     </div>
@@ -39,7 +39,46 @@ width: 36%;">
 
   {/if}
  <div class="page-container page-navigation-top-fixed">
-    <ul class="x-navigation x-navigation-horizontal" style="z-index: 5;position: fixed;" >
+<div id="page">
+    <div class="header">
+        <a href="#menu"></a>
+        IDCLA
+    </div>
+    
+    <nav id="menu">
+        <ul>
+            <li><a href="#" onclick="javascript:void(0)">IDCLA</a></li>
+            <li><a href="#about"><span class="fa fa-user"></span><span class="xn-text" style="padding-left: 10%;">账户信息</span></a>
+                <ul>
+                    <li><a href="#about/history">{$_W['user']['username']}</a></li>
+                    <li><a href="#about/team">{$_W['account']['name']}</a></li>
+                     {if $_W['isfounder']}
+            <li>
+                <a href="{url 'profile/module'}"><span class="fa fa-cogs"></span> <span class="xn-text">扩展功能管理</span></a>
+            </li>
+
+            <li>
+                <a href="{url 'system/welcome'}"><span class="fa fa-cog"></span> <span class="xn-text">系统设置</span></a>
+            </li>
+
+
+            {/if}                    
+                </ul>
+            </li>
+            <li>
+                <a href="{url 'account/display'}"><span class="fa fa-comments"></span> <span class="xn-text">公众号管理</span></a>
+            </li>
+           
+            <li>
+                <a href="{url 'user/logout'}"><span class="fa fa-sign-out"></span> <span class="xn-text">直接退出</span></a>
+            </li>
+            
+            
+        </ul>
+    </nav>
+</div>
+
+    <ul class="x-navigation x-navigation-horizontal" style="z-index: 5;position: fixed;" id="tophead">
       <li class="xn-logo" style="background: #0D708F;">
             <a href="javascript:;"></a>
            
@@ -57,7 +96,24 @@ width: 36%;">
         <li class="xn-openable pull-right" >
             <a href="javascript:;" ><i class="fa fa-comments-o"></i> {$_W['account']['name']}</a>
         </li>
+        {php $frames = empty($frames) ? $GLOBALS['frames'] : $frames; _calc_current_frames($frames);}
+                {if !empty($frames)}
+                {loop $frames $k $frame}
+                <li class="xn-openable active">
 
+                    <a data-toggle="collapse"  data-parent="#frame-{$k}" href="#frame-{$k}"><span class="xn-text">{$frame['title']}</span></a>
+
+                    <ul id="frame-{$k}" class="panel-collapse collapse in">
+                        <li>
+                            {loop $frame['items'] $link}
+
+                            <a class="list-group-item1{$link['active']}" href="{$link['url']}" >{$link['title']}</a>
+
+                            {/loop}</li>
+                    </ul>
+
+                </li>
+                {/loop}{/if}
     </ul>
 
     

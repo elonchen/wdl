@@ -333,28 +333,17 @@ a:link, a:visited {
 </head>
 <body style="">
 <div class="container-fluid" style="width:98%;margin: 0 auto;background: white;">
-    <!--    -->
     <div class="row-fluid" style="margin-top:4px;">
-        <div class="span12">
-            <div class="touchSlider" id="dzhV2_hd" data-dot-color="#fffffd" data-auto-play="1">
-                <div class="inner">
-                    <div class="sld_dots" style="margin-left: 134px; ">
-                        <canvas width="8" height="8" data-color="#fffffd" style="left: 0px; opacity: 1; "></canvas>
-                        <canvas width="8" height="8" data-color="#fffffd" style="left: 13px; opacity: 0.4; "></canvas>
-                        <canvas width="8" height="8" data-color="#fffffd" style="left: 26px; opacity: 0.4; "></canvas>
-                        <canvas width="8" height="8" data-color="#fffffd" style="left: 39px; opacity: 0.4; "></canvas>
-                        <canvas width="8" height="8" data-color="#fffffd" style="left: 52px; opacity: 0.4; "></canvas>
-                    </div>
-                    <div class="sld_bar"
-                         style="width: 100%; -webkit-transition-duration: 0.2472s; -webkit-transform: translate3d(0px, 0px, 0px); ">
-                        <div class="sld_page" style="width: 100%; ">
-                            <a href="#">
-                                <img style="width: 100%;" src="{$_W['attachurl']}{$setting['newflat_images']}">
-                            </a>
-                        </div>
-
-                    </div>
-                </div>
+        <div id="focus" class="focus">
+            <div class="hd" style="display:none;">
+                <ul></ul>
+            </div>
+            <div class="bd">
+                <ul>
+                    {loop $slides $s}
+                    <li><a href="{$s['url']}"><img width="100%" height="125px" data-pinit="registered" src="{$_W['attachurl']}{$s['slide']}" style="width: 100%;height:150px;"/></a></li>
+                    {/loop}
+                </ul>
             </div>
         </div>
     </div>
@@ -419,39 +408,7 @@ a:link, a:visited {
         </a>
     </div>
 
-   <!-- <div class="foot-fix-panel"
-         style="width: 100%;visibility: visible;border-top: 1px solid rgb(209, 214, 212);background: white;">
-        <div class="panel-box" style="width: 100%;">
-            <div class="page " data-index="0"
-                 style="width: 100%; left: 0px; transition: 0ms; -webkit-transition: 0ms; -webkit-transform: translate(0px, 0px) translateZ(0px);">
-                <a class="easycall-item" href="wap.php?m=cat&a=new&wxid=oAoOquASYH-qtYyA_zRTctmbdFlE">
-                    <img class="icon" src="../addons/amouse_house/ui/images/shouye.png">
-                    <div class="title">首页</div>
-                </a>
-                <a class="easycall-item" href="javascript:getNearby(29);">
-                    <img class="icon" src="../addons/amouse_house/ui/images/fujin2.png">
-                    <div class="title" style="color:rgb(65,140,3); ">附近优惠</div>
 
-                </a>
-                <a class="easycall-item" href="http://wsq.qq.com/reflow/180332771">
-                    <img class="icon" src="../addons/amouse_house/ui/images/liuyan.png">
-                    <div class="title">留言</div>
-                </a>
-                <a class="easycall-item" href="wap.php?m=card&b=1&wxid=oAoOquASYH-qtYyA_zRTctmbdFlE">
-                    <img class="icon" src="../addons/amouse_house/ui/images/wo.png">
-                    <div class="title">我的</div>
-                </a>
-            </div>
-            <div class="page " data-index="1"
-                 style="width: 1280px; left: -1280px; transition: 0ms; -webkit-transition: 0ms; -webkit-transform: translate(1280px, 0px) translateZ(0px);"></div>
-            <div class="page " data-index="2"
-                 style="width: 1280px; left: -2560px; transition: 0ms; -webkit-transition: 0ms; -webkit-transform: translate(1280px, 0px) translateZ(0px);"></div>
-            <div class="page " data-index="3"
-                 style="width: 1280px; left: -3840px; transition: 0ms; -webkit-transition: 0ms; -webkit-transform: translate(1280px, 0px) translateZ(0px);"></div>
-            <div class="page " data-index="4"
-                 style="width: 1280px; left: -5120px; transition: 0ms; -webkit-transition: 0ms; -webkit-transform: translate(1280px, 0px) translateZ(0px);"></div>
-        </div>
-    </div>-->
     <div class="foot-fix-panel"  style="width: 100%;height:79px;visibility: visible;border-top: 1px solid rgb(228, 221, 221);background: white;">
         <div class="panel-box" style="width: 100%;">
             <div class="page " data-index="0"  style="display:block;width: 100%;height: 30px;background: rgb(56, 173, 75);color: white; left: 0px; transition: 0ms; -webkit-transition: 0ms; -webkit-transform: translate(0px, 0px) translateZ(0px);">
@@ -500,37 +457,53 @@ a:link, a:visited {
     </div>
 </div>
 </body>
-<script language="javascript" src="../addons/amouse_house/ui/js/jquery.js?v=20150314"></script>
-<script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
-<script language='javascript'>
-    <?php
-            $jssdk = new JSSDK();
-    $signPackage = $jssdk->GetSignPackage();
-    ?>
-    wx.config({
-        debug:false,
-        appId: "{$_W['account']['appid_share']}",
-        timestamp: {$signPackage["timestamp"]},
-        nonceStr: '{$signPackage["nonceStr"]}',
-        signature: '{$signPackage["signature"]}',
-        jsApiList: [
-            'onMenuShareTimeline','onMenuShareAppMessage','onMenuShareWeibo'
-        ]
-    });
-
-    var shareMeta = {
-        imgUrl:"{$_W['attachurl']}{$setting['newflat_images']}",
-        link :  "{$url}",
-        desc : "【微楼盘-本地时尚生活互动平台】",
-        title : "微楼盘-本地时尚生活互动平台】"
-    };
-
-    wx.ready(function(){
-        wx.onMenuShareTimeline(shareMeta);
-        wx.onMenuShareAppMessage(shareMeta);
-        wx.onMenuShareWeibo(shareMeta);
+<script src="../addons/amouse_house/ui/js/TouchSlide.1.1.js?v=20150313"></script>
+<script type="text/javascript">
+    TouchSlide({
+        slideCell: "#focus",
+        titCell: ".hd ul",
+        mainCell: ".bd ul",
+        effect: "leftLoop",
+        autoPlay: true,
+        autoPage: true,
+        switchLoad: "_src"
     });
 </script>
+<script language="javascript" src="../addons/amouse_house/ui/js/jquery.js?v=20150314"></script>
+<script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+{php $signPackage=$_W['account']['jssdkconfig'];}
+<script>
+    wx.config({
+        debug: false,
+        appId: '<?php echo $signPackage["appId"];?>',
+        timestamp: '<?php echo $signPackage["timestamp"];?>',
+        nonceStr: '<?php echo $signPackage["nonceStr"];?>',
+        signature: '<?php echo $signPackage["signature"];?>',
+        jsApiList: ['checkJsApi','onMenuShareTimeline','onMenuShareAppMessage','onMenuShareQQ','onMenuShareWeibo']
+    });
+
+    wx.ready(function () {
+        var shareData = {
+            desc : "【微楼盘-本地时尚生活互动平台】",
+            title : "微楼盘-本地时尚生活互动平台】",
+            imgUrl:"{$_W['attachurl']}{$setting['newflat_images']}",
+            link :  "{$url}",
+            trigger: function (res) {},
+            complete: function (res) {},
+            success: function (res) {
+            },
+            cancel: function (res) {
+            },
+            fail: function (res) {
+            }
+        };
+        wx.onMenuShareAppMessage(shareData);
+        wx.onMenuShareQQ(shareData);
+        wx.onMenuShareWeibo(shareData);
+        wx.onMenuShareTimeline(shareData);
+    });
+</script>
+
 <script language="javascript">
 function getNearby(catid) {
     if (navigator.geolocation) {

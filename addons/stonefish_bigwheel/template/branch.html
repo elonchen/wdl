@@ -15,12 +15,16 @@
 </script>
 <div class="main">
 	<ul class="nav nav-tabs">
-		<li{if $_GPC['do'] == 'manage'} class="active"{/if}><a href="{php echo $this->createWebUrl('manage');}">大转盘管理</a></li>
-		<li{if $_GPC['do'] == 'post'} class="active"{/if}><a href="{php echo url('platform/reply/post',array('m'=>'stonefish_bigwheel'));}">添加大转盘规则</a></li>
-		<li{if $_GPC['do'] == 'fanslist'} class="active"{/if}><a href="{php echo $this->createWebUrl('fanslist',array('rid' => $rid));}">参与粉丝</a></li>
-		<li{if $_GPC['do'] == 'awardlist'} class="active"{/if}><a href="{php echo $this->createWebUrl('awardlist',array('rid' => $rid));}">中奖名单</a></li>
+		<li{if $_GPC['do'] == 'manage'} class="active"{/if}><a href="{php echo $this->createWebUrl('manage');}">管理幸运大转盘</a></li>
+		<li{if $_GPC['do'] == 'post'} class="active"{/if}><a href="{php echo url('platform/reply/post',array('m'=>'stonefish_bigwheel'));}"><i class="fa fa-plus"></i> 添加幸运大转盘</a></li>
+		<li{if $_GPC['do'] == 'fansdata'} class="active"{/if}><a href="{php echo $this->createWebUrl('fansdata',array('rid' => $rid));}">参与粉丝</a></li>
+		<li{if $_GPC['do'] == 'sharedata'} class="active"{/if}><a href="{php echo $this->createWebUrl('sharedata',array('rid' => $rid));}">分享数据</a></li>
+		<li{if $_GPC['do'] == 'prizedata'} class="active"{/if}><a href="{php echo $this->createWebUrl('prizedata',array('rid' => $rid));}">中奖名单</a></li>		
+		<li{if $_GPC['do'] == 'rankdata'} class="active"{/if}><a href="{php echo $this->createWebUrl('rankdata',array('rid' => $rid));}">粉丝排行</a></li>
+		<li{if $_GPC['do'] == 'trend'} class="active"{/if}><a href="{php echo $this->createWebUrl('trend',array('rid' => $rid));}">活动分析</a></li>
+		<li{if $_GPC['do'] == 'posttmplmsg'} class="active"{/if}><a href="{php echo $this->createWebUrl('posttmplmsg',array('rid' => $rid));}">消息通知</a></li>
 		{if $stonefish_branch}<li{if $_GPC['do'] == 'branch'} class="active"{/if}><a href="{php echo $this->createWebUrl('branch',array('rid' => $rid));}">商家赠送项</a></li>{/if}
-		<li><a href="{php echo url('platform/reply/post',array('m'=>'stonefish_bigwheel', 'rid' => $rid));}">编辑大转盘规则</a></li>
+		<li><a href="{php echo url('platform/reply/post',array('m'=>'stonefish_bigwheel', 'rid' => $rid));}">编辑幸运大转盘</a></li>
 	</ul>
     <div class="panel panel-info">
 	<div class="panel-heading">筛选</div>
@@ -72,13 +76,12 @@
 <div class="panel-heading">
 	<div class="row-fluid">
     	<div class="span8 control-group">
-			<a class="btn btn-primary" href="{php echo $this->createWebUrl('download',array('rid'=>$rid,'fans'=>'branch','pcate'=>$_GPC['pcate'],'districtid'=>$_GPC['districtid']))}"><i class="fa fa-download"></i> 导出赠送信息</a>
+			<a class="btn btn-warning" href="{php echo $this->createWebUrl('download',array('rid'=>$rid,'data'=>'branch','pcate'=>$_GPC['pcate'],'districtid'=>$_GPC['districtid']))}"><i class="fa fa-download"></i> 导出赠送信息</a>
 			<a class="btn btn-danger importing" href="javascript:void(0)" id="{$row['id']}"  data-toggle="tooltip" data-placement="top" title="导入赠送信息"><i class="fa fa-upload"></i> 导入赠送信息</a>
         </div>
     </div>
 </div>
-	<form method="post" class="form-horizontal" id="form1">
-	<div style="position:relative">
+<div style="position:relative">
 		<div class="panel-body table-responsive">
 			<table class="table table-hover" style="position:relative">
 			<thead class="navbar-inner">
@@ -105,30 +108,29 @@
 					<td>{$row['shangjia']}</td>
 					<td>{if $row['status']==0}<label data="{$row['status']}"  style="cursor:pointer" class="label label-default" onclick="setcheck(this,{$row['id']},'status')">不可用{/if}{if $row['status']==1}<label data="{$row['status']}"   style="cursor:pointer" class="label label-warning" onclick="setcheck(this,{$row['id']},'status')">未审核{/if}{if $row['status']==2}<label data="{$row['status']}"   style="cursor:pointer" class="label label-success" onclick="setcheck(this,{$row['id']},'status')">已审核{/if}</label></td>
 					<td>{php echo date('Y/m/d H:i',$row['createtime']);}</td>
-					<td><a href="javascript:void(0)" id="{$row['id']}" class="btn btn-default btn-sm manage" data-toggle="tooltip" data-placement="top" title="增加中奖"><i class="fa fa-pencil-square-o"></i> 修改赠送</a></td>
+					<td><a href="javascript:void(0)" id="{$row['id']}" class="btn btn-default btn-sm manage" data-toggle="tooltip" data-placement="top" title="修改赠送"><i class="fa fa-pencil-square-o"></i> 修改赠送</a></td>
 				</tr>
 				{/loop}
 				<tr>
 					<td><input type="checkbox" name="" onclick="var ck = this.checked;$(':checkbox').each(function(){this.checked = ck});"></td>
-					<td colspan="8"><input name="token" type="hidden" value="{$_W['token']}" /><input type="submit" name="submit" class="btn btn-primary" value="删除选中的增送记录"></td>
+					<td colspan="8"><input name="token" type="hidden" value="{$_W['token']}" /><input type="submit" name="deleteall" class="btn btn-danger" value="删除选中的增送记录"></td>
 				</tr>
 			</tbody>
 		</table>
 	</div>
 </div>
-</form>
 </div>
 {$pager}
 </div>
 <div id="guanbi" class="hide">
-		<span type="button" class="pull-right btn btn-primary" data-dismiss="modal" aria-hidden="true">关闭</span>
+	<span type="button" class="pull-right btn btn-primary" data-dismiss="modal" aria-hidden="true">关闭</span>
 </div>
 <script>
 	require(['jquery', 'util'], function($, u){
-		$('#form1').submit(function(){
+		$("input[name=deleteall]").click(function(){
 		    if($(":checkbox[name='uid[]']:checked").size() > 0){
 			    var check = $(":checkbox[name='uid[]']:checked");
-			    if( confirm("确认要删除选择的商家赠送记录?")){
+			    //if(confirm("确认要删除选择的粉丝中奖记录?")){
 		            var id = new Array();
 				    var rid = {$rid};
 		            check.each(function(i){
@@ -136,17 +138,18 @@
 		            });
 		            $.post('{php echo $this->createWebUrl('deletebranch')}', {idArr:id,rid:rid},function(data){
 			        if (data.errno ==0){
-						location.reload();
-			        } else {
-				        alert(data.error);
+						u.message(data.error, '{php echo url('site/entry/branch',array('m' => 'stonefish_bigwheel','rid' => $rid))}', 'warning');
+			        }else{
+				        u.message(data.error, '', 'error');
 			        }
+					return false;
 		            },'json');
-		        }
+		        //}
 		    }else{
 		        u.message('没有选择商家增送记录', '', 'error');
 		        return false;
-		    }
-	    });
+		    }		    
+	    });		
 		$('.manage').click(function(){
 			var uid = parseInt($(this).attr('id'));
 			$.get("{php echo url('site/entry/editbranch',array('m' => 'stonefish_bigwheel','rid' => $rid))}&uid=" + uid, function(data){
@@ -181,24 +184,22 @@
 		})
 	});
     function setcheck(obj,id,type){
-        
        $(obj).html($(obj).html() + "...");
-        $.post("{php echo $this->createWebUrl('setcheck')}"
-            ,{id:id,type:type, data: obj.getAttribute("data")}
-            ,function(d){
-                $(obj).html($(obj).html().replace("...",""));
-					if(d.data=='2'){
-					    $(obj).html('已审核');
-						$(obj).addClass("label-success");
-						$(obj).removeClass("label-default");
-						$(obj).removeClass("label-warning");
-					}else{
-					    $(obj).html('未审核');
-						$(obj).addClass("label-warning");
-						$(obj).removeClass("label-default");
-						$(obj).removeClass("label-success");
-					}
-                $(obj).attr("data",d.data);
-            },"json");
-    }</script>
+        $.post("{php echo $this->createWebUrl('setcheck')}",{id:id,type:type, data: obj.getAttribute("data")},function(d){
+            $(obj).html($(obj).html().replace("...",""));
+				if(d.data=='2'){
+					$(obj).html('已审核');
+					$(obj).addClass("label-success");
+					$(obj).removeClass("label-default");
+					$(obj).removeClass("label-warning");
+				}else{
+					$(obj).html('未审核');
+					$(obj).addClass("label-warning");
+					$(obj).removeClass("label-default");
+					$(obj).removeClass("label-success");
+				}
+            $(obj).attr("data",d.data);
+        },"json");
+    }
+</script>
 {template 'common/footer'}

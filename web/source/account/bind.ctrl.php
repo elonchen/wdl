@@ -92,6 +92,8 @@ if ($do == 'post') {
 			$account['key'] = $_GPC['key'];
 			$account['secret'] = $_GPC['secret'];
 			$account['type'] = intval($_GPC['type']);
+			$account['topad'] = $_GPC['topad'];
+			$account['footad'] = $_GPC['footad'];
 		}
 		if (empty($acid)) {
 			$acid = account_create($uniacid, $account);

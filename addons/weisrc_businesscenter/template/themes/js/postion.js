@@ -31,10 +31,17 @@ $(function() {
                 var ShopLng = ShopLngLat.slice(0, InputOF);
                 var ShopLat = ShopLngLat.slice(InputOF + 1, InputOFLast);
                 var dis111 = distanceByLnglat(locLng, locLat, ShopLng, ShopLat);
-                $(this).find("#shopspostion").html("" + dis111 + " Km");
+                $(this).find("#shopspostion").html(dis111 + " Km");
             });
             $("#curlat").val(locLat);
             $("#curlng").val(locLng);
+
+            isposition = $("#isposition").val();
+            cururl = $("#cururl").val();
+            if (isposition == 0) {
+                var url = cururl + '&lat=' + locLat + '&lng=' + locLng;
+                window.location = url;
+            }
         } else {
             $(".morelist").each(function() {
                 $(this).find("#shopspostion").html("无法获取距离" + _this.getStatus() + "");

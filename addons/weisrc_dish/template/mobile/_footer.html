@@ -1,5 +1,5 @@
 <style>
-    .header { padding: 5px 0; display: block; position: fixed; width: 100%; z-index: 3; bottom: 48px; color: #F03C03; background-color:#fff; line-height: 32px; font-size: 14px;border-top: 1px solid #E2E2E2; }
+    .header { padding: 5px 0; display: block; position: fixed; width: 100%; z-index: 3; bottom: 0px; color: #F03C03; background-color:#fff; line-height: 32px; font-size: 14px;border-top: 1px solid #E2E2E2; }
     .header .left { float: left;margin-left: 10px }
     .header .right { float: right;margin-right: 10px }
     .footermenu {
@@ -69,11 +69,11 @@
     .xhlbtn {
         display: block;
         text-align: center;
-        /*background-color: #F03C03;*/
-        background-color: #fdb338;
+        background-color: #F03C03;
+        /*background-color: #fdb338;*/
         /*background-color: #5ac5d4;*/
         padding: 0 15px;
-        border-radius: 3px;
+        border-radius: 20px;
         color: #fff;
         font-weight: bold;
     }
@@ -83,42 +83,42 @@
         vertical-align: middle;
     }
 </style>
-<div class="footermenu">
-    <ul>
-        {if $do != 'rest'}
-        <li>
-            <a {if $do=='list'}class="active"{/if} href="{php echo $this->createMobileurl('waplist', array('from_user' => $page_from_user, 'storeid' => $storeid, 'isdelivery' => $this->_isdelivery), true)}">
-                <img src="../addons/weisrc_dish/template/images/menu.png">
-                <p>菜单</p>
-            </a>
-        </li>
-        {if !empty($intelligents)}
-        <li>
-            <a href="{php echo $this->createMobileurl('wapselect', array('from_user' => $page_from_user, 'storeid' => $storeid), true)}">
-                <img src="../addons/weisrc_dish/template/images/store.png">
-                <p>智能点餐</p>
-            </a>
-        </li>
-        {/if}
-        <li>
-            <a {if $do=='menu'}class="active"{/if} href="{php echo $this->createMobileurl('wapmenu', array('from_user' => $page_from_user, 'storeid' => $storeid, 'isdelivery' => $this->_isdelivery), true)}">
-                <!--<span class="num" id="cartN2">0</span>-->
-                <img src="../addons/weisrc_dish/template/images/cart.png">
-                <p>购物车</p>
-            </a>
-        </li>
-        <li>
-            <a {if $do=='order'}class="active"{/if} href="{php echo $this->createMobileurl('orderlist', array('from_user' => $page_from_user, 'storeid' => $storeid, 'isdelivery' => $this->_isdelivery), true)}">
-                <img src="../addons/weisrc_dish/template/images/order.png">
-                <p>订单</p>
-            </a>
-        </li>
-        <li>
-            <a {if $do=='rest'}class="active"{/if} href="{php echo $this->createMobileurl('waprestlist', array('from_user' => $page_from_user, 'storeid' => $storeid, 'isdelivery' => $this->_isdelivery), true)}">
-            <img src="../addons/weisrc_dish/template/images/home.png">
-            <p>门店</p>
-            </a>
-        </li>
-        {/if}
-    </ul>
-</div>
+<!--<div class="footermenu">-->
+    <!--<ul>-->
+        <!--{if $do != 'rest'}-->
+        <!--<li>-->
+            <!--<a {if $do=='list'}class="active"{/if} href="{php echo $this->createMobileurl('waplist', array('from_user' => $page_from_user, 'storeid' => $storeid, 'isdelivery' => $this->_isdelivery), true)}">-->
+                <!--<img src="../addons/weisrc_dish/template/images/menu.png">-->
+                <!--<p>菜单</p>-->
+            <!--</a>-->
+        <!--</li>-->
+        <!--{if !empty($intelligents)}-->
+        <!--<li>-->
+            <!--<a href="{php echo $this->createMobileurl('wapselect', array('from_user' => $page_from_user, 'storeid' => $storeid), true)}">-->
+                <!--<img src="../addons/weisrc_dish/template/images/store.png">-->
+                <!--<p>智能点餐</p>-->
+            <!--</a>-->
+        <!--</li>-->
+        <!--{/if}-->
+        <!--<li>-->
+            <!--<a {if $do=='menu'}class="active"{/if} href="{php echo $this->createMobileurl('wapmenu', array('from_user' => $page_from_user, 'storeid' => $storeid, 'isdelivery' => $this->_isdelivery), true)}">-->
+                <!--&lt;!&ndash;<span class="num" id="cartN2">0</span>&ndash;&gt;-->
+                <!--<img src="../addons/weisrc_dish/template/images/cart.png">-->
+                <!--<p>购物车</p>-->
+            <!--</a>-->
+        <!--</li>-->
+        <!--<li>-->
+            <!--<a {if $do=='order'}class="active"{/if} href="{php echo $this->createMobileurl('order', array('from_user' => $page_from_user, 'storeid' => $storeid, 'isdelivery' => $this->_isdelivery), true)}">-->
+                <!--<img src="../addons/weisrc_dish/template/images/order.png">-->
+                <!--<p>订单</p>-->
+            <!--</a>-->
+        <!--</li>-->
+        <!--<li>-->
+            <!--<a {if $do=='rest'}class="active"{/if} href="{php echo $this->createMobileurl('waprestlist', array('from_user' => $page_from_user, 'storeid' => $storeid, 'isdelivery' => $this->_isdelivery), true)}">-->
+            <!--<img src="../addons/weisrc_dish/template/images/home.png">-->
+            <!--<p>门店</p>-->
+            <!--</a>-->
+        <!--</li>-->
+        <!--{/if}-->
+    <!--</ul>-->
+<!--</div>-->

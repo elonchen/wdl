@@ -7,16 +7,7 @@
 	<i class="fa fa-info-circle"></i>
 	当前门店名称: {$store['title']}
 </div>
-<ul class="nav nav-tabs">
-	<li><a href="{php echo $this->createWebUrl('store');}"><i class="fa fa-reply-all"></i> 返回门店列表</a></li>
-	<li {if $op == 'cate_list'}class="active"{/if}><a href="{php echo $this->createWebUrl('manage', array('op' => 'cate_list'));}">菜品分类</a></li>
-	<li {if $op == 'cate_post' && !$id} class="active"{/if}><a href="{php echo $this->createWebUrl('manage', array('op' => 'cate_post'));}">添加菜品分类</a></li>
-	<li {if $op == 'dish_list'}class="active"{/if}><a href="{php echo $this->createWebUrl('manage', array('op' => 'dish_list'));}">菜品列表</a></li>
-	<li {if $op == 'dish_post' && !$id} class="active"{/if}><a href="{php echo $this->createWebUrl('manage', array('op' => 'dish_post'));}">添加菜品</a></li>
-	{if $op == 'dish_post' && $id} <li class="active"><a href="{php echo $this->createWebUrl('manage', array('op' => 'dish_post', array('id' => $id)));}">编辑菜品</a></li>{/if}
-	<li {if $op == 'order'}class="active"{/if}><a href="{php echo $this->createWebUrl('manage', array('op' => 'order'));}">订单管理</a></li>
-	{if $op == 'orderdetail'}<li class="active"><a href="{php echo $this->createWebUrl('manage', array('op' => 'orderdetail', 'id' => $id));}">订单详情</a></li>{/if}
-</ul>
+{template 'nav'}
 {if $op == 'order'}
 	<div class="main">
 		<div class="panel panel-info">
@@ -74,11 +65,13 @@
 					<table class="table table-hover">
 						<thead class="navbar-inner">
 							<tr>
+								<th>订单id</th>
 								<th>预定人</th>
 								<th>电话</th>
 								<th>份数/总价</th>
 								<th width="90">支付方式</th>
 								<th width="90">订单状态</th>
+								<th width="120">打印(份数)</th>
 								<th>下单时间</th>
 								<th style="width:150px; text-align:right;">操作</th>
 							</tr>
@@ -86,6 +79,7 @@
 						<tbody>
 							{loop $data $dca}
 							<tr>
+								<td><b>{$dca['id']}</b></td>
 								<td>{$dca['username']}</td>
 								<td>{$dca['mobile']}</td>
 								<td>{$dca['num']}份/{$dca['price']}元</td>
@@ -130,6 +124,16 @@
 										</ul>
 									</div>
 								</td>
+								<td><a href="javascript:;" class="btn btn-default btn-sm print" data-id="{$dca['id']}">
+									<i class="fa fa-print"></i> 
+									(
+										{if $dca['print_nums'] > 0}
+											<span style="color:green">{$dca['print_nums']}</span>
+										{else}
+											<span style="color:red">{$dca['print_nums']}</span>
+										{/if}
+									)</a>
+								</td>
 								<td>{php echo date('Y-m-d H:i', $dca['addtime'])}</td>
 								<td style="text-align:right;">
 									<a href="{php echo $this->createWebUrl('manage', array('op' => 'orderdetail', 'id' => $dca['id']))}" class="btn btn-success btn-sm" title="查看详情" data-toggle="tooltip" data-placement="top">查看详情</a>
@@ -151,7 +155,7 @@
 		</form>
 	</div>
 	<script type="text/javascript">
-		$(function(){
+		require(['util'], function(u){
 			$('.pay_status, .status').click(function(){
 				var value = $(this).attr('data-value');
 				var oid = $(this).attr('data-oid');
@@ -167,6 +171,21 @@
 					});
 				}
 			});
+			$('.print').click(function(){
+				if(!confirm('确定打印该订单吗？')) {
+					return false;
+				}
+				var id = $(this).attr('data-id');
+				$.post("{php echo $this->createWebUrl('manage', array('op' => 'ajaxprint'))}", {'id' : id}, function(data) {
+					if(data != 'success') {
+						u.message(data, '', 'error');
+					} else {
+						location.reload();
+					}
+				});
+				return false;
+			});
+
 		});
 	</script>
 {elseif $op == 'orderdetail'}
@@ -206,7 +225,7 @@
 											{/if}
 										</td>
 										<td>
-											<a class="btn btn-success" target="_blank" href="{php echo $this->createWebUrl('manage', array('op' => 'dish_post', 'id' => $order['id']));}">菜品信息</a>
+											<a class="btn btn-success" target="_blank" href="{php echo $this->createWebUrl('manage', array('op' => 'dish_post', 'id' => $or['id']));}">菜品信息</a>
 										</td>
 									</tr>
 								{/loop}

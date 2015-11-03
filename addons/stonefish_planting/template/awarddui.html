@@ -62,7 +62,7 @@
 <div class="panel-heading">
 	<div class="row-fluid">
     	<div class="span8 control-group">
-			<a class="btn btn-default{if $_GPC['tickettype']=='0'} btn-primary active{/if}" href="{php echo $this->createWebUrl('awarddui',array('rid'=>$rid,'tickettype'=>0))}">全　部</a>
+			<a class="btn btn-default{if $_GPC['tickettype']==''} btn-primary active{/if}" href="{php echo $this->createWebUrl('awarddui',array('rid'=>$rid))}">全　部</a>
 			<a class="btn btn-default{if $_GPC['tickettype']=='1'} btn-primary active{/if}" href="{php echo $this->createWebUrl('awarddui',array('rid'=>$rid,'tickettype'=>1))}">后台兑奖</a>
 			<a class="btn btn-default{if $_GPC['tickettype']=='2'} btn-primary active{/if}" href="{php echo $this->createWebUrl('awarddui',array('rid'=>$rid,'tickettype'=>2))}">店员兑奖</a>
 			{if $stonefish_branch}<a class="btn btn-default{if $_GPC['tickettype']=='3'} btn-primary active{/if}" href="{php echo $this->createWebUrl('awarddui',array('rid'=>$rid,'tickettype'=>3))}">商家网点兑奖</a>{/if}
@@ -73,18 +73,18 @@
     	<div class="span8 control-group">
 			<a class="btn btn-default{if $_GPC['award']==''} btn-primary active{/if}" href="{php echo $this->createWebUrl('awarddui',array('rid'=>$rid,'tickettype'=>$_GPC['tickettype']))}">全　部</a>
 			{loop $award $awardp}
-			<a class="btn btn-default{if $_GPC['award']==$awardp['prizetype']} btn-primary active{/if}" href="{php echo $this->createWebUrl('awarddui',array('rid'=>$rid,'tickettype'=>$_GPC['tickettype'],'award'=>$awardp['prizetype']))}">{$awardp['prizetype']}</a>
+			<a class="btn btn-default{if $_GPC['prizeid']==$awardp['id']} btn-primary active{/if}" href="{php echo $this->createWebUrl('awarddui',array('rid'=>$rid,'tickettype'=>$_GPC['tickettype'],'award'=>$awardp['prizetype'],'prizeid'=>$awardp['id']))}">{$awardp['prizetype']}</a>
 			{/loop}			
         </div>
     </div>
 	<div class="alert" style="margin-bottom:0;">
 		{loop $award $awardt}
-		    {$awardt['prizetype']}:{$awardt['prizedraw']}个/{$awardt['prizetotal']}个　　
+		    {$awardt['prizetype']}:总数{$awardt['prizetotal']}个  兑换{$awardt['prizedraw']}个  抽中{$awardt['num']}个　　
 		{/loop}			
 	</div>
 	<div class="row-fluid">
     	<div class="span8 control-group">			
-			<a class="btn btn-primary" href="{php echo $this->createWebUrl('download',array('rid'=>$rid,'fans'=>duijiang,'tickettype'=>$_GPC['tickettype'],'award'=>$_GPC['award']))}"><i class="fa fa-download"></i> 导出{$statustitle}信息</a>
+			<a class="btn btn-primary" href="{php echo $this->createWebUrl('download',array('rid'=>$rid,'fans'=>duijiang,'tickettype'=>$_GPC['tickettype'],'award'=>$_GPC['award'],'prizeid'=>$_GPC['prizeid']))}"><i class="fa fa-download"></i> 导出{$statustitle}信息</a>
         </div>
     </div>
 </div>
@@ -101,7 +101,7 @@
 					<th style="width:120px;">领取者手机号</th>
 					<th style="width:150px;">中奖时间</th>
 					<th style="width:150px;">兑奖时间</th>
-					<th style="width:150px;">兑奖人</th>
+					<th style="width:150px;">兑奖地</th>
 				</tr>
 			</thead>
 			<tbody>

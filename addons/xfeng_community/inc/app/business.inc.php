@@ -12,7 +12,7 @@ defined('IN_IA') or exit('Access Denied');
 
 	global $_W,$_GPC;
 	$title = '小区商家';
-	$op = !empty($_GPC['op']) ? $_GPC['op'] : 'login';
+	$op = !empty($_GPC['op']) ? $_GPC['op'] : 'app';
 
 	if($op == 'login'){
 		//商家管理后台独立页面	
@@ -101,11 +101,12 @@ defined('IN_IA') or exit('Access Denied');
 		$uid = intval($_GPC['uid']);
 		if ($_GPC['id']) {
 			$item = pdo_fetch("SELECT * FROM".tablename('xcommunity_sjdp')."WHERE id=:id",array(':id' => $_GPC['id']));
+			$regs = unserialize($item['regionid']);
 		}
 		$data = array(
 				'weid'          => $_W['uniacid'],
 				'uid'           => $uid,
-				'regionid'      => $_GPC['regionid'],
+				'regionid'      => serialize($_GPC['regionid']),
 				'sjname'        => $_GPC['sjname'],
 				'picurl'        => $_GPC['picurl'],
 				'contactname'   => $_GPC['contactname'],
@@ -118,6 +119,7 @@ defined('IN_IA') or exit('Access Denied');
 				'address'		=> $_GPC['address'],
 				'shopdesc'      => htmlspecialchars_decode($_GPC['shopdesc']),
 				'businnesstime' => $_GPC['businnesstime'],
+				'businessurl'   => $_GPC['businessurl'],
 				'createtime'    => TIMESTAMP,
 			);
 		if ($_W['ispost']) {
@@ -145,9 +147,22 @@ defined('IN_IA') or exit('Access Denied');
 		$pindex = max(1, intval($_GPC['page']));
 		$psize  = 10;
 		$member = $this->changemember();
-		$list   = pdo_fetchall("select * from".tablename('xcommunity_sjdp')."where weid = '{$_W['uniacid']}'  and regionid='{$member['regionid']}' LIMIT ".($pindex - 1) * $psize.','.$psize);
+		$rows   = pdo_fetchall("select * from".tablename('xcommunity_sjdp')."where weid = '{$_W['uniacid']}' LIMIT ".($pindex - 1) * $psize.','.$psize);
+		$list = array();
+		foreach ($rows as $key => $value) {
+			$regions = unserialize($value['regionid']);
+			if (@in_array($member['regionid'], $regions)) {
+				$list[$key]['sjname'] = $value['sjname'];
+				$list[$key]['address'] = $value['address'];
+				$list[$key]['mobile'] = $value['mobile'];
+				$list[$key]['id'] = $value['id'];
+				$list[$key]['picurl'] = $value['picurl'];
+				$list[$key]['businessurl'] = $value['businessurl'];
+			}
+		}
+
 		if ($op == 'more') {
-			include $this->template('homemaking_more');
+			include $this->template('business_app_more');
 			exit();
 		}	
 

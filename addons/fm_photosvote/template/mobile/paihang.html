@@ -110,7 +110,7 @@ body{background:#f5f5f5 no-repeat;background-size:100% auto;}
   margin: 0 auto;
 }
 .usr_more {
-  width: 100%;
+  width: 95%;
   border: 0px solid #c4d4d0;
   line-height: 35px;
   text-align: center;
@@ -132,13 +132,13 @@ body{background:#f5f5f5 no-repeat;background-size:100% auto;}
 $(document).ready(function() {
     var track_click = 0; //track user click on "load more" button, righ now it is 0 click  
     var total_pages = {$total_pages};
-    $('#results').load("{php echo $this->createMobileUrl('phdata', array('rid' => $rid,'pagesnum' => $psize,'phdata' => 'votelog'))}", {'page':track_click}, function() {track_click++;}); //initial data to load   
+    $('#results').load("{php echo $this->createMobileUrl('phdata', array('rid' => $rid,'tfrom_user' => $tfrom_user,'pagesnum' => $psize,'phdata' => 'votelog'))}", {'page':track_click}, function() {track_click++;}); //initial data to load   
     $(".load_more").click(function (e) { //user clicks on button      
         $(this).hide(); //hide load more button on click  
         $('.animation_image').show(); //show loading image   
         if(track_click <= total_pages) //make sure user clicks are still less than total pages  
         {  
-            $.post('{php echo $this->createMobileUrl('phdata', array('rid' => $rid,'pagesnum' => $psize,'phdata' => 'votelog'))}',{'page': track_click}, function(data) {  
+            $.post('{php echo $this->createMobileUrl('phdata', array('rid' => $rid,'tfrom_user' => $tfrom_user,'pagesnum' => $psize,'phdata' => 'votelog'))}',{'page': track_click}, function(data) {  
                 $(".load_more").show(); //bring back load more button  
                 $("#results").append(data); //append data received from server  
                 $("html, body").animate({scrollTop: $("#load_more_button").offset().bottom}, 500);  

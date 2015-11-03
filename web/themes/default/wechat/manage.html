@@ -13,9 +13,6 @@
 	.text-danger{color:red;}
 </style>
 {if $do == 'logo'}
-	<div class="alert alert-info">
-		<i class="fa fa-info-circle"> 微信卡券功能需要您的公众号为认证订阅号或认证服务号，并且在微信公众平台开通了“卡券功能插件”</i>
-	</div>
 	<div class="clearfix">
 		<form action="" method="post" class="form-horizontal form" enctype="multipart/form-data" id="form1">
 			<div class="panel panel-default" id="step1">
@@ -26,7 +23,7 @@
 					<div class="form-group">
 						<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="text-danger">*</span> 上传商户LOGO</label>
 						<div class="col-sm-9 col-xs-12">
-							{php echo tpl_form_field_wechat_image('logo', $coupon_setting['logourl'], '', array('acid' => $acid, 'mode' => 'file_upload'));}
+							{php echo tpl_form_field_image('logo', $coupon_setting['logourl'])}
 							<div class="help-block">商户LOGO大小不超过1M。像素为：300*300。仅支持JPG格式</div>
 						</div>
 					</div>
@@ -61,17 +58,24 @@
 							<span class="help-block">分店名不得含有区域地址信息（如，“北京国贸店”中的“北京”）</span>
 						</div>
 					</div>
-
 					<div class="form-group">
 						<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="text-danger">*</span> 类目</label>
-						<div class="col-sm-8 col-xs-12">
-							{php echo tpl_form_field_location_category("class");}
+						<div class="col-sm-4 col-xs-6">
+							<select name="category" id="category" class="form-control">
+								<option value="美食" id="0">美食</option>
+								<option value="休闲娱乐" id="1">休闲娱乐</option>
+								<option value="生活服务" id="2">生活服务</option>
+								<option value="运输票务" id="3">运输票务</option>
+								<option value="电影票" id="4">电影票</option>
+								<option value="旅游" id="5">旅游</option>
+								<option value="酒店" id="6">酒店</option>
+								<option value="购物" id="7">购物</option>
+								<option value="虚拟" id="8">虚拟</option>
+							</select>
 						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="text-danger"></span> </label>
-						<div class="col-sm-8 col-xs-12">
-							<span class="help-block">请选择门店类目。门店类目必须合法有效。</span>
+						<div class="col-sm-4 col-xs-6">
+							<select name="subclass" id="subclass" class="form-control" style="display:none">
+							</select>
 						</div>
 					</div>
 					<div class="form-group">
@@ -98,52 +102,7 @@
 							<input type="text" class="form-control" name="telephone" value="{$item['telephone']}"/>
 						</div>
 					</div>
-					<div class="form-group">
-						<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="text-danger">*</span> 图片列表</label>
-						<div class="col-sm-8 col-xs-12">
-							{php echo tpl_form_field_wechat_multi_image('photo_list', '', '', array('mode' => 'file_upload', 'acid' => $acid));}
-							<span class="help-block">图片只支持jpg格式,大小不超过为1M</span>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="text-danger"></span> 人均价格</label>
-						<div class="col-sm-8 col-xs-12">
-							<input type="text" name="avg_price" class="form-control"/>
-							<span class="help-block">人均价格，大于0的整数,单位为人民币（元）</span>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="text-danger">*</span> 营业时间</label>
-						<div class="col-sm-9 col-xs-4 col-md-3">
-							<div class="input-group">
-								<input type="text" class="form-control" placeholder="8:00" name="open_time_start" value="8:00">
-								<span class="input-group-addon" id="basic-addon2">-</span>
-								<input type="text" class="form-control" placeholder="24:00" name="open_time_end" value="24:00">
-							</div>
-							<span class="help-block">营业时间，24小时制表示，如 8:00-20:00</span>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="text-danger"></span> 推荐</label>
-						<div class="col-sm-8 col-xs-12">
-							<textarea name="recommend" class="form-control" cols="30" rows="3"></textarea>
-							<span class="help-block">推荐品，餐厅可为推荐菜；酒店为推荐套房；景点为 推荐游玩景点等，针对自己行业的推荐内容</span>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="text-danger">*</span> 特色服务</label>
-						<div class="col-sm-8 col-xs-12">
-							<textarea name="special" class="form-control" cols="30" rows="3"></textarea>
-							<span class="help-block">特色服务，如免费wifi，免费停车，送货上门等商户 能提供的特色功能或服务</span>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="text-danger"></span> 简介</label>
-						<div class="col-sm-8 col-xs-12">
-							<textarea name="introduction" class="form-control" cols="30" rows="3"></textarea>
-							<span class="help-block">商户简介，主要介绍商户信息等 </span>
-						</div>
-					</div>
+
 				</div>
 			</div>
 			<div class="form-group col-sm-12">
@@ -152,232 +111,68 @@
 			</div>
 		</form>
 	</div>
-{/if}
-{if $do == 'location_edit'}
-<div class="clearfix">
-	<form action="" method="post" class="form-horizontal form" enctype="multipart/form-data" id="form1">
-		<div class="panel panel-default" id="step1">
-			<div class="panel-heading">
-				基本信息 <small class="text-danger">不可修改</small>
-			</div>
-			<div class="panel-body">
-				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="text-danger">*</span> 门店名</label>
-					<div class="col-sm-8 col-xs-12">
-						<input type="text" class="form-control" name="business_name" value="{$location['business_name']}" disabled/>
-						<span class="help-block">门店名不得含有区域地址信息（如，北京市XXX公司）</span>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label"> 分店名(选填)</label>
-					<div class="col-sm-8 col-xs-12">
-						<input type="text" class="form-control" name="branch_name" value="{$location['branch_name']}" disabled/>
-						<span class="help-block">分店名不得含有区域地址信息（如，“北京国贸店”中的“北京”）</span>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="text-danger">*</span> 类目</label>
-					<div class="col-sm-8 col-xs-12">
-						{php echo tpl_form_field_location_category("class", $location['category']);}
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="text-danger">*</span> 地址</label>
-					<div class="col-sm-8 col-xs-12">
-						{php echo tpl_fans_form('reside',array('province' => $location['province'],'city' => $location['city'],'district' => $location['district']));}
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="text-danger">*</span> 详细地址</label>
-					<div class="col-sm-8 col-xs-12">
-						<input type="text" name="address" id="addresss" class="form-control" disabled placeholder="输入详细地址，请勿重复填写省市区信息" value="{$location['address']}"/>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="text-danger">*</span> 定位</label>
-					<div class="col-sm-8 col-xs-12" id="map">
-						{php echo tpl_form_field_coordinate('baidumap', $location['baidumap'])}
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="panel panel-default" id="step1">
-			<div class="panel-heading">
-				服务信息 <small class="text-danger">可修改</small>
-			</div>
-			<div class="panel-body">
-				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="text-danger">*</span> 电话</label>
-					<div class="col-sm-8 col-xs-12">
-						<input type="text" class="form-control" name="telephone" value="{$location['telephone']}"/>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="text-danger">*</span> 图片列表</label>
-					<div class="col-sm-8 col-xs-12">
-						{php echo tpl_form_field_wechat_multi_image('photo_list', $location['photo_list'], '', array('mode' => 'file_upload', 'acid' => $acid));}
-						<span class="help-block">图片只支持jpg格式,大小不超过为1M</span>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="text-danger">*</span> 营业时间</label>
-					<div class="col-sm-9 col-xs-4 col-md-3">
-						<div class="input-group">
-							<input type="text" class="form-control" placeholder="8:00" name="open_time_start" value="{$location['open_time_start']}">
-							<span class="input-group-addon" id="basic-addon2">-</span>
-							<input type="text" class="form-control" placeholder="24:00" name="open_time_end" value="{$location['open_time_end']}">
-						</div>
-						<span class="help-block">营业时间，24小时制表示，如 8:00-20:00</span>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="text-danger"></span> 人均价格</label>
-					<div class="col-sm-8 col-xs-12">
-						<input type="text" name="avg_price" class="form-control" value="{$location['avg_price']}"/>
-						<span class="help-block">人均价格，大于0的整数,单位为人民币（元）</span>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="text-danger"></span> 推荐</label>
-					<div class="col-sm-8 col-xs-12">
-						<textarea name="recommend" class="form-control" cols="30" rows="3">{$location['recommend']}</textarea>
-						<span class="help-block">推荐品，餐厅可为推荐菜；酒店为推荐套房；景点为 推荐游玩景点等，针对自己行业的推荐内容</span>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="text-danger">*</span> 特色服务</label>
-					<div class="col-sm-8 col-xs-12">
-						<textarea name="special" class="form-control" cols="30" rows="3">{$location['special']}</textarea>
-						<span class="help-block">特色服务，如免费wifi，免费停车，送货上门等商户 能提供的特色功能或服务</span>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="text-danger"></span> 简介</label>
-					<div class="col-sm-8 col-xs-12">
-						<textarea name="introduction" class="form-control" cols="30" rows="3">{$location['introduction']}</textarea>
-						<span class="help-block">商户简介，主要介绍商户信息等 </span>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="form-group col-sm-12">
-			<input name="submit" id="submit" type="submit" value="提交" class="btn btn-primary col-lg-1">
-			<input type="hidden" name="token" value="{$_W['token']}" />
-		</div>
-	</form>
-</div>
-<script>
-	$(function(){
-		$('select[name^="class_0"]').attr('disabled', 'disabled');
-		$('select[name^="reside"]').attr('disabled', 'disabled');
-		$('input[name^="baidumap"]').attr('disabled', 'disabled');
-	});
-</script>
-{/if}
+	<script>
+		$(function(){
+			var subclass= [
+				['外卖', '粤菜', '茶餐厅', '川菜', '湘菜', '东北菜', '西北菜', '火锅', '自助餐', '小吃', '快餐', '日本料理', '韩国料理', '东南亚菜', '西餐', '面包甜点', '咖啡厅', '江浙菜', '其它美食'],
+				['展览展出', '会议活动', '培训拓展', '美容美发', '美甲', '艺术写真', '酒吧/俱乐部', '文化文艺', 'KTV', '棋牌室', '运动健身', '足疗按摩', '演出门票', '宠物美容'],
+				['留学中介', '百货商场', '超市/便利店', '婚庆服务', '汽车服务', '家政服务', '物业管理', '医疗保健', '快递', '货运', '宠物医疗', '教育学校'],
+				['运输票务'],
+				['电影票'],
+				['景点门票', '旅游套餐'],
+				['星级酒店', '度假村', '快捷酒店'],
+				['综合电商', '服饰', '鞋类箱包', '运动户外', '化妆品', '珠宝配饰', '家纺家装', '数码家电', '乐器', '鲜花礼品', '普通食品', '保健食品', '酒类', '母婴用品', '图书报刊杂志', '钟表眼镜', '药房/药店'],
+				['话费/流量/宽带', '水电煤缴费', '有线电视缴费']
+			];
+			//初始化
+			var cate = "{$item['category']}";
+			var sub = "{$item['subclass']}";
+			if(cate) {
+				$('#category').find('option[value="' + cate +  '"]').prop('selected', true);
+				var id = $('#category').find('option[value="' + cate +  '"]').attr('id');
+				var html = '';
+				for(var i = 0; i < subclass[id].length; i++) {
+					if(sub) {
+						if(sub == subclass[id][i]) {
+							var select = 'selected';
+						} else {
+							var select = '';
+						}
+						html += '<option value="'+subclass[id][i] +'" '+select+'>'+subclass[id][i]+'</option>';
+					} else {
+						html += '<option value="'+subclass[id][i]+'">'+subclass[id][i]+'</option>';
+					}
+				}
+				$('#subclass').html(html);
+				$('#subclass').show();
+			} else {
+				for(var i = 0; i < subclass[0].length; i++) {
+					html += '<option value="'+subclass[0][i]+'">'+subclass[0][i]+'</option>';
+				}
+				$('#subclass').html(html);
+				$('#subclass').show();
+			}
 
-{if $do == 'location_view'}
-<div class="clearfix">
-	<form action="" method="post" class="form-horizontal form" enctype="multipart/form-data" id="form1">
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				基本信息 <small class="text-danger"></small>
-			</div>
-			<div class="panel-body">
-				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label"> 门店名</label>
-					<div class="col-sm-8 col-xs-12">
-						<p class="form-control-static">{$location['business_name']}</p>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label"> 分店名</label>
-					<div class="col-sm-8 col-xs-12">
-						<p class="form-control-static">{$location['branch_name']}</p>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label"> 类目</label>
-					<div class="col-sm-8 col-xs-12">
-						<p class="form-control-static">{$location['category']}</p>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label"> 地址</label>
-					<div class="col-sm-8 col-xs-12">
-						<p class="form-control-static">{$location['address']}</p>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label"> 定位</label>
-					<div class="col-sm-8 col-xs-12">
-						{php echo tpl_form_field_coordinate('baidumap', $location['baidumap'])}
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				服务信息 <small class="text-danger"></small>
-			</div>
-			<div class="panel-body">
-				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label"> 门店图片</label>
-					<div class="col-sm-8 col-xs-12 multi-img-details">
-						{loop $location['photo_list'] $photo}
-						<div class="multi-item">
-							<img src="{php echo url('utility/wxcode/image', array('attach' => $photo['photo_url']));}" class="img-responsive img-thumbnail">
-						</div>
-						{/loop}
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label"> 电话</label>
-					<div class="col-sm-8 col-xs-12">
-						<p class="form-control-static">{$location['telephone']}</p>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label"> 人均价格</label>
-					<div class="col-sm-8 col-xs-12">
-						<p class="form-control-static">{$location['avg_price']}</p>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label"> 营业时间</label>
-					<div class="col-sm-8 col-xs-12">
-						<p class="form-control-static">{$location['open_time']}</p>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label"> 推荐</label>
-					<div class="col-sm-8 col-xs-12">
-						<p class="form-control-static">{$location['recommend']}</p>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label"> 特色服务</label>
-					<div class="col-sm-8 col-xs-12">
-						<p class="form-control-static">{$location['special']}</p>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label"> 简介</label>
-					<div class="col-sm-8 col-xs-12">
-						<p class="form-control-static">{$location['introduction']}</p>
-					</div>
-				</div>
-			</div>
-		</div>
-	</form>
-</div>
+			$('#category').change(function(){
+				var id = $(this).find('option[value="' + $(this).val() +  '"]').attr('id');
+				var html = '';
+				for(var i = 0; i < subclass[id].length; i++) {
+					html += '<option value="'+subclass[id][i]+'">'+subclass[id][i]+'</option>';
+				}
+				$('#subclass').html(html);
+				$('#subclass').show();
+			});
+
+			$('#map :text').css('margin-left', '-15px');
+		});
+	</script>
 {/if}
 
 {if $do == 'location_list'}
 	<div class="clearfix">
 		<div class="form-group" style="margin-bottom: 40px;margin-left:-15px">
 			<div class="col-sm-12">
-				<a href="{php echo url('wechat/manage/location_post')}" class="btn btn-success col-lg-1" style="margin-right:20px;">添加门店</a>
-				<a href="{php echo url('wechat/manage/export')}" class="btn btn-danger col-lg-1">从微信导入</a>
+				<a href="{php echo url('wechat/manage/location_post')}" class="btn btn-success col-lg-1">添加门店</a>
 			</div>
 		</div>
 		<div class="panel panel-info">
@@ -406,15 +201,12 @@
 					<table class="table table-hover" ng-controller="advAPI" style="width:100%;" cellspacing="0" cellpadding="0">
 						<thead class="navbar-inner">
 						<tr>
-							<th width="150">门店名称</th>
-							<th width="150">分店名</th>
-							<th width="170">类型</th>
-							<th width="90">营业时间</th>
-							<th width="120">电话</th>
-							<th>地址</th>
-							<th width="100">审核状态</th>
-							<th width="170">审核说明</th>
-							<th width="100" style="text-align:right">操作</th>
+							<th width="20%">门店名称</th>
+							<th width="20%">分店名</th>
+							<th width="20%">类型</th>
+							<th width="20%">电话</th>
+							<th width="20%">地址</th>
+							<th width="20%">操作</th>
 						</tr>
 						</thead>
 						<tbody>
@@ -422,28 +214,10 @@
 								<tr>
 									<td>{$li['business_name']}</td>
 									<td>{$li['branch_name']}</td>
-									<td>{$li['category_']}</td>
-									<td>{$li['open_time']}</td>
+									<td>{$li['category']}</td>
 									<td>{$li['telephone']}</td>
 									<td>{$li['province']} {$li['city']} {$li['district']} {$li['address']}</td>
 									<td>
-										{if $li['status'] == 1}
-										<span class="label label-success">审核通过</span>
-										{elseif $li['status'] == 2}
-										<span class="label label-default">审核中</span>
-										{else}
-										<span class="label label-danger">审核未通过</span>
-										{/if}
-									</td>
-									<td>
-										{if empty($li['message'])}
-											暂无说明
-										{else}
-											<a style="cursor:pointer" tabindex="0" role="button" data-toggle="popover" data-placement="bottom" data-content="{$li['message']}">{php echo cutstr($li['message'], 15, '...');}</a>
-										{/if}
-									</td>
-									<td style="text-align:right">
-										<a class="btn btn-default btn-sm" href="{php echo url('wechat/manage/location_view', array('id' => $li['id']))}" data-toggle="tooltip" data-placement="top" title="详情"><i class="fa fa-eye"></i></a>
 										<a class="btn btn-default btn-sm" href="{php echo url('wechat/manage/location_del', array('id' => $li['id']))}" onclick="if(!confirm('您确定要删除吗？')) return false;" data-toggle="tooltip" data-placement="top" title="删除"><i class="fa fa-times"></i></a>
 									</td>
 								</tr>
@@ -496,21 +270,19 @@
 </div>
 {/if}
 <script>
-	require(['bootstrap'], function($){
+	$(function(){
 		$('.btn').hover(function(){
 			$(this).tooltip('show');
 		},function(){
 			$(this).tooltip('hide');
 		});
-
-		$('[data-toggle="popover"]').popover();
-
 		$('#add').click(function(){
 			var html = '<tr>' +
 							'<td><input type="text" name="username[]" value="" placeholder="填写微信号" class="form-control"/></td>' +
 							'<td><a href="javascript:;" onclick="$(this).parent().parent().remove();return false;"><i class="fa fa-times-circle" title="删除"> </i></a></td>' +
 						'</tr>';
 			$(this).parent().parent().before(html);
+
 		});
 	});
 </script>

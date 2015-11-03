@@ -34,10 +34,10 @@
                     <div class="col-sm-2 col-lg-2">
                         <input class="form-control" name="keyword" id="" type="text" value="{$_GPC['keyword']}">
                     </div>
-                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">菜品分类</label>
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">商品分类</label>
                     <div class="col-sm-2 col-lg-2">
                         <select style="margin-right:15px;" name="category_id" class="form-control">
-                            <option value="0">请选择菜品分类</option>
+                            <option value="0">请选择商品分类</option>
                             {loop $category $row}
                             <option value="{$row['id']}" {if $row['id'] == $_GPC['category_id']} selected="selected"{/if}>{$row['name']}</option>
                             {/loop}
@@ -50,26 +50,29 @@
             </form>
         </div>
     </div>
-    <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
-        <input type="hidden" name="leadExcel" value="true">
-        <input type="hidden" name="c" value="site" />
-        <input type="hidden" name="a" value="entry" />
-        <input type="hidden" name="m" value="weisrc_dish" />
-        <input type="hidden" name="do" value="UploadExcel" />
-        <input type="hidden" name="ac" value="goods" />
-        <input type="hidden" name="storeid" value="{$storeid}" />
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+                <input type="hidden" name="leadExcel" value="true">
+                <input type="hidden" name="c" value="site" />
+                <input type="hidden" name="a" value="entry" />
+                <input type="hidden" name="m" value="weisrc_dish" />
+                <input type="hidden" name="do" value="UploadExcel" />
+                <input type="hidden" name="ac" value="goods" />
+                <input type="hidden" name="storeid" value="{$storeid}" />
 
-        <a class="btn btn-primary" href="{php echo $this->createWebUrl('goods', array('op' => 'post', 'storeid' => $storeid))}"><i class="icon-plus"></i> 添加菜品</a>
-        <a class="btn btn-primary" href="javascript:location.reload()"><i class="icon-refresh"></i> 刷新</a>
-        <input name="viewfile" id="viewfile" type="text" value="" style="margin-left: 40px;" class="form-control-excel" readonly>
-        <a class="btn btn-primary"><label for="unload" style="margin: 0px;padding: 0px;">上传...</label></a>
-        <input type="file" class="pull-left btn-primary span3" name="inputExcel" id="unload" style="display: none;"
-               onchange="document.getElementById('viewfile').value=this.value;this.style.display='none';">
-        <!--<input type="file" class=" pull-left btn-primary span3" name="inputExcel">-->
-        <input type="submit" class="btn btn-primary" name="btnExcel" value="导入数据">
-        <a class="btn btn-primary" href="../addons/weisrc_dish/example/example_goods.xls">下载导入模板</a>
-    </form>
-    <div style="padding-top: 15px;"></div>
+                <a class="btn btn-primary" href="{php echo $this->createWebUrl('goods', array('op' => 'post', 'storeid' => $storeid))}"><i class="fa fa-plus"></i> 添加商品</a>
+                <a class="btn btn-primary" href="javascript:location.reload()"><i class="fa fa-refresh"></i> 刷新</a>
+                <input name="viewfile" id="viewfile" type="text" value="" style="margin-left: 40px;" class="form-control-excel" readonly>
+                <a class="btn btn-primary"><label for="unload" style="margin: 0px;padding: 0px;">上传...</label></a>
+                <input type="file" class="pull-left btn-primary span3" name="inputExcel" id="unload" style="display: none;"
+                       onchange="document.getElementById('viewfile').value=this.value;this.style.display='none';">
+                <!--<input type="file" class=" pull-left btn-primary span3" name="inputExcel">-->
+                <input type="submit" class="btn btn-primary" name="btnExcel" value="导入数据">
+                <a class="btn btn-primary" href="../addons/weisrc_dish/example/example_goods.xls">下载导入模板</a>
+            </form>
+        </div>
+    </div>
     <div class="panel panel-default">
         <div class="table-responsive panel-body">
         <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
@@ -81,8 +84,8 @@
                     <th style="width:10%;">顺序</th>
 					<th style="width:6%;">ID</th>
                     <th style="width:10%;">类别</th>
-					<th style="width:14%">菜品名称</th>
-                    <th style="width:8%;">特价</th>
+					<th style="width:14%">商品名称</th>
+                    <th style="width:8%;">优惠价</th>
 					<th style="width:8%;">原价</th>
                     <th style="width:8%;">单位</th>
                     <th style="width:8%;">积分</th>
@@ -149,10 +152,10 @@ $(function(){
     $("input[name=btndeleteall]").click(function(){
         var check = $("input[type=checkbox][class!=check_all]:checked");
         if(check.length < 1){
-            alert('请选择要删除的菜品!');
+            alert('请选择要删除的商品!');
             return false;
         }
-        if(confirm("确认要删除选择的菜品?")){
+        if(confirm("确认要删除选择的商品?")){
             var id = new Array();
             check.each(function(i){
                 id[i] = $(this).val();
@@ -178,7 +181,7 @@ $(function(){
         <input type="hidden" name="id" value="{$item['id']}" />
         <div class="panel panel-default">
             <div class="panel-heading">
-                菜品编辑
+                商品编辑
             </div>
             <div class="panel-body">
                 <div class="form-group">
@@ -189,13 +192,13 @@ $(function(){
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">菜品名称</label>
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">商品名称</label>
                     <div class="col-sm-9">
                         <input type="text" name="goodsname" class="form-control" value="{$item['title']}" />
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">菜品分类</label>
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">商品分类</label>
                     <div class="col-sm-9">
                         <select class="form-control" style="margin-right:15px;" name="pcate" onchange="fetchChildCategory(this.options[this.selectedIndex].value)"  autocomplete="off" class="form-control">
                             <option value="0">请选择分类</option>
@@ -206,24 +209,24 @@ $(function(){
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">菜品图片</label>
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">商品图片</label>
                     <div class="col-sm-9">
                         {php echo tpl_form_field_image('thumb', $item['thumb'])}
                         <span class="help-block"></span>
                     </div>
                 </div>
+                <!--<div class="form-group">-->
+                    <!--<label class="col-xs-12 col-sm-3 col-md-2 control-label">特价商品</label>-->
+                    <!--<div class="col-sm-9">-->
+                        <!--<select class="form-control" style="margin-right:15px;" id="isspecial" name="isspecial" autocomplete="off">-->
+                            <!--<option value="1" {if $item['isspecial']==1 || empty($item)} selected="selected"{/if}>未启用</option>-->
+                            <!--<option value="2" {if $item['isspecial']==2} selected="selected"{/if}>特价</option>-->
+                            <!--&lt;!&ndash;<option value="3" {if $item['isspecial']==3} selected="selected"{/if}>会员</option>&ndash;&gt;-->
+                        <!--</select>-->
+                    <!--</div>-->
+                <!--</div>-->
                 <div class="form-group">
-                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">特价菜品</label>
-                    <div class="col-sm-9">
-                        <select class="form-control" style="margin-right:15px;" id="isspecial" name="isspecial" autocomplete="off">
-                            <option value="1" {if $item['isspecial']==1 || empty($item)} selected="selected"{/if}>未启用</option>
-                            <option value="2" {if $item['isspecial']==2} selected="selected"{/if}>特价</option>
-                            <!--<option value="3" {if $item['isspecial']==3} selected="selected"{/if}>会员</option>-->
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">特价价格</label>
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">优惠价</label>
                     <div class="col-sm-9">
                         <div class="input-group">
                             <input type="text" name="marketprice" class="form-control" value="{$item['marketprice']}" />
@@ -232,7 +235,7 @@ $(function(){
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">菜品原价</label>
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">商品原价</label>
                     <div class="col-sm-9">
                         <div class="input-group">
                             <input type="text" name="productprice" class="form-control" value="{$item['productprice']}" />
@@ -247,12 +250,14 @@ $(function(){
                             <input type="text" name="credit" class="form-control" value="{$item['credit']}" />
                             <span class="input-group-addon">分</span>
                         </div>
+                        <div class="help-block">点此商品所能获取的积分数</div>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">菜品单位</label>
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">商品单位</label>
                     <div class="col-sm-9">
                         <input type="text" class="form-control" name="unitname" value="{if empty($item['unitname'])}份{else}{$item['unitname']}{/if}" />
+                        <div class="help-block">份、例、斤、半斤、个 等</div>
                         <!--<select id="unitname" name="unitname" class="form-control">-->
                             <!--<option {if $item['unitname']=='份' || empty($item)}selected="selected"{/if} value="份">份</option>-->
                             <!--<option {if $item['unitname']=='斤'}selected="selected"{/if} value="斤">斤</option>-->
@@ -270,7 +275,7 @@ $(function(){
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">菜品描述</label>
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">商品描述</label>
                     <div class="col-sm-9">
                         <textarea style="height:150px;" class="form-control richtext" name="description" cols="70">{$item['description']}</textarea>
                         <span class="help-block"></span>

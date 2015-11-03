@@ -8,7 +8,7 @@
 <div id='list'>
 {loop $list $item}
 <div class="fy">
-    <a href="{php echo $this->createMobileUrl('business',array('op'=> 'detail','id'=> $item['id']))}" class="sq_box commodity">
+    <a href="{if $item['businessurl']}{$item['businessurl']}{else}{php echo $this->createMobileUrl('business',array('op'=> 'detail','id'=> $item['id']))}{/if}" class="sq_box commodity">
         <div class="commodity_img">
             <img src="{if $item['picurl']}{$_W['attachurl']}{$item['picurl']}{else}{MODULE_URL}template/image/Nopictures.jpg{/if}" />
 

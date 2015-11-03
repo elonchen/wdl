@@ -19,7 +19,7 @@
                 {loop $store['thumb_url'] $item}
                 <section class="sld_page">
                     <figure>
-                        <img src="{php echo tomedia($item)}"/>
+                        <img src="{$_W['attachurl']}{$item}"/>
                     </figure>
                 </section>
                 {/loop}

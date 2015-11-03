@@ -91,16 +91,6 @@
 	<div class="yaoqing" id="shareimg">
 		<img src="{php echo toimage($share['share_picurl'])}">
 	</div>
-	<div class="jifen">
-		<img src="../addons/stonefish_planting/template/images/text_jifen.png" class="fl">
-		<span class="num">
-		    {if $haswatered==0}<span><img src="../addons/stonefish_planting/template/images/num_1.png" alt=""></span>
-		    <span><img src="../addons/stonefish_planting/template/images/num_2.png" alt=""></span>
-		    <span><img src="../addons/stonefish_planting/template/images/num_3.png" alt=""></span>
-		    <span><img src="../addons/stonefish_planting/template/images/num_4.png" alt=""></span>
-		    <span><img src="../addons/stonefish_planting/template/images/num_5.png" alt=""></span>{/if}
-		<span>
-	</div>
 	{if $haswatered==0}
 	<div class="mask_zhiyin"></div>
 	<!-- <img src="../addons/stonefish_planting/template/images/zhiyin.png" class="img_zhiyin" id="zhiyin"> -->
@@ -123,8 +113,18 @@
 			{/loop}
         </marquee>
 	</div>
-	<a href="{php echo $this->createMobileUrl('index',array('rid'=>$rid,'from_user'=>$page_from_user))}"><img src="../addons/stonefish_planting/template/images/{$firendExistsimg}.png" class="btn_rule"></a>
 </div>
+<div class="jifen">
+	<img src="../addons/stonefish_planting/template/images/text_jifen.png" class="fl">
+	<span class="num">
+		{if $haswatered==0}<span><img src="../addons/stonefish_planting/template/images/num_1.png" alt=""></span>
+		<span><img src="../addons/stonefish_planting/template/images/num_2.png" alt=""></span>
+		<span><img src="../addons/stonefish_planting/template/images/num_3.png" alt=""></span>
+		<span><img src="../addons/stonefish_planting/template/images/num_4.png" alt=""></span>
+		<span><img src="../addons/stonefish_planting/template/images/num_5.png" alt=""></span>{/if}
+	<span>
+</div>
+<a href="{php echo $this->createMobileUrl('index',array('rid'=>$rid,'from_user'=>$page_from_user))}"><img src="../addons/stonefish_planting/template/images/{$firendExistsimg}.png" class="btn_rule"></a>
 <audio preload="auto" id="audio1" controls="controls">
 	<source src="../addons/stonefish_planting/template/audio/rain.mp3" type="audio/mpeg">
 </audio>
@@ -149,11 +149,11 @@
 		    setJifen({$sharenum},true);
 		}
 		$("#shareimg").click(function(){
-		   	$("#pop_share").show(500);
+		   	$("#pop_share").show();
 	   	});
 
 	   	$("#pop_share").click(function(){
-		  	$("#pop_share").hide(500);
+		  	$("#pop_share").hide();
 	    });
 		//$('.cloud_touch').click(function(){
 		$('.zhiyin').bind("touchend",function(){

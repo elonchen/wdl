@@ -2,7 +2,7 @@
 /**
  * 微信墙模块
  *
- * [WeEngine System] Copyright (c) 2013 wdlcms.com
+ * [WeiZan System] Copyright (c) 2013 012wz.com
  */
 defined('IN_IA') or exit('Access Denied');
 

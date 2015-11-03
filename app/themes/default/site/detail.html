@@ -21,6 +21,8 @@ body{color:#222;font-family:Helvetica, STHeiti STXihei, Microsoft JhengHei, Micr
 body > .tips{display:none;left:50%;padding:20px;position:fixed;text-align:center;top:50%;width:200px;z-index:100;}
 .page{padding:15px;}
 .page .page-error, .page .page-loading{line-height:30px;position:relative;text-align:center;}
+#activity-detail .page-topad{padding:10px;border-bottom: 1px dotted #CCC;}
+#activity-detail .page-footerad{padding:10px;border-top: 1px dotted #CCC;}
 #activity-detail .page-bizinfo{border-bottom:1px dotted #CCC;}
 #activity-detail .page-bizinfo .header{padding:10px 10px 10px;}
 #activity-detail .page-bizinfo .header #activity-name{color:#000;font-size:20px;margin-bottom:5px;font-weight:bold;word-break:normal;word-wrap:break-word;}
@@ -50,18 +52,20 @@ body > .tips{display:none;left:50%;padding:20px;position:fixed;text-align:center
 #mbutton > span{float:right; display:inline-block; background:#666; border:1px #DDD solid; color:#FFF; height:30px; line-height:30px; padding:0 10px; margin-left:10px;}
 #mcover{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0, 0, 0, 0.7);display:none;z-index:20000;}
 #mcover img{position:fixed;right: 18px;top:5px;width:260px;height:180px;z-index:20001;}
-.head{height:40px; line-height:40px; background:#22292C; padding:0 5px; color:#FFF;}
+.head{height:40px; line-height:40px; background:#428bca; padding:0 5px; color:#FFF;}
 .head .bn{display:inline-block; height:30px; line-height:30px; padding:0 10px; margin-top:4px; font-size:20px; background:transparent; color:#FFF; text-decoration:none;}
-.head .bn.pull-left{border-right:1px solid #000;}
-.head .bn.pull-right{position:absolute; right:5px; top:0; border-left:1px solid #000;}
+.head .bn.pull-left{border-right:1px solid #fff;}
+.head .bn.pull-right{position:absolute; right:5px; top:0; border-left:1px solid #fff;}
 .head .title{font-size:14pt;display:block;padding-left:10px;font-weight:bolder;margin-right:49px;text-align:center;height:40px;line-height:40px;text-overflow:ellipsis;white-space:nowrap;overflow: hidden;}
 .head .order{background:#F9F9F9; position:absolute; z-index:9999; right:0;}
 .head .order li > a{display:block; padding:0 10px; min-width:100px; height:35px; line-height:35px; font-size:16px; color:#333; text-decoration:none; border-top:1px #EEE solid;}
 .head .order li.fa-caret-up{font-size:20px;color:#F9F9F9;position:absolute;top:-11px;right:16px;}
+.left{padding:15px 10px 15px 10px;}
+.right{float:right; display:inline-block; background:#428bca; border-radius: 4px; color:#FFF; height:25px; line-height:25px; padding:0 10px; margin-left:10px;}
 </style>
 <div class="head">
 	<a href="javascript:history.go(-1);" class="bn pull-left"><i class="fa fa-reply"></i></a>
-	<span class="title">内容页</span>
+	<span class="title">{$detail['title']}</span>
 	<a href="javascript:;" id="category_show" class="bn pull-right"><i class="fa fa-reorder"></i></a>
 	<ul class="list-unstyled order hide">
 		<li class="fa fa-caret-up"></li>
@@ -86,15 +90,28 @@ body > .tips{display:none;left:50%;padding:20px;position:fixed;text-align:center
 		</span>
 	</div>
 </div>
+{if !empty($topad)}
+<div class="page-topad">
+<img src="{php echo toimage($topad)}" style="width:100%;">
+</div>
+{/if}
 <div class="page-content">
 	<div class="text">
 		{$detail['content']}
 	</div>
 </div>
 </div>
-<div id="mbutton">
-	<span class="" onclick="$('#mcover').show()"><i class="fa fa-share-alt"></i> 转发</span>
-	<span class="" onclick="$('#mcover').show()"><i class="fa fa-group"></i> 分享</span>
+<div class="left">
+ <span style="color:#607FA6;font-size:14px;">
+ <a href="{$subscribeurl}" title="" target="_blank">阅读原文</a></span> &nbsp;&nbsp;
+  <span style="color:#8C8C8C;font-size:14px;"> 阅读:<span class="hits orange01">{$detail['click']}</span>次 &nbsp;&nbsp;
+<span class="right" onclick="$('#mcover').show()"><i class="fa fa-share-alt"></i> 转发</span>
+<span class="right" onclick="$('#mcover').show()"><i class="fa fa-group"></i> 分享</span>
 </div>
 <div id="mcover" onclick="$(this).hide()"><img src="./resource/images/guide.png"></div>
+{if !empty($footad)}
+<div class="page-footerad">
+<img src="{php echo toimage($footad)}" style="width:100%;">
+</div>
+{/if}
 {template 'common/footer'}

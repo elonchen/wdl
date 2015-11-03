@@ -3,7 +3,7 @@
  * 女神来了模块定义
  *
  * @author 微赞科技
- * @url http://bbs.wdlcms.com/
+ * @url http://bbs.012wz.com/
  */
 defined('IN_IA') or exit('Access Denied');
 load()->func('tpl');
@@ -47,7 +47,10 @@ load()->func('tpl');
 			$list_praise = pdo_fetchall('SELECT * FROM '.tablename($this->table_users).' WHERE uniacid= :uniacid '.$where.' order by `id` desc LIMIT ' . ($pindex - 1) * $psize . ',' . $psize, array(':uniacid' => $uniacid) );
 			$total = pdo_fetchcolumn('SELECT COUNT(*) FROM '.tablename($this->table_users).' WHERE uniacid= :uniacid '.$where.' ', array(':uniacid' => $uniacid));
 			$pager = pagination($total, $pindex, $psize);
-			
+			$sharenum = array();
+			foreach ($list_praise as $mid => $m) {
+				$sharenum[$mid] = pdo_fetchcolumn("SELECT COUNT(*) FROM ".tablename($this->table_data)." WHERE uniacid = :uniacid and tfrom_user = :tfrom_user and rid = :rid", array(':uniacid' => $uniacid,':tfrom_user' => $m['from_user'],':rid' => $rid)) + pdo_fetchcolumn("SELECT COUNT(*) FROM ".tablename($this->table_data)." WHERE uniacid = :uniacid and fromuser = :fromuser and rid = :rid", array(':uniacid' => $uniacid,':fromuser' =>$m['from_user'], ':rid' => $rid)) + $m['sharenum'];
+			}
 			
 			
 			//include $this->template('provevote');
@@ -62,7 +65,7 @@ load()->func('tpl');
 				}
 			}
 			$picarr = $this->getpicarr($uniacid,$reply['tpxz'],$from_user,$rid);
-			
+			$sharesn = pdo_fetchcolumn("SELECT COUNT(*) FROM ".tablename($this->table_data)." WHERE uniacid = :uniacid and tfrom_user = :tfrom_user and rid = :rid", array(':uniacid' => $uniacid,':tfrom_user' => $from_user,':rid' => $rid)) + pdo_fetchcolumn("SELECT COUNT(*) FROM ".tablename($this->table_data)." WHERE uniacid = :uniacid and fromuser = :fromuser and rid = :rid", array(':uniacid' => $uniacid,':fromuser' =>$from_user, ':rid' => $rid)) + $item['sharenum'];
 			if (checksubmit('fileupload-delete')) {
 				file_delete($_GPC['fileupload-delete']);
 				pdo_update($this->table_users, array('photo' => ''), array('rid' => $rid, 'from_user' => $from_user));

@@ -45,11 +45,28 @@ defined('IN_IA') or exit('Access Denied');
 		$pager  = pagination($total, $pindex, $psize);	
 	}elseif ($op == 'post') {
 		//对应ID的投诉记录查看
-		$sql  = "select a.id,a.category,b.realname,b.mobile,a.content,a.createtime,a.status,a.resolver,a.resolve,a.resolvetime from".tablename("xcommunity_report")."as a left join".tablename("xcommunity_member")."as b on a.openid=b.openid where a.weid='{$_W['weid']}' and a.regionid='{$regionid}' and a.id='{$id}'";
-		print_r($sql);exit();
-		$item = pdo_fetch($sql);
+		$sql  = "select a.images,a.id,a.category,b.realname,b.mobile,a.content,a.createtime,a.status,a.resolver,a.resolve,a.resolvetime from".tablename("xcommunity_report")."as a left join".tablename("xcommunity_member")."as b on a.openid=b.openid where a.weid='{$_W['weid']}' and a.regionid='{$regionid}' and a.id='{$id}'";
+		$value = pdo_fetch($sql);
+		$images = unserialize($value['images']);
+		if ($images) {
+			$picid  = implode(',', $images);
+		    $imgs   = pdo_fetchall("SELECT * FROM".tablename('xfcommunity_images')."WHERE id in({$picid})");
+		}
+		//组成一个新的数组
+		 $item = array();
+		 $item = array(
+				'id'          =>$value['id'] ,
+				'requirement' =>$value['requirement'],
+				'category'    =>$value['category'],
+				'realname'    =>$value['realname'],
+				'content'     =>$value['content'],
+				'createtime'  =>$value['createtime'],
+				'status'      =>$value['status'],
+				'reply'       =>$reply,
+				'img'		  =>$imgs,
+		 	 );
 		if($_W['ispost']){
-			if (!empty($_GPC['resolve'])) {
+			
 				$resolver = empty($_GPC['resolver'])?$_W['username']:$_GPC['resolver'];
 				$data = array(
 				'status'      => 1,
@@ -59,7 +76,7 @@ defined('IN_IA') or exit('Access Denied');
 				);
 				pdo_update("xcommunity_report",$data,array('id'=>$id));
 				message('处理成功！',referer(),'success');
-			}		
+				
 		}
 	}elseif($op == 'delete'){
 		pdo_delete("xcommunity_report",array('weid'=>$_W['weid'],'id' =>$id));

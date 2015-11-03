@@ -17,7 +17,7 @@ span.module-priority{cursor:default;}
 .module-button .popover-content {padding:5px 10px; overflow:hidden;}
 .module-button .popover .arrow{left:85%;}
 .module-button .popover select{width:100%;}
-.module-detail{position:absolute;bottom:0;filter:Alpha(opacity=70);background:#000;background:rgba(0, 0, 0, 0.7);width:100%;font-family:arial,宋体b8b\4f53,sans-serif;}
+.module-detail{position:absolute;bottom:0;filter:Alpha(opacity=70);background:#000;background:rgba(0, 0, 0, 0.7);width:100%;}
 .module-detail p{padding:0 9px; margin:0;}
 .module-detail h5{color:#FFF;font-weight:normal;padding:0 9px;}
 .module-detail h5 small,.module-detail p{color:#CCC;}
@@ -32,7 +32,7 @@ p.module-description{display:block;padding:3px 10px;}
 					<div class="module-pic">
 						<img src="{$row['preview']}" onerror="this.src='../web/resource/images/nopic.jpg'" {if !$row['enabled']}class="gray"{/if}>
 						<div class="module-detail">
-							<h5 class="module-title">{$row['title']}</h5>
+							<h5 class="module-title" style="margin-bottom:5px;">{$row['title']}<small>（标识：{$row['name']}）</small></h5>
 							<p class="module-brief">{$row['ability']}</p>
 							<p class="module-description">{if $row['isrulefields']}<a href="{php echo url('platform/reply/post', array('m' => $row['name']))}" class="text-info">添加规则</a>{/if}</p>
 						</div>
@@ -42,7 +42,7 @@ p.module-description{display:block;padding:3px 10px;}
 					</div>
 					<div class="module-button" style="padding: 0px;">
 						{if $row['issystem']}
-							<a href="javascript:;" class="pull-right"><span style="font-weight: bold;">此模块为系统模块</span></a>
+							<a href="javascript:;" class="pull-right"><span>此模块为系统模块</span></a>
 						{else}
 						{if $row['enabled']}
 							<a id="enabled_{$row['mid']}_0" href="{php echo url('profile/module/enable', array('m' => $row['name'], 'enabled' => 0))}" onclick="return ajaxopen(this.href)" class="btn btn-primary module-button-switch">禁用</a>

@@ -88,7 +88,8 @@ function getMonthCost()
 						for(i=0;i<count;i++)
 						{
 							data= msg.data[i];
-						
+							url = "{php echo $this->createMobileUrl('propertyfree',array('op' => 'pay'),true)}&pid="+data.id;
+
 								$(".costInfo").append('<p><i class="icon-calendar"></i><span>查询月份：</span>'+month+'</p>');
 								if(data.username !=""){$(".costInfo").append('<p><i class="icon-user"></i><span>姓名：</span>'+data.username+'</p>');}
 								if(data.homenumber !=""){$(".costInfo").append('<p><i class="icon-building"></i><span>房号：</span>'+data.homenumber+'</p>');}
@@ -96,6 +97,13 @@ function getMonthCost()
 								if(data.tcf !=""){$(".costInfo").append('<p><i></i><span>停车费：</span>'+data.tcf+'元</p>');	}
 								if(data.gtsf !=""){$(".costInfo").append('<p><i></i><span>公摊水费：</span>'+data.gtsf+'元</p>');	}
 								if(data.gtdf !=""){$(".costInfo").append('<p><i></i><span>公摊电费：</span>'+data.gtdf+'元</p>');	}
+								if(data.status ==1){
+										$(".costInfo").append('<p><i></i><span>是否缴费：</span>已缴费</p>');	
+								}else{
+									$(".costInfo").append(
+										"<p><i></i><span>是否缴费：</span><a href="+url+">请缴费</a></p>");
+ 
+								}
 							
 							 
 								$(".costInfo").append("<p style=\"border-bottom: 1px solid #ddd;padding: 0 2px 5px;\"></p>");

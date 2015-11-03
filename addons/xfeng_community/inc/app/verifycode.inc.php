@@ -7,19 +7,18 @@
 /**
  * 注册短信验证
  */
+load()->classs('wesession');
 defined('IN_IA') or exit('Access Denied');
 	global $_GPC,$_W;
-	WeSession::$expire = 600;	
-	WeSession::start();
+	WeSession::start($_W['uniacid'],$_W['fans']['from_user'],60);
 	$mobile = $_GPC['mobile'];
 	if ($_GPC['type'] == 'verify') {
-		$member = pdo_fetch("select * from".tablename("xcommunity_member")."where weid='{$_W['weid']}' and mobile=:mobile",array(':mobile' => $mobile);
+		$member = pdo_fetch("select * from".tablename("xcommunity_member")."where weid='{$_W['uniacid']}' and mobile=:mobile",array(':mobile' => $mobile));
 	}else{
-		$member = pdo_fetch("select * from".tablename("xcommunity_business")."where weid='{$_W['weid']}' and mobile=:mobile",array(':mobile' => $mobile));
+		$member = pdo_fetch("select * from".tablename("xcommunity_business")."where weid='{$_W['uniacid']}' and mobile=:mobile",array(':mobile' => $mobile));
 	}
 	if (!empty($member)) {
-		//已经注册
-		message('已经注册');
+		message('该号码已经注册，请更换号码，重新注册',referer(),'success');exit();
 	}
 	if($mobile==$_SESSION['mobile']){
 		$code=$_SESSION['code'];
@@ -36,6 +35,7 @@ defined('IN_IA') or exit('Access Denied');
 		$appkey    = $this->module['config']['sms_account'];
 		$params    = "mobile=".$mobile."&tpl_id=".$tpl_id."&tpl_value=".$tpl_value."&key=".$appkey;
 		$url       = 'http://v.juhe.cn/sms/send';
+		load()->func('communication');
 		$content   = ihttp_post($url,$params);
 		return $content;
 	}

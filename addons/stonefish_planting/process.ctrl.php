@@ -1,7 +1,7 @@
 stonefish_planting<?php 
 /**
- * [WeEngine System] Copyright (c) 2014 wdlcms.com
- * WeEngine is NOT a free software, it under the license terms, visited http://www.wdlcms.com/ for more details.
+ * [WeEngine System] Copyright (c) 2014 012wz.com
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.012wz.com/ for more details.
  */
 load()->func('communication');
 load()->model('cloud');

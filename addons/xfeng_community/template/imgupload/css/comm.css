@@ -40,7 +40,7 @@ ul,ol
 }
 .photoList .on
 {
-	background: #d9d9d9 url('../img/sprBg.png') no-repeat -244px -4px;
+	background:#d9d9d9 url('../img/021.png') no-repeat 10px 10px;
 	margin-right: 0;
 	cursor: pointer;
 }
@@ -68,7 +68,7 @@ ul,ol
 }
 .cBtnOn
 {
-	background-image: url('../img/sprBg.png');
+	background-image: url('../img/021.png');
 	background-position: -25px 0;
 }
 .maskLay

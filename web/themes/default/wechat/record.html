@@ -111,11 +111,18 @@
 						</td>
 						<td>{$dca['clerk_name']}</td>
 						<td style="text-align:right;">
-							{if $dca['status'] == 1}
-								<a href="{php echo url('wechat/card/record', array('op' => 'unavailable', 'id' => $dca['id']))}" class="btn btn-default btn-sm" title="设置为失效" data-toggle="tooltip" data-placement="top" onclick="if(!confirm('设置为失效后将不可恢复，确定设置失效吗?')) return false;"><i class="fa fa-power-off"> </i></a>
-								<a href="javascript:;" class="btn btn-default btn-sm consume" title="核销卡券" data-toggle="tooltip" data-placement="top" data-id="{$dca['id']}"><i class="fa fa-key"> </i></a>
+							<!--权限判断-->
+							{if $_W['isfounder'] ||  $_W['role'] == 'manager'}
+								{if $dca['status'] == 1}
+									<a href="{php echo url('wechat/card/record', array('op' => 'unavailable', 'id' => $dca['id']))}" class="btn btn-default btn-sm" title="设置为失效" data-toggle="tooltip" data-placement="top" onclick="if(!confirm('设置为失效后将不可恢复，确定设置失效吗?')) return false;"><i class="fa fa-power-off"> </i></a>
+									<a href="{php echo url('wechat/card/record', array('op' => 'consume', 'id' => $dca['id']))}" class="btn btn-default btn-sm" title="核销卡券" data-toggle="tooltip" data-placement="top" onclick="if(!confirm('确定核销卡券吗?')) return false;"><i class="fa fa-key"> </i></a>
+								{/if}
+								<a href="{php echo url('wechat/card/record', array('op' => 'unavailable', 'del' => 1, 'id' => $dca['id']))}" class="btn btn-default btn-sm" title="删除" data-toggle="tooltip" data-placement="top" onclick="if(!confirm('删除后不可恢复，确定删除吗?')) return false;"><i class="fa fa-times"> </i></a>
+							{else}
+								{if $dca['status'] == 1}
+									<a href="javascript:;" data-id="{$dca['id']}" class="consume btn btn-default btn-sm" title="核销卡券" data-toggle="tooltip" data-placement="top"><i class="fa fa-key"> </i></a>
+								{/if}
 							{/if}
-							<a href="{php echo url('wechat/card/record', array('op' => 'unavailable', 'del' => 1, 'id' => $dca['id']))}" class="btn btn-default btn-sm" title="删除" data-toggle="tooltip" data-placement="top" onclick="if(!confirm('删除后不可恢复，确定删除吗?')) return false;"><i class="fa fa-times"> </i></a>
 						</td>
 					</tr>
 					{/loop}

@@ -1,33 +1,65 @@
-<script type="text/javascript" src="../addons/scene_cube/style/src/WeixinApi.js" ></script>	<!--微信分享统计 -->
-<script>
-WeixinApi.ready(function(Api){
-    // 微信分享的数据
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script type="text/javascript">
+    // jssdk config 对象
+    jssdkconfig = {php echo json_encode($_W['account']['jssdkconfig']);} || {};
+    // 是否启用调试
+    jssdkconfig.debug = false;
+    //
+    jssdkconfig.jsApiList = [
+        'checkJsApi',
+        'onMenuShareTimeline',
+        'onMenuShareAppMessage',
+        'onMenuShareQQ',
+        'onMenuShareWeibo',
+        'hideMenuItems',
+        'showMenuItems',
+        'hideAllNonBaseMenuItem',
+        'showAllNonBaseMenuItem',
+        'translateVoice',
+        'startRecord',
+        'stopRecord',
+        'onRecordEnd',
+        'playVoice',
+        'pauseVoice',
+        'stopVoice',
+        'uploadVoice',
+        'downloadVoice',
+        'chooseImage',
+        'previewImage',
+        'uploadImage',
+        'downloadImage',
+        'getNetworkType',
+        'openLocation',
+        'getLocation',
+        'hideOptionMenu',
+        'showOptionMenu',
+        'closeWindow',
+        'scanQRCode',
+        'chooseWXPay',
+        'openProductSpecificView',
+        'addCard',
+        'chooseCard',
+        'openCard'
+    ];
+
     var wxData = {
+        //"appId": "{$_W['account']['key']}",
         "imgUrl":"{php echo toimage($list['share_thumb'])}",
         "link":document.URL,
         "desc":"{$list['share_content']}",
         "title":"{$list['share_title']}"
     };
-    // 分享的回调
-    var wxCallbacks = {
-        // 分享成功
-        confirm:function (resp) {
-            //var self = this;
-            $.get("{php echo $this->createMobileurl('share',array('id'=>$id));}",function(responseData){
-                //alert('aaa');
-            });
-        },
-		// 整个分享过程结束
-		all : function(resp,shareTo) {
-			// 如果你做的是一个鼓励用户进行分享的产品，在这里是不是可以给用户一些反馈了？
-			alert("分享" + (shareTo ? "到" + shareTo : "") + "结束，感谢您的分享");
-		}
-    };
-    Api.shareToFriend(wxData, wxCallbacks);
-    Api.shareToTimeline(wxData, wxCallbacks);
-    Api.shareToWeibo(wxData, wxCallbacks);
-	// iOS上，可以直接调用这个API进行分享，一句话搞定
-	Api.generalShare(wxData,wxCallbacks);
-});
+
+    if('{$list['share_thumb']}' == ''){
+        wxData['imgUrl'] = '{$_W['attachurl']}images/global/wechat_share.png';
+    }
+
+    wx.config(jssdkconfig);
+    wx.ready(function () {
+        wx.onMenuShareAppMessage(wxData);
+        wx.onMenuShareTimeline(wxData);
+        wx.onMenuShareQQ(wxData);
+        wx.onMenuShareWeibo(wxData);
+    });
 </script>
 <div style="display:none">{php echo htmlspecialchars_decode($list['tongji'])}</div>

@@ -87,6 +87,13 @@ defined('IN_IA') or exit('Access Denied');
 		}
 		include $this->template('car_index');
 		exit();
+	}elseif ($op == 'delete') {
+		if ($_GPC['id']) {
+			if (pdo_delete('xcommunity_carpool',array('id' => $_GPC['id']))) {
+				$result['state'] = 0;
+				message($result, '', 'ajax');
+			}
+		}
 	}
 
 

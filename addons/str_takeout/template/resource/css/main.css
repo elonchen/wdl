@@ -346,3 +346,5 @@ textarea.txt{height: 92px; line-height: 24px;}
 
 .score_btns a{color: #ff510c;}
 .score_btns a.on{background-color: #ff510c; color: #fff;}
+
+.menu_list_edit{width:55px;height:55px;border-radius:60px;color:#fff;background: #ff5e33;opacity: 0.8;border: 1px solid #FFF;position:absolute;right:0;top:0px}

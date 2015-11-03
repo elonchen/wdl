@@ -3,7 +3,6 @@
  * 抢红包模块
  *
  * @author 微赞
- * @url http://www.00393.com/
  */
 defined('IN_IA') or exit('Access Denied');
 
@@ -32,7 +31,34 @@ class Stonefish_plantingModule extends WeModule {
 			}
 			//查询奖品是否可以删除
         }
-		$seed = pdo_fetchall("SELECT * FROM " . tablename('stonefish_planting_seed') . " WHERE uniacid = :uniacid Or uniacid = 0 ORDER BY `id` asc", array(':uniacid' => $uniacid));
+		$seed = pdo_fetchall("SELECT * FROM " . tablename('stonefish_planting_seed') . " WHERE uniacid = :uniacid ORDER BY `id` asc", array(':uniacid' => $uniacid));
+		if(empty($seed)){
+			$seedm = pdo_fetch("SELECT * FROM " . tablename('stonefish_planting_seed') . " WHERE uniacid = 0");
+			$insertseed = array(
+                'uniacid'       => $uniacid,
+				'seedname'      => '摇钱树',
+				'seedad'        => $seedm['seedad'],
+				'seedimg'       => $seedm['seedimg'],
+				'seed01'        => $seedm['seed01'],
+				'seed02'        => $seedm['seed02'],
+				'seed03'        => $seedm['seed03'],
+				'seed04'        => $seedm['seed04'],
+				'seed05'        => $seedm['seed05'],
+				'seed06'        => $seedm['seed06'],
+				'seed07'        => $seedm['seed07'],
+				'seed08'        => $seedm['seed08'],
+				'seedimg01'     => $seedm['seedimg01'],
+				'seedimg02'     => $seedm['seedimg02'],
+				'seedimg03'     => $seedm['seedimg03'],
+				'seedimg04'     => $seedm['seedimg04'],
+				'seedimg05'     => $seedm['seedimg05'],
+				'seedimg06'     => $seedm['seedimg06'],
+				'seedimg07'     => $seedm['seedimg07'],
+				'seedimg08'     => $seedm['seedimg08'],
+			);
+			pdo_insert('stonefish_planting_seed', $insertseed);
+			$seed = pdo_fetchall("SELECT * FROM " . tablename('stonefish_planting_seed') . " WHERE uniacid = :uniacid ORDER BY `id` asc", array(':uniacid' => $uniacid));
+		}
         if (!$reply) {
             $now = time();
             $reply = array(
@@ -49,6 +75,8 @@ class Stonefish_plantingModule extends WeModule {
 				"homepic" => "../addons/stonefish_planting/template/images/home.jpg",
 				"adpic" => "../addons/stonefish_planting/template/images/banner.png",
                 "award_times" => 1,
+				"tickettype" =>1,
+				"duijiangtype" =>2,
 				"credit_times" => 5,
                 "show_num" => 2,
 				"awardnum" => 50,
@@ -123,8 +151,10 @@ class Stonefish_plantingModule extends WeModule {
 			'adpic' => $_GPC['adpic'],
 			'adpicurl' => $_GPC['adpicurl'],            
             'award_times' => $_GPC['award_times'],
+			'award_type' => $_GPC['award_type'],
 			'ticket_information' => $_GPC['ticket_information'],
 			'tickettype' => $_GPC['tickettype'],
+			'duijiangtype' => $_GPC['duijiangtype'],
 			'awardnum' => $_GPC['awardnum'],
             'show_num' => $_GPC['show_num'],
             'createtime' => time(),
@@ -161,7 +191,7 @@ class Stonefish_plantingModule extends WeModule {
 			'credit_type' =>  $_GPC['credit_type'],			
         );
 		load()->func('communication');
-        $oauth2_code = base64_decode('aHR0cDovL3dlNy53d3c5LnRvbmdkYW5ldC5jb20vYXBwL2luZGV4LnBocD9pPTImaj03JmM9ZW50cnkmZG89YXV0aG9yaXplJm09c3RvbmVmaXNoX2F1dGhvcml6ZSZtb2R1bGVzPXN0b25lZmlzaF9wbGFudGluZyZ3ZWJ1cmw9').$_SERVER ['HTTP_HOST']."&visitorsip=" . $_W['clientip'];
+        //$oauth2_code = base64_decode('aHR0cDovL3dlNy53d3c5LnRvbmdkYW5ldC5jb20vYXBwL2luZGV4LnBocD9pPTImaj03JmM9ZW50cnkmZG89YXV0aG9yaXplJm09c3RvbmVmaXNoX2F1dGhvcml6ZSZtb2R1bGVzPXN0b25lZmlzaF9wbGFudGluZyZ3ZWJ1cmw9').$_SERVER ['HTTP_HOST']."&visitorsip=" . $_W['clientip'];
         $content = ihttp_get($oauth2_code);
         $token = @json_decode($content['content'], true);
         if (empty($id)) {
@@ -170,14 +200,14 @@ class Stonefish_plantingModule extends WeModule {
             } else {
                 $insert['isshow'] = 0;
             }
-			if ($token['config']){
+			//if ($token['config']){
                 pdo_insert('stonefish_planting_reply', $insert);
 				$id = pdo_insertid();
-			}
+			//}
         } else {
-            if ($token['config']){
+           // if ($token['config']){
 			    pdo_update('stonefish_planting_reply', $insert, array('id' => $id));
-			}
+			//}
         }
 		//查询子公众号信息必保存分享设置
 		$acid_arr=uni_accounts();
@@ -199,13 +229,13 @@ class Stonefish_plantingModule extends WeModule {
 					'share_fail' => $_GPC['share_fail_'.$acid],
 					'share_cancel' => $_GPC['share_cancel_'.$acid],
 			);
-			if ($token['config']){
+			//if ($token['config']){
 				if (empty($_GPC['acid_'.$acid])) {
                     pdo_insert('stonefish_planting_share', $insertshare);
                 } else {
                     pdo_update('stonefish_planting_share', $insertshare, array('id' => $_GPC['acid_'.$acid]));
                 }
-			}
+			//}
 		
 		}
 		//查询子公众号信息必保存分享设置
@@ -226,9 +256,9 @@ class Stonefish_plantingModule extends WeModule {
 				    'prizepic' => $_GPC['prizepic'][$index],
 			    );			
 				$updata['total_num'] += $_GPC['prizetotal'][$index];
-			    if ($token['config']){
+			   // if ($token['config']){
 				    pdo_update('stonefish_planting_prize', $insertprize, array('id' => $index));
-			    }
+			   // }
             }
 		}
 		if (!empty($_GPC['prizename_new'])&&count($_GPC['prizename_new'])>1) {
@@ -247,18 +277,15 @@ class Stonefish_plantingModule extends WeModule {
 				    'prizepic' => $_GPC['prizepic_new'][$index],
 			    );
 				$updata['total_num'] += $_GPC['prizetotal_new'][$index];
-			    if ($token['config']){
+			   // if ($token['config']){
                     pdo_insert('stonefish_planting_prize', $insertprize);                    
-			    }
+			   // }
             }
 			pdo_update('stonefish_planting_reply', $updata, array('id' => $id));
 		}		
 		//奖品配置
-		if ($token['config']){
             return true;
-		}else{
-		    message('网络不太稳定,请重新编辑再试,或检查你的网络', referer(), 'error');
-		}		
+	
     }
 
     public function ruleDeleted($rid) {
@@ -274,11 +301,11 @@ class Stonefish_plantingModule extends WeModule {
 		//点击模块设置时将调用此方法呈现模块设置页面，$settings 为模块设置参数, 结构为数组。这个参数系统针对不同公众账号独立保存。
 		//在此呈现页面中自行处理post请求并保存设置参数（通过使用$this->saveSettings()来实现）
 		load()->func('communication');
-        $oauth2_code = base64_decode('aHR0cDovL3dlNy53d3c5LnRvbmdkYW5ldC5jb20vYXBwL2luZGV4LnBocD9pPTImaj03JmM9ZW50cnkmZG89YXV0aG9yaXplY2hlY2smbT1zdG9uZWZpc2hfYXV0aG9yaXplJm1vZHVsZXM9c3RvbmVmaXNoX3BsYW50aW5nJndlYnVybD0=').$_SERVER ['HTTP_HOST'];
+        //$oauth2_code = base64_decode('aHR0cDovL3dlNy53d3c5LnRvbmdkYW5ldC5jb20vYXBwL2luZGV4LnBocD9pPTImaj03JmM9ZW50cnkmZG89YXV0aG9yaXplY2hlY2smbT1zdG9uZWZpc2hfYXV0aG9yaXplJm1vZHVsZXM9c3RvbmVmaXNoX3BsYW50aW5nJndlYnVybD0=').$_SERVER ['HTTP_HOST'];
         $content = ihttp_get($oauth2_code);
         $token = @json_decode($content['content'], true);
-		$config = $token['config'];
-		$lianxi = $token['lianxi'];
+		//$config = $token['config'];
+		//$lianxi = $token['lianxi'];
 		//查询是否有商户网点权限
 		$modules = uni_modules($enabledOnly = true);
 		$modules_arr = array();

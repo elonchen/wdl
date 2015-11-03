@@ -33,7 +33,7 @@ form{
 </div>
 <div class="form-group">
 	<div class="col-xs-12">
-		<input type="text" id="mobile" name="mobile" value="{$member['mobile']}" class="form-control input-lg" placeholder="请输入您的手机号" />
+		<input type="text" id="mobile" name="mobile" value="" class="form-control input-lg" placeholder="请输入您的手机号" {if $_SESSION['code']}disabled="disabled"{/if}/>
 	</div>
 </div>
 <div class="form-group">
@@ -144,7 +144,7 @@ form{
 				$('#verifyCodeBtn').attr('disabled', false);
 			}
 		},1000);
-		$.getJSON('{php echo $this->createMobileUrl('verifycode')}&mobile='+mobile+'&type=verify', function(s){
+		$.getJSON('{php echo $this->createMobileUrl('verifycode','',true)}&mobile='+mobile+'&type=verify', function(s){
 			if (!s.message.status) {
 				// alert(s.message.message);
 				$('#verifyCodeBtn').removeClass('active');

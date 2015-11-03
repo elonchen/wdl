@@ -171,6 +171,7 @@
 							<option value="23:00-24:00">23:00-24:00</option>
 						</select>
 						{/if}
+
 						{if $row['type'] == 'reside'}
 						{php echo tpl_fans_form('reside',array('province' => $profile['resideprovince'],'city' => $profile['residecity'],'district' => $profile['residedist']));}
 						{/if}
@@ -191,4 +192,17 @@
 </form>
 </div>
 
+<script type="text/javascript">
+	// 预约与调查分享
+	wx.ready(function () {
+		sharedata = {
+			title: "{$activity['title']}",
+			desc: "{php echo str_replace("\r\n", '', strip_tags(htmlspecialchars_decode($activity['content'])))}",
+			link: "{$_W['siteurl']}",
+			imgUrl: "{php echo tomedia($activity['thumb']);}"
+		};
+		wx.onMenuShareAppMessage(sharedata);
+		wx.onMenuShareTimeline(sharedata);
+	});
+</script>
 {template 'footer'}

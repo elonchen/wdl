@@ -3,11 +3,11 @@
  * 女神来了模块定义
  *
  * @author 微赞科技
- * @url http://bbs.wdlcms.com/
+ * @url http://bbs.012wz.com/
  */
 defined('IN_IA') or exit('Access Denied');
 
-		if ($reply['ipannounce'] == 1) {
+		if ($istop['ipannounce'] == 1) {
 			$announce = pdo_fetchall("SELECT * FROM " . tablename($this->table_announce) . " WHERE uniacid= '{$uniacid}' AND rid= '{$rid}' ORDER BY id DESC");
 			
 		}
@@ -67,9 +67,7 @@ defined('IN_IA') or exit('Access Denied');
 			$m = ($pindex-1) * $psize+1;
 			//取得用户列表
 			$where = '';			
-			if (!empty($tfrom_user)) {				
-				$where .= " AND tfrom_user = '".$tfrom_user."'";				
-			}
+			
 			$where .= " AND status = '1'";
 			
 			if ($reply['indexpx'] == '0') {
@@ -104,13 +102,12 @@ defined('IN_IA') or exit('Access Denied');
 		
 		$myavatar = $avatar;
 		$mynickname = $nickname;
-		$shareurl = $_W['siteroot'] .'app/'.$this->createMobileUrl('shareuserview', array('rid' => $rid,'fromuser' => $from_user));//分享URL
+		$shareurl = $_W['siteroot'] .'app/'.$this->createMobileUrl('shareuserview', array('rid' => $rid,'duli' => 3,'fromuser' => $from_user));//分享URL
 		$regurl = $_W['siteroot'] .'app/'.$this->createMobileUrl('reg', array('rid' => $rid));//关注或借用直接注册页
 		$guanzhu = $reply['shareurl'];//没有关注用户跳转引导页
-		$lingjiangurl = $_W['siteroot'] .'app/'.$this->createMobileUrl('lingjiang', array('rid' => $rid));//领奖URL
 		$mygifturl = $_W['siteroot'] .'app/'.$this->createMobileUrl('photosvoteview', array('rid' => $rid));//我的页面
 		
-		$_share['link'] = $_W['siteroot'] .'app/'.$this->createMobileUrl('shareuserview', array('rid' => $rid,'fromuser' => $from_user));//分享URL		
+		$_share['link'] = $_W['siteroot'] .'app/'.$this->createMobileUrl('shareuserview', array('rid' => $rid,'duli' => 3,'fromuser' => $from_user));//分享URL		
 		
 				
 		

@@ -3,10 +3,10 @@
  * 女神来了模块定义
  *
  * @author 微赞科技
- * @url http://bbs.wdlcms.com/
+ * @url http://bbs.012wz.com/
  */
 defined('IN_IA') or exit('Access Denied');
-	$qiniu = iunserializer($reply['qiniu']);
+		$qiniu = iunserializer($reply['qiniu']);
 		$now= time();
 			
 		load()->func('file');
@@ -70,8 +70,8 @@ defined('IN_IA') or exit('Access Denied');
 			
 			$username = pdo_fetch("SELECT * FROM ".tablename($this->table_users_name)." WHERE uniacid = :uniacid and from_user = :from_user and rid = :rid", array(':uniacid' => $uniacid,':from_user' => $from_user,':rid' => $rid));
 		}
-		if ($reply['subscribe']) {
-			if (!$follow) {
+		/**if ($reply['subscribe']) {
+			if ($follow <> 1) {
 				$linkurl = $this->createMobileUrl('subscribeshare', array('rid' => $rid));
 				$fmdata = array(
 					"success" => 3,
@@ -83,7 +83,7 @@ defined('IN_IA') or exit('Access Denied');
 				exit();	
 			}
 		}
-		
+		**/
 		
 		
 		
@@ -114,6 +114,7 @@ defined('IN_IA') or exit('Access Denied');
 				'from_user' => $from_user,
 				'avatar'    => $avatar,
 				'nickname'  => $nickname,			    
+				'sex'  => $sex,			    
 				'photo'  => '',			    
 				'description'  => '',
 				'photoname'  => '',
@@ -222,11 +223,12 @@ defined('IN_IA') or exit('Access Denied');
 				$updir = '../attachment/images/'.$uniacid.'/'.date("Y").'/'.date("m").'/';
 				mkdirs($updir);	
 				
-				$data = preg_replace("/data:image\/(.*);base64,/","",$data);
+				$data = preg_replace("/^data:image\/(.*);base64,/","",$data);
+				
 				if (!$data) {
 					$fmdata = array(
 						"success" => -1,
-						"msg" => '当前图片宽度大于3264px,系统无法识别为其生成！',
+						"msg" => $data.'当前图片宽度大于3264px,系统无法识别为其生成！',
 					);
 					echo json_encode($fmdata);
 					exit;
@@ -622,7 +624,8 @@ defined('IN_IA') or exit('Access Denied');
 				$tyurl = str_replace("&quot;", '', $matchs[0]);
 				$udata = array(
 					'avatar'    => $avatar,
-					'nickname'  => $nickname,
+					'nickname'  => $nickname,			    
+					'sex'  => $sex,			  
 					'description'  => $_GPC["description"],
 					'photoname'  => $_GPC["photoname"],
 					'youkuurl'  => $tyurl,
@@ -678,6 +681,11 @@ defined('IN_IA') or exit('Access Denied');
 		                ));
 				    }				
 			    }
+
+			    if ($_W['account']['level'] == 4){
+					$this->sendMobileRegMsg($from_user, $rid, $uniacid);
+				}
+
 				if ($reply['tpsh'] == 1) {
 					$msg = '恭喜你报名成功，现在进入审核';
 				}else {

@@ -35,7 +35,7 @@ class Xfeng_communityModule extends WeModule {
 		$cfg = array(
 			'cname'        => $_GPC['cname'],
 			'tel'          => $_GPC['tel'],
-			'verify'	   => $_GPC['verify'],
+			'verify'       => $_GPC['verify'],
 			'businesscode' => $_GPC['businesscode'],
 			'verifycode'   => $_GPC['verifycode'],
 			'report_type'  => $_GPC['report_type'],
@@ -44,9 +44,20 @@ class Xfeng_communityModule extends WeModule {
 			'sms_account'  => $_GPC['sms_account'],
 			'print_status' => $_GPC['print_status'],
 			'print_type'   => $_GPC['print_type'],
-			'print_usr'    => $_GPC['print_usr'],
+			'member_code'  => $_GPC['member_code'],
+			'api_key'      => $_GPC['api_key'],
+			'deviceNo'     => $_GPC['deviceNo'],
 			'print_nums'   => $_GPC['print_nums'],
 			'print_bottom' => $_GPC['print_bottom'],
+			'notice'       => $_GPC['notice'],
+			'repair_tplid' => $_GPC['repair_tplid'],
+			'report_tplid' => $_GPC['report_tplid'],
+			'shopping_tplid' => $_GPC['shopping_tplid'],
+			'wechat_status' => $_GPC['wechat_status'],
+			'shopping_id' => $_GPC['shopping_id'],
+			'property_id' => $_GPC['property_id'],
+			'property_status' => $_GPC['property_status'],
+			'property_tplid' => $_GPC['property_tplid'],
 	);
 		$this->saveSettings($cfg);
 		message('保存成功', 'refresh');

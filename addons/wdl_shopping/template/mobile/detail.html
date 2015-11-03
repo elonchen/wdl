@@ -68,12 +68,12 @@
         <div class="detail-group text-center" style="line-height:20px;font-weight:bold;">{$goods['title']}</div>
         <div class="detail-group" style='margin-top:10px;'>
 			<span class="col-xs-8" style="width:100%;">
-				{if $marketprice==$productprice}
-				现价 : ¥ <span id='marketprice' class="text-danger" style="font-size:18px; font-weight:bold;">{$marketprice}</span> {if !empty($goods['unit'])}/ {$goods['unit']}{/if}
+				{if $marketprice==$originalprice}
+				现价 : ¥ <span id='marketprice' class="text-danger" style="font-size:18px; font-weight:bold;">{$marketprice}</span> {if !empty($goods['unit'])}元&nbsp;/ {$goods['unit']}{/if}
 				{else}
-		   	 	现价 : ¥ <span class="text-danger" id='marketprice' style="font-size:18px; font-weight:bold;">{$marketprice}</span> <span
-                    id='productpricecontainer' style='{if $productprice<=0}display:none{/if}'>  &nbsp;原价 : <del
-                    style="font-size:14px; ">¥ <span id='productprice'>{$originalprice}</span></del></span>
+		   	 	现价 : ¥ <span class="text-danger" id='marketprice' style="font-size:18px; font-weight:bold;">{$marketprice} 元&nbsp;/ {$goods['unit']}</span> <span
+                    id='productpricecontainer' >  原价 : <del
+                    style="font-size:14px; ">¥ <span id='productprice'>{$originalprice}</span>元&nbsp; / {$goods['unit']}</del></span>
 				{/if}
 			</span>
         </div>
@@ -328,7 +328,7 @@
     wx.ready(function () {
         sharedata = {
             title: "{$goods['title']}",
-            desc: '{php echo str_replace("\r\n", "", strip_tags($goods["content"]));}',
+            desc: '{php echo cutstr(str_replace("\r\n", "", strip_tags($goods["content"])), 64, true);}',
             link: "{$_W['siteurl']}",
             imgUrl: "{php echo tomedia($goods['thumb']);}"
         };

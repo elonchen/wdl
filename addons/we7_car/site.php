@@ -71,14 +71,19 @@ class We7_carModuleSite extends WeModuleSite {
         global $_GPC, $_W;
         $op = !empty($_GPC['op']) ? trim($_GPC['op']) : 'index';
         $theone = pdo_fetch('SELECT * FROM ' . tablename('we7car_set') . " WHERE `weid` = :weid ", array(':weid' => $_W['uniacid']));
+        // 设置分享信息
+        $shareDesc = $theone['description'];
+        $shareThumb = tomedia($theone['weicar_logo']);
         if ($op == 'index') {
             $news_category = pdo_fetchall('SELECT * FROM ' . tablename('we7car_news_category') . " WHERE `weid` = :weid AND status = 1", array(':weid' => $_W['uniacid']));
             if (!empty($theone['thumbArr'])) {
                 $theone['thumb_url'] = explode('|', $theone['thumbArr']);
             }
+            $shareTitle = $title = $theone['title'];
             include $this->template('index');
         }
         if ($op == 'about') {
+            $shareTitle = $title = '关于我们';
             include $this->template('about');
         }
     }
@@ -299,6 +304,7 @@ class We7_carModuleSite extends WeModuleSite {
                     'listorder' => $listorder,
                     'status' => $status,
                     'weid' => $_W['uniacid'],
+                    'description' => $_GPC['description'],
                     'createtime' => TIMESTAMP
                 );
                 if (!empty($_GPC['thumb_url'])) {
@@ -422,6 +428,7 @@ class We7_carModuleSite extends WeModuleSite {
     public function doWebYuyue() {
         global $_GPC, $_W;
         $op = $_GPC['op'] ? $_GPC['op'] : 'list';
+        load()->func('tpl');
 
         if ($op == 'post') {
             $id = intval($_GPC['id']); //预约id
@@ -513,7 +520,9 @@ class We7_carModuleSite extends WeModuleSite {
         }
 
         if ($op == 'list') {
-            $list = pdo_fetchall("SELECT * FROM " . tablename('we7car_order_set') . "  WHERE `weid` = :weid ORDER BY `isshow` DESC,`id` DESC", array(':weid' => $_W['uniacid']));
+            $sql = 'SELECT * FROM ' . tablename('we7car_order_set') . ' WHERE `weid` = :weid ORDER BY `isshow` DESC,
+                    `id` DESC';
+            $list = pdo_fetchall($sql, array(':weid' => $_W['uniacid']));
             include $this->template('web/yuyue_list');
         }
 
@@ -537,6 +546,50 @@ class We7_carModuleSite extends WeModuleSite {
                 $yendtime = empty($_GPC['date']['end']) ? TIMESTAMP : strtotime($_GPC['date']['end']) + 86399;
                 $starttime = empty($_GPC['date1']['start']) ? strtotime('-1 month') : strtotime($_GPC['date1']['start']);
                 $endtime = empty($_GPC['date1']['end']) ? TIMESTAMP : strtotime($_GPC['date1']['end']) + 86399;
+            }
+
+            if (!empty($_GPC['export'])) {
+                /* 输入到CSV文件 */
+                $html = "\xEF\xBB\xBF";
+
+                /* 输出表头 */
+                $filter = array(
+                    'from_user' => '用户',
+                    'username' => '真实姓名',
+                    'mobile' => '电话',
+                    'brand_cn' => '品牌',
+                    'serie_cn' => '车系',
+                    'type_cn' => '车型',
+                    'dateline' => '试车时间',
+                    'createtime' => '提交时间',
+                    'note' => '备注'
+                );
+
+                foreach ($filter as $key => $value) {
+                    $html .= $value . "\t,";
+                }
+                $html .= "\n";
+                $key_array = array_keys($filter);
+
+                foreach ($list as $k => $v) {
+                    foreach ($v as $k1 => $v1) {
+                        if (in_array($k1, $key_array)) {
+                            if ($k1 == 'createtime' || $k1 == 'dateline'){
+                                $html .= date('Y-m-d H:i:s', $v1) . "\t ,";
+                            } else {
+                                $html .= $v1 . "\t,";
+                            }
+                        }
+                    }
+                    $html .= "\n";
+                }
+
+                /* 输出CSV文件 */
+                header("Content-type:text/csv");
+                header("Content-Disposition:attachment; filename=全部数据.csv");
+                echo $html;
+                exit();
+
             }
 
             include $this->template('web/yuyue_show');
@@ -595,18 +648,22 @@ class We7_carModuleSite extends WeModuleSite {
         }
     }
 
-    //车系列
+    // 车系列
     public function doMobileSeries() {
         global $_GPC, $_W;
         $op = $_GPC['op'] ? $_GPC['op'] : 'brand';
         $main_off = 1;
-        $bid = intval($_GPC['bid']); //品牌id
+        $bid = intval($_GPC['bid']);
         $company = pdo_fetch('SELECT * FROM ' . tablename('we7car_set') . " WHERE  weid = :weid LIMIT 1", array(':weid' => $_W['uniacid']));
+
         if (!$bid) {
             $brand = pdo_fetchall('SELECT * FROM ' . tablename('we7car_brand') . " WHERE  weid = :weid AND `status` = 1 ORDER BY `listorder` DESC", array(':weid' => $_W['uniacid']));
         } else {
             $brand = pdo_fetch('SELECT * FROM ' . tablename('we7car_brand') . " WHERE  weid = :weid  AND id = :id", array(':weid' => $_W['uniacid'], ':id' => $bid));
         }
+        // 设置分享信息
+        $shareDesc = $shareTitle = $title = '全部车型';
+        $shareThumb = tomedia($company['shop_logo']);
 
         if ($op == 'series') {
             if ($bid) {
@@ -614,12 +671,22 @@ class We7_carModuleSite extends WeModuleSite {
             } else {
                 $series = pdo_fetchall("SELECT * FROM " . tablename('we7car_series') . " WHERE weid = :weid AND `status` = 1  ORDER BY listorder DESC", array(':weid' => $_W['uniacid']));
             }
+
+            // 设置分享信息
+            $shareTitle = $title = $brand['title'];
+            $shareDesc = $brand['description'];
+            $shareThumb = tomedia($brand['logo']);
         }
 
         if ($op == 'type') {
             $sid = intval($_GPC['sid']);
             $serieone = pdo_fetch("SELECT * FROM " . tablename('we7car_series') . " WHERE `weid` = :weid AND `id` = :sid ORDER BY `listorder` DESC", array(':weid' => $_W['uniacid'], ':sid' => $sid));
             $types = pdo_fetchall("SELECT * FROM " . tablename('we7car_type') . " WHERE `weid` = :weid AND `status` = 1  AND `sid` = :sid ORDER BY `listorder` DESC", array(':weid' => $_W['uniacid'], ':sid' => $sid));
+
+            // 设置分享信息
+            $shareTitle = $title = $serieone['title'];
+            $shareDesc = $serieone['description'];
+            $shareThumb = tomedia($serieone['thumb']);
         }
 
         if ($op == 'typedetail') {
@@ -632,7 +699,13 @@ class We7_carModuleSite extends WeModuleSite {
             if (!empty($typeone['thumbArr'])) {
                 $typeone['thumb_url'] = explode('|', $typeone['thumbArr']);
             }
+
+            // 设置分享信息
+            $shareTitle = $title = $typeone['title'];
+            $shareDesc = $typeone['description'];
+            $shareThumb = tomedia($typeone['thumb']);
         }
+
         include $this->template('series_series');
     }
 
@@ -642,18 +715,50 @@ class We7_carModuleSite extends WeModuleSite {
         $op = $_GPC['op'] ? $_GPC['op'] : 'series';
         $list1 = pdo_fetchall("SELECT * FROM " . tablename('we7car_services') . " WHERE `weid` = :weid AND `status` = 1  AND `pre_sales` = 1 ORDER BY `listorder` DESC", array(':weid' => $_W['uniacid']));
         $list2 = pdo_fetchall("SELECT * FROM " . tablename('we7car_services') . " WHERE `weid` = :weid AND `status` = 1  AND `aft_sales` = 1 ORDER BY `listorder` DESC", array(':weid' => $_W['uniacid']));
-   
+        $thumbs = array();
+        if (!empty($list1)) {
+            foreach ($list1 as $list) {
+                $thumbs[] = tomedia($list['headthumb']);
+            }
+        }
+        if (!empty($list2)) {
+            foreach ($list2 as $list) {
+                $thumbs[] = tomedia($list['headthumb']);
+            }
+        }
+
+        // 设置分享信息
+        $shareDesc = $shareTitle = $title = '联系销售';
+        $shareThumb = $thumbs[mt_rand(0, count($thumbs) - 1)];
+
         include $this->template('kefu_index');
     }
 
-    //试驾预约/预约保养
+    /**
+     * 试驾预约/预约保养
+    */
     public function doMobileYuyue() {
         global $_GPC, $_W;
-
-        //checkauth();
         $op = trim($_GPC['op']);
-        //获取select下的option
-        $brands = pdo_fetchall('SELECT * FROM ' . tablename('we7car_brand') . " WHERE `weid` = :weid AND `status` = 1 ORDER BY listorder DESC", array(':weid' => $_W['uniacid']));
+
+        $where = ' WHERE `weid` = :weid';
+        $params = array(':weid' => $_W['uniacid']);
+
+        // 获取汽车品牌
+        $sql = 'SELECT * FROM ' . tablename('we7car_brand') . $where . ' AND `status` = :status ORDER BY `listorder` DESC';
+        $params[':status'] = 1;
+        $brands = pdo_fetchall($sql, $params);
+
+        // 获取汽车车系
+        $sql = 'SELECT `id`, `title` FROM ' . tablename('we7car_series') . $where . ' AND `status` = :status ORDER BY
+                `listorder` DESC';
+        $eseries = pdo_fetchall($sql, $params);
+
+        // 获取汽车车型
+        $sql = 'SELECT `id`, `title` FROM ' . tablename('we7car_type') . $where . ' AND `status` = :status ORDER BY
+                `listorder` DESC';
+        $etypes = pdo_fetchall($sql, $params);
+
         if ($op == 'getseries') {
             $bid = intval($_GPC['bid']);
             $ty = trim($_GPC['ty']);
@@ -666,7 +771,6 @@ class We7_carModuleSite extends WeModuleSite {
                         $html.="<option value='{$val['val']}'>{$val['title']}</option>";
                     }
                 } elseif ($ty == 'types') {
-
                     $datas = pdo_fetchall("SELECT id,title FROM " . tablename('we7car_type') . " WHERE `weid` = :weid AND `status` = 1 AND `sid` = :bid ORDER BY `listorder` DESC", array(':weid' => $_W['uniacid'], ':bid' => $bid));
                     $html = "<option value='0'>请选择车型</option>";
                     foreach ($datas as $val) {
@@ -680,8 +784,13 @@ class We7_carModuleSite extends WeModuleSite {
 
         $lid = intval($_GPC['id']); //订单id
         $yytype = intval($_GPC['yytype']) ? intval($_GPC['yytype']) : intval($_GPC['__state']); //预约类型
-        //获取预约信息
-        $reply = pdo_fetch("SELECT * FROM " . tablename('we7car_order_set') . " WHERE `weid` = :weid AND `yytype` = :yytype AND `isshow` = 1 ORDER BY `id` DESC LIMIT 1", array(':weid' => $_W['uniacid'], ':yytype' => $yytype));
+
+        // 获取预约信息
+        $sql = 'SELECT * FROM ' . tablename('we7car_order_set') . $where . ' AND `yytype` = :yytype AND `isshow` =
+                :status ORDER BY `id` DESC';
+        $params[':yytype'] = $yytype;
+        $reply = pdo_fetch($sql, $params);
+
         if (!$reply) {
             message('抱歉，暂无预约信息.');
         }
@@ -691,12 +800,16 @@ class We7_carModuleSite extends WeModuleSite {
         if ($reply['end_time'] < TIMESTAMP) {
             message('当前预约活动已经结束！');
         }
-        //获取预约的自定义字段
+
+        // 设置分享信息
+        $shareTitle = $title = $reply['title'];
+        $shareDesc = $reply['description'];
+        $shareThumb = tomedia($reply['topbanner']);
+
+        // 获取预约的自定义字段
         if (!empty($reply)) {
             $sql = 'SELECT * FROM ' . tablename('we7car_order_fields') . ' WHERE `sid` = :sid ORDER BY fid ASC';
-            $params = array();
-            $params[':sid'] = $reply['id'];
-            $ds = pdo_fetchall($sql, $params);
+            $ds = pdo_fetchall($sql, array(':sid' => $reply['id']));
         }
         if (!empty($ds)) {
             foreach ($ds as &$d) {
@@ -709,9 +822,10 @@ class We7_carModuleSite extends WeModuleSite {
             }
         }
 
-        //获取某用户的预约次数
-        $pertotal = 0;
-        $pertotal = pdo_fetchcolumn("SELECT COUNT(*) FROM " . tablename('we7car_order_list') . " WHERE sid = :sid AND from_user = :openid AND yytype = :yytype", array(':sid' => $reply['id'], ':openid' => $_W['fans']['from_user'], ':yytype' => $yytype));
+        // 获取某用户的预约次数
+        $sql = 'SELECT COUNT(*) FROM ' . tablename('we7car_order_list') . ' WHERE `sid` = :sid AND `from_user` =
+                :openid AND `yytype` = :yytype';
+        $pertotal = pdo_fetchcolumn($sql, array(':sid' => $reply['id'], ':openid' => $_W['fans']['from_user'], ':yytype' => $yytype));
         if ($pertotal >= $reply['pertotal'] && $reply['pertotal'] != 0) {
             $pererror = 1;
         }
@@ -740,17 +854,17 @@ class We7_carModuleSite extends WeModuleSite {
             $order['dateline'] = date('Y-m-d');
         }
 
+        // 自动获取车主信息
+        $sql = 'SELECT * FROM ' . tablename('we7car_care') . ' WHERE `weid` = :weid AND `from_user` = :from_user';
+        $carOwnerInfo = pdo_fetch($sql, array(':weid' => $_W['uniacid'], ':from_user' => $_W['openid']));
+
         if (checksubmit('submit')) {
-            $sid = intval($reply['id']); //某条预约的id
+            $sid = intval($reply['id']);
             if ($pererror == 1 && !$lid) {
                 message("没人可预约{$reply['pertotal']}次.");
             }
             if (!$sid) {
                 message('预约信息获取失败.');
-            }
-            //更新粉丝的手机号和姓名
-            if ($userinfo == '0') {
-                fans_update($_W['fans']['from_user'], array('realname' => trim($_GPC['realname']), 'mobile' => trim($_GPC['tel'])));
             }
             $barr = explode('=', trim($_GPC['brand']));
             $sarr = explode('=', trim($_GPC['serie']));
@@ -811,14 +925,13 @@ class We7_carModuleSite extends WeModuleSite {
                     }
                 }
             }
-            message('成功', $this->createMobileUrl('mybook', array('yytype' => $insert['yytype'])), 'success');
+            message('预约成功', $this->createMobileUrl('mybook', array('yytype' => $insert['yytype'])), 'success');
         }
         include $this->template('yuyue');
     }
 
     public function doMobileMybook() {
         global $_GPC, $_W;
-        //checkauth();
         $op = trim($_GPC['op']);
         $yytype = intval($_GPC['yytype']);
         $reply = pdo_fetch("SELECT * FROM " . tablename('we7car_order_set') . " WHERE `weid` = :weid AND `yytype` = :yytype AND `isshow` = 1 ORDER BY `id` DESC LIMIT 1", array(':weid' => $_W['uniacid'], ':yytype' => $yytype));
@@ -848,6 +961,12 @@ class We7_carModuleSite extends WeModuleSite {
                 message('删除数据成功！', $this->createMobileUrl('mybook', array('yytype' => $yytype)), 'success');
             }
         }
+
+        // 设置分享信息
+        $shareTitle = $title = $reply['title'];
+        $shareDesc = $reply['description'];
+        $shareThumb = tomedia($reply['topbanner']);
+
         include $this->template('yuyue_mybook');
     }
 
@@ -921,7 +1040,6 @@ class We7_carModuleSite extends WeModuleSite {
                 'tools' => $_GPC['tools'],
                 'create_time' => time(),
             );
-
             $temp = pdo_update('we7car_set', $insert, array('weid' => $_W['uniacid']));
             if ($temp == false) {
                 $temp = pdo_insert('we7car_set', $insert);
@@ -956,7 +1074,23 @@ class We7_carModuleSite extends WeModuleSite {
         global $_GPC, $_W;
         $op = trim($_GPC['op']) ? trim($_GPC['op']) : 'index';
         $weid = $_W['uniacid'];
-        $car = pdo_fetch("SELECT * FROM " . tablename('we7car_care') . " WHERE weid = :weid AND from_user = :from_user LIMIT 1", array(':weid' => $_W['uniacid'], ':from_user' => $_W['fans']['from_user']));
+
+        $where = ' WHERE `weid` = :weid';
+        $params = array(':weid' => $_W['uniacid']);
+
+        // 获取车主关怀顶部图片
+        $sql = 'SELECT `guanhuai_thumb` FROM ' . tablename('we7car_set') . $where;
+        $banner = pdo_fetchcolumn($sql, $params);
+
+        // 获取车主信息
+        $sql = 'SELECT * FROM ' . tablename('we7car_care') . $where . ' AND `from_user` = :from_user';
+        $params[':from_user'] = $_W['openid'];
+        $car = pdo_fetch($sql, $params);
+
+        // 设置分享信息
+        $shareTitle = $title = '车主关怀';
+        $shareDesc = $car['brand_cn'];
+        $shareThumb = tomedia($car['car_photo']);
 
         if (!empty($car)) {
             $car['brand_val'] = $car['brand_id'] . '=' . $car['brand_cn'];
@@ -975,12 +1109,29 @@ class We7_carModuleSite extends WeModuleSite {
             $car['car_care_lastDate'] = date('Y-m-d');
         }
 
-        //获取车主关怀顶部图片
-        $banner = pdo_fetchcolumn("SELECT guanhuai_thumb FROM " . tablename('we7car_set') . " WHERE  weid = :weid  ", array(':weid' => $_W['uniacid']));
+        if ($op == 'index') {
+            include $this->template('guanhuai_index');
+        }
+
         if ($op == 'caredit') {
-            $brands = pdo_fetchall("SELECT id,title FROM " . tablename('we7car_brand') . " WHERE `weid` = :weid AND `status` = 1 AND `status` = 1 ORDER BY `listorder` DESC", array(':weid' => $_W['uniacid']));
-            $eseries = pdo_fetchall('SELECT id,title FROM ' . tablename('we7car_series') . " WHERE `weid` = :weid AND `bid` = :bid AND `status` = 1 ORDER BY listorder DESC", array(':weid' => $_W['uniacid'], ':bid' => $car['brand_id']));
-            $etypes = pdo_fetchall('SELECT id,title FROM ' . tablename('we7car_type') . " WHERE `weid` = :weid AND `sid` = :sid AND `status` = 1 ORDER BY listorder DESC", array(':weid' => $_W['uniacid'], ':sid' => $car['series_id']));
+            $where .= ' AND `status` = :status';
+            unset($params[':from_user']);
+            // 获取汽车品牌
+            $sql = 'SELECT `id`, `title` FROM ' . tablename('we7car_brand') . $where . ' ORDER BY `listorder` DESC';
+            $params[':status'] = 1;
+            $brands = pdo_fetchall($sql, $params);
+
+            // 获取汽车车系
+            $sql = 'SELECT `id`, `title` FROM ' . tablename('we7car_series') . $where . ' AND `bid` = :bid
+                    ORDER BY `listorder` DESC';
+            $params[':bid'] = $car['brand_id'];
+            $eseries = pdo_fetchall($sql, $params);
+
+            // 获取汽车车型
+            $sql = 'SELECT `id`, `title` FROM ' . tablename('we7car_type') . $where . ' AND `sid` = :bid
+                    ORDER BY `listorder` DESC';
+            $params[':bid'] = $car['series_id'];
+            $etypes = pdo_fetchall($sql, $params);
 
             if (checksubmit('submit')) {
                 $brand = explode('=', $_GPC['brand']);
@@ -1030,9 +1181,7 @@ class We7_carModuleSite extends WeModuleSite {
             load()->func('tpl');
             include $this->template('guanhuai_caredit');
         }
-        if ($op == 'index') {
-            include $this->template('guanhuai_index');
-        }
+
     }
 
     //留言管理
@@ -1124,6 +1273,11 @@ class We7_carModuleSite extends WeModuleSite {
         global $_GPC, $_W;
         $op = trim($_GPC['op']) ? trim($_GPC['op']) : 'list';
         $set = pdo_fetch("SELECT * FROM " . tablename('we7car_message_set') . " WHERE weid = :weid ORDER BY `id` DESC LIMIT 1", array(':weid' => $_W['uniacid']));
+
+        // 设置分享信息
+        $shareDesc = $shareTitle = $title = $set['title'];
+        $shareThumb = tomedia($set['thumb']);
+
         if ($set == false) {
             $set = array(
                 'status' => 1,
@@ -1208,7 +1362,9 @@ class We7_carModuleSite extends WeModuleSite {
 
     public function doMobileTool() {
         global $_GPC, $_W;
-        $tools = pdo_fetchcolumn("SELECT tools FROM " . tablename('we7car_set') . " WHERE  weid=:weid  ", array(':weid' => $_W['uniacid']));
+        $sql = 'SELECT `shop_logo`, `tools` FROM ' . tablename('we7car_set') . ' WHERE `weid` = :weid';
+        $car = pdo_fetch($sql, array(':weid' => $_W['uniacid']));
+        $tools = $car['tools'];
         if ($tools === false) {
             $toolsArr = array(
                 '1' => true,
@@ -1224,6 +1380,12 @@ class We7_carModuleSite extends WeModuleSite {
                 $toolsArr[$v] = true;
             }
         }
+
+        // 设置分享信息
+        $shareTitle = $title = '实用小工具';
+        $shareDesc = '实用小工具';
+        $shareThumb = tomedia($car['shop_logo']);
+
         include $this->template('tools_index');
     }
 
@@ -1389,6 +1551,11 @@ class We7_carModuleSite extends WeModuleSite {
             $news = pdo_fetchall("SELECT * FROM " . tablename('we7car_news') . " WHERE weid = '{$_W['uniacid']}' AND category_id = :category_id ORDER BY ishot DESC,createtime DESC LIMIT " . ($pindex - 1) * $psize . ',' . $psize, array(':category_id' => $category_id));
             $total = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename('we7car_news') . " WHERE weid = '{$_W['uniacid']}' AND category_id = :category_id ", array(':category_id' => $category_id));
             $pager = pagination($total, $pindex, $psize);
+
+            // 设置分享信息
+            $shareTitle = $title = $category['title'];
+            $shareDesc = $category['description'];
+            $shareThumb = tomedia($category['thumb']);
         }
         if ($op == 'news_detail') {
             $id = intval($_GPC['id']);
@@ -1399,7 +1566,11 @@ class We7_carModuleSite extends WeModuleSite {
             if (!empty($new['template'])) {
                 $_W['account']['template'] = $new['template'];
             }
-            //var_dump($new);
+
+            // 设置分享信息
+            $shareTitle = $title = $new['title'];
+            $shareDesc = str_replace("\r\n", '', strip_tags($new['description']));
+            $shareThumb = tomedia($new['thumb']);
         }
         include $this->template('news');
     }
@@ -1600,9 +1771,14 @@ class We7_carModuleSite extends WeModuleSite {
         global $_W, $_GPC;
         $pindex = max(1, intval($_GPC['page']));
         $psize = 20;
+        $result = array();
         $result['list'] = pdo_fetchall("SELECT * FROM " . tablename('we7car_album') . " WHERE weid = '{$_W['uniacid']}' AND isview = '1' ORDER BY displayorder DESC LIMIT " . ($pindex - 1) * $psize . ',' . $psize);
         $total = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename('we7car_album') . " WHERE isview = '1'");
         $result['pager'] = pagination($total, $pindex, $psize);
+        // 设置分享信息
+        $shareDesc = $shareTitle = $title = '车型欣赏';
+        $shareThumb = $_W['siteroot'] . '/addons/we7_car/style/images/albums_head.jpg';
+
         include $this->template('album_list');
     }
 
@@ -1613,6 +1789,12 @@ class We7_carModuleSite extends WeModuleSite {
         if (empty($album)) {
             message('相册不存在或是已经被删除！');
         }
+
+        // 设置分享信息
+        $shareTitle = $title = $album['title'];
+        $shareDesc = $album['content'];
+        $shareThumb = tomedia($album['thumb']);
+
         $result['list'] = pdo_fetchall("SELECT * FROM " . tablename('we7car_album_photo') . " WHERE albumid = :albumid ORDER BY displayorder DESC", array(':albumid' => $album['id']));
         $url = $this->createMobileUrl('detail', array('id' => $id));
         //360全景

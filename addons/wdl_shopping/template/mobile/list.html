@@ -29,7 +29,7 @@
 		{loop $advs $adv}
 		<li>
 			<a href="{if empty($adv['link'])}#{else}{$adv['link']}{/if}">
-				<img src="{php echo tomedia($adv['thumb']);}" title="{$adv['advname']}" height='200px'/>
+				<img src="{php echo tomedia($adv['thumb']);}" title="{$adv['advname']}"/>
 			</a>
 			<span class="title">{$adv['advname']}</span>
 		</li>

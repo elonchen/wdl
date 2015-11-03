@@ -35,6 +35,16 @@
 		</div>
 		
 	</div>
+
+	<div class="panel panel-default">
+		<div class="panel-heading">	
+			<div class="row-fluid">
+				<div class="span8 control-group">
+					<a class="btn btn-primary" href="{php echo $this->createWebUrl('downloadph',array('rid'=>$rid, 'indexpxf' =>$_GPC['indexpxf'], 'indexpx' =>$_GPC['indexpx']))}"><i class="fa fa-download"></i> 导出排行信息
+					</a>
+				</div>
+			</div>
+		</div>
 		<div class="panel panel-default">
 			
 			<form method="post" class="form-horizontal" id="formfans">
@@ -58,7 +68,7 @@
 						<tr>
 							<td class="row-first row-hover">{php echo $i+(($page-1)*$psize)}</td>
 							<td><img src="{php echo toimage($row['avatar'])}" width="50px;"/></td>
-							<td class="info">{$row['nickname']}</td>
+							<td class="info">{if empty($row['realname'])}{php echo cutstr($row['nickname'], '16')}{else}{php echo cutstr($row['realname'], '16')}{/if}</td>
 							<td>{php echo $row['photosnum'] + $row['xnphotosnum']}</td>
 							<td>{php echo $row['hits'] + $row['xnhits']}</td>
 							<td>{php echo date('Y-m-d H:i:s', $row['createtime']);}</td>

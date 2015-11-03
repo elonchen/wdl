@@ -6,7 +6,7 @@
  */
 defined('IN_IA') or exit('Access Denied');
 
-class Wdl_bigwheelModuleSite extends WeModuleSite {
+class wdl_bigwheelModuleSite extends WeModuleSite {
 
 	public $tablename = 'bigwheel_reply';
 	public $tablefans = 'bigwheel_fans';
@@ -37,20 +37,15 @@ class Wdl_bigwheelModuleSite extends WeModuleSite {
 		$keyword = pdo_fetch("select content from ".tablename('rule_keyword')." where rid=:rid and type=1",array(":rid"=>$id));
 		$reply['keyword']=  $keyword['content'];
 
-		if (empty($_W['member']) || $_GPC['share'] == 1) {
-			//301跳转
-			if (!empty($reply['share_url'])) {
-				header("HTTP/1.1 301 Moved Permanently");
-				header("Location: " . $reply['share_url'] . "");
-				exit();
-			}
+		if (empty($_W['fans']['follow']) || $_GPC['share'] == 1) {
 			$isshare = 1;
 			$running = false;
-			$msg = '请先关注公共号。';
+			$msg = '请先关注公众号。';
 		} else {
 			$fansID = $_W['member']['uid'];
 			$from_user = $_W['fans']['from_user'];
-			$fans = pdo_fetch("SELECT * FROM " . tablename($this->tablefans) . " WHERE rid = " . $id . " and fansID=" . $fansID . " and from_user='" . $from_user . "'");
+			$fans = pdo_fetch("SELECT * FROM " . tablename($this->tablefans) . " WHERE rid = " . $id . " and fansID='" . $fansID . "' and from_user='" . $from_user . "'");
+
 			if ($fans == false) {
 				$insert = array(
 					'rid' => $id,
@@ -72,7 +67,7 @@ class Wdl_bigwheelModuleSite extends WeModuleSite {
 				pdo_update($this->tablename, array('viewnum' => $reply['viewnum'] + 1), array('id' => $reply['id']));
 			}
 			//判断是否获奖
-			$award = pdo_fetchall("SELECT * FROM " . tablename('bigwheel_award') . " WHERE weid=" . $_W['uniacid'] . " and rid = " . $id . " and fansID=" . $fansID . " and from_user='" . $from_user . "' order by id desc");
+			$award = pdo_fetchall("SELECT * FROM " . tablename('bigwheel_award') . " WHERE weid=" . $_W['uniacid'] . " and rid = " . $id . " and fansID='" . $fansID . "' and from_user='" . $from_user . "' order by id desc");
 			if ($award != false) {
 				$awardone = $award[0];
 			}
@@ -122,6 +117,7 @@ class Wdl_bigwheelModuleSite extends WeModuleSite {
 			}
 			$awardstr.='</p>';
 		}
+
 		if ($reply['most_num_times'] > 0 && $reply['number_times'] > 0) {
 			$detail = '本次活动共可以转' . $reply['number_times'] . '次，每天可以转 ' . intval($reply['most_num_times']) . ' 次! 你共已经转了 <span id="totalcount">' . intval($fans['totalnum']) . '</span> 次 ，今天转了<span id="count">' . intval($fans['todaynum']). '</span> 次.';
 			$Tcount = $reply['most_num_times'];
@@ -139,7 +135,8 @@ class Wdl_bigwheelModuleSite extends WeModuleSite {
 			$Tcount = 10000;
 			$Lcount = 10000;
 		}
-		$detail.='<br/>' . htmlspecialchars_decode($reply['content']);
+
+		$detail .=  htmlspecialchars_decode($reply['content']);
 		if (empty($reply['sn_rename'])) {
 			$reply['sn_rename'] = 'SN码';
 		}
@@ -155,6 +152,7 @@ class Wdl_bigwheelModuleSite extends WeModuleSite {
 		if (empty($fans['totalnum'])) {
 			$fans['totalnum'] = 0;
 		}
+
 		//分享信息
 		$sharelink = empty($reply['share_url']) ? ($_W['siteroot'] . 'app/' . $this->createMobileUrl('index', array('id' => $id, 'name' => 'bigwheel', 'share' => 1))) : $reply['share_url'];
 		$sharelink = str_replace('./', '', $sharelink);
@@ -171,8 +169,9 @@ class Wdl_bigwheelModuleSite extends WeModuleSite {
 		$id = intval($_GPC['id']);
 		//开始抽奖咯
 		$reply = pdo_fetch("SELECT * FROM " . tablename($this->tablename) . " WHERE rid = :rid ORDER BY `id` DESC", array(':rid' => $id));
-		if ($reply == false) {
-			$this->message();
+
+		if (empty($reply)) {
+			$this->message(array('success' => 2, 'msg' => '活动已经结束了，下次再来吧！...'), '');
 		}
 
 		if($reply['isshow'] != 1){
@@ -189,21 +188,18 @@ class Wdl_bigwheelModuleSite extends WeModuleSite {
 			$this->message(array("success"=>2, "msg"=>'活动已经结束了，下次再来吧！'),"");
 		}
 
-		if (empty($_W['fans'])) {
-			$this->message(array("success"=>2, "msg"=>'请先关注公共账号再来参与活动！详情请查看参与方法。'),"");
-		}
-
 		//先判断有没有资格领取
-		if (empty($_W['fans'])) {
-			$this->message('', 'fan数据为空');
+		if (empty($_W['fans']['follow'])) {
+			$this->message(array("success"=>2, "msg"=>'请先关注公众号再来参与活动！详情请查看参与方法。'),"");
 		}
 		$fansID = $_W['member']['uid'];
 		$from_user = $_W['fans']['from_user'];
+
+
 		//第一步，判断有没有已经领取奖品了，如果领取了，则不能再领取了
-		$fans = pdo_fetch("SELECT * FROM " . tablename($this->tablefans) . " WHERE rid = " . $id . " and fansID=" . $fansID . " and from_user='" . $from_user . "'");
+		$fans = pdo_fetch("SELECT * FROM " . tablename($this->tablefans) . " WHERE rid = " . $id . " and fansID='" . $fansID . "' and from_user='" . $from_user . "'");
 		if ($fans == false) {
 			//不存在false的情况，如果是false，则表明是非法
-			//$this->message();
 			$fans = array(
 				'rid' => $id,
 				'fansID' => $fansID,
@@ -215,7 +211,6 @@ class Wdl_bigwheelModuleSite extends WeModuleSite {
 			);
 			pdo_insert($this->tablefans, $fans);
 			$fans['id'] = pdo_insertid();
-
 		}
 
 		//更新当日次数
@@ -240,62 +235,37 @@ class Wdl_bigwheelModuleSite extends WeModuleSite {
 		//总抽奖次数
 		pdo_update('bigwheel_fans', array('totalnum' => $fans['totalnum'] + 1), array('id' => $fans['id']));
 
-		$gifts =
-			array(
-				"one"=>array("name"=>$reply['c_name_one'], "type"=>$reply['c_type_one'], "probalilty"=>$reply['c_rate_one'],"total"=>$reply['c_num_one'],"draw"=>$reply['c_draw_one']),
-				"two"=>array("name"=>$reply['c_name_two'],"type"=>$reply['c_type_two'], "probalilty"=>$reply['c_rate_two'],"total"=>$reply['c_num_two'],"draw"=>$reply['c_draw_two']),
-				"three"=>array("name"=>$reply['c_name_three'],"type"=>$reply['c_type_three'], "probalilty"=>$reply['c_rate_three'],"total"=>$reply['c_num_three'],"draw"=>$reply['c_draw_three']),
-				"four"=>array("name"=>$reply['c_name_four'],"type"=>$reply['c_type_four'], "probalilty"=>$reply['c_rate_four'],"total"=>$reply['c_num_four'],"draw"=>$reply['c_draw_four']),
-				"five"=>array("name"=>$reply['c_name_five'],"type"=>$reply['c_type_five'], "probalilty"=>$reply['c_rate_five'],"total"=>$reply['c_num_five'],"draw"=>$reply['c_draw_five']),
-				"six"=>array("name"=>$reply['c_name_six'],"type"=>$reply['c_type_six'], "probalilty"=>$reply['c_rate_six'],"total"=>$reply['c_num_six'],"draw"=>$reply['c_draw_six']),
-			) ;
+		$gifts = array(
+				"one" => array("name" => $reply['c_name_one'], "type" => $reply['c_type_one'], "probalilty" => $reply['c_rate_one'], "total" => $reply['c_num_one'], "draw" => $reply['c_draw_one']),
+				"two" => array("name" => $reply['c_name_two'], "type" => $reply['c_type_two'], "probalilty" => $reply['c_rate_two'], "total" => $reply['c_num_two'], "draw" => $reply['c_draw_two']),
+				"three" => array("name" => $reply['c_name_three'], "type" => $reply['c_type_three'], "probalilty" => $reply['c_rate_three'], "total" => $reply['c_num_three'], "draw" => $reply['c_draw_three']),
+				"four" => array("name" => $reply['c_name_four'], "type" => $reply['c_type_four'], "probalilty" => $reply['c_rate_four'], "total" => $reply['c_num_four'], "draw" => $reply['c_draw_four']),
+				"five" => array("name" => $reply['c_name_five'], "type" => $reply['c_type_five'], "probalilty" => $reply['c_rate_five'], "total" => $reply['c_num_five'], "draw" => $reply['c_draw_five']),
+				"six" => array("name" => $reply['c_name_six'], "type" => $reply['c_type_six'], "probalilty" => $reply['c_rate_six'], "total" => $reply['c_num_six'], "draw" => $reply['c_draw_six']),
+		);
 
-
-
-		//计算每个礼物的概率
-		$probability = 0;
-		$rate = 1;
-
-		$award = array();
-		$awards= array(); //奖品名字 (同时可中多个奖品，然后随机派奖)
-		foreach ($gifts as $name=>$gift) {
-			if( $gift['total'] - $gift['draw']<=0){
+		$awards = array();
+		foreach ($gifts as $key => $gift) {
+			if ($gift['total'] <= $gift['draw']) {
+				unset($gifts[$key]);
 				continue;
 			}
 			if (empty($gift['probalilty'])) {
+				unset($gifts[$key]);
 				continue;
 			}
-			$probability = $gift['probalilty'];
-			if ($probability< 1) {
-				$temp = explode('.', $probability);
-				$temp = pow(10, strlen($temp[1]));
-				$rate = $temp < $rate ? $rate : $temp;
-				$probability = $probability * $rate;
-			}
-			$award[] = array('prizetype'=>$name, 'name' => $gift['name'], 'probalilty' => $probability, 'total'=>$gift['total']);
-
-		}
-
-
-		$all = 100 * $rate;
-
-		mt_srand((double) microtime() * 1000000);
-		$rand = mt_rand(1, $all);
-
-		foreach ($award as $gift) {
-			if ($rand > 0 && $rand <= $gift['probalilty'] && $gift['total']>0) {
-				$awards[] =$gift['prizetype'];
+			$gifts[$key]['random'] = mt_rand(1, 100 / $gift['probalilty']);
+			if (mt_rand(1, 100 / $gift['probalilty']) == mt_rand(1, 100 / $gift['probalilty'])) {
+				$gift['type'] = $key;
+				$awards[] = $gift;
 			}
 		}
-		$prizetype = "";
-		$awardtype = "";
-		$awardname = "";
-		if(count($awards)>0){
+
+		$prizetype = array();
+		if (count($awards) > 0){
 			mt_srand((double) microtime() * 1000000);
-			$randid = mt_rand(0, count($awards)-1);
+			$randid = mt_rand(0, count($awards) - 1);
 			$prizetype = $awards[$randid];
-			$awardtype = $gifts[$prizetype]['type'];
-			$awardname = $gifts[$prizetype]['name'];
 		}
 		if ($reply['award_times'] == '0') {
 			$reply['award_times'] = $fans['awardnum'] + 1;
@@ -303,16 +273,16 @@ class Wdl_bigwheelModuleSite extends WeModuleSite {
 		if( (!empty($prizetype)) && ($fans['awardnum'] < $reply['award_times']) ){
 			//中奖
 			$sn = random(16);
-			pdo_update('bigwheel_reply', array('c_draw_' . $prizetype => $reply['c_draw_' . $prizetype] + 1), array('id' => $reply['id']));
+			pdo_update('bigwheel_reply', array('c_draw_' . $prizetype['type'] => $reply['c_draw_' . $prizetype['type']] + 1), array('id' => $reply['id']));
 			//保存sn到award中
 			$insert = array(
 				'weid' => $_W['uniacid'],
 				'rid' => $id,
 				'fansID' => $fansID,
 				'from_user' => $_W['fans']['from_user'],
-				'name' => $awardtype,
-				'description' => $awardname,
-				'prizetype' => $prizetype,
+				'name' => $reply['c_type_' . $prizetype['type']],
+				'description' => $prizetype['name'],
+				'prizetype' => $prizetype['type'],
 				'award_sn' => $sn,
 				'createtime' => time(),
 				'status' => 1,
@@ -320,26 +290,14 @@ class Wdl_bigwheelModuleSite extends WeModuleSite {
 			$temp = pdo_insert('bigwheel_award', $insert);
 			//保存中奖人信息到fans中
 			pdo_update('bigwheel_fans', array('awardnum' => $fans['awardnum'] + 1), array('id' => $fans['id']));
-			$k = 0;
-			if($prizetype=='one'){
-				$k=1;
-			}else if($prizetype=='two'){
-				$k=2;
-			}if($prizetype=='three'){
-				$k=3;
-			}if($prizetype=='four'){
-				$k=4;
-			}if($prizetype=='five'){
-				$k=5;
-			}if($prizetype=='six'){
-				$k=6;
-			}
+
+			$statusCode = array('one' => 1, 'two' => 2, 'three' => 3, 'four' => 4, 'five' => 5, 'six' => 6);
 			$data = array(
-				'name' => $reply['c_type_' . $prizetype],
-				'award' => $reply['c_name_' . $prizetype],
+				'name' => $reply['c_type_' . $prizetype['type']],
+				'award' => $prizetype['name'],
 				'sn' => $sn,
 				'success' => 1,
-				'prizetype' =>$k,
+				'prizetype' => $statusCode[$prizetype['type']]
 			);
 			$this->message($data);
 		}
@@ -551,8 +509,12 @@ class Wdl_bigwheelModuleSite extends WeModuleSite {
 		$psize = 12;
 		$pager = pagination($total, $pindex, $psize);
 		$start = ($pindex - 1) * $psize;
-		$limit .= " LIMIT {$start},{$psize}";
-		$list = pdo_fetchall("SELECT a.* FROM " . tablename('bigwheel_award') . " a WHERE a.rid = :rid and a.weid=:weid  " . $where . " ORDER BY a.id DESC " . $limit, $params);
+		$limit = " LIMIT {$start},{$psize}";
+
+		$sql = 'SELECT `a`.*, `f`.`nickname` FROM ' . tablename('bigwheel_award') . ' AS `a` LEFT JOIN ' .
+				tablename('mc_mapping_fans') . ' AS `f` ON `a`.`from_user` = `f`.`openid` WHERE `a`.`rid` = :rid AND
+				`f`.`uniacid` = :weid ' . $where . ' ORDER BY `a`.`id` DESC ' . $limit;
+		$list = pdo_fetchall($sql, $params);
 
 		//一些参数的显示
 		$num1 = pdo_fetchcolumn("SELECT total_num FROM " . tablename($this->tablename) . " WHERE rid = :rid", array(':rid' => $rid));

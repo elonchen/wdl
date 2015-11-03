@@ -71,7 +71,7 @@
 				{/if}					
 				{if $reply['isjob'] == 1}		
 					<div class="form-group">
-						<label class="col-xs-12 col-sm-3 col-md-2 control-label">参赛者Email</label>
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label">参赛者职业</label>
 						<div class="col-sm-9 col-xs-12">						
 							<input type="text" name="job" class="form-control" value="{$item['job']}" />
 							<span class="help-block">参赛者职业</span>
@@ -80,7 +80,7 @@
 				{/if}					
 				{if $reply['isxingqu'] == 1}		
 					<div class="form-group">
-						<label class="col-xs-12 col-sm-3 col-md-2 control-label">参赛者Email</label>
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label">参赛者兴趣</label>
 						<div class="col-sm-9 col-xs-12">						
 							<input type="text" name="xingqu" class="form-control" value="{$item['xingqu']}" />
 							<span class="help-block">参赛者兴趣</span>
@@ -111,36 +111,6 @@
 					<span class="help-block">参赛照片简介</span>
 					</div>
 				</div>
-				<!--
-				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label">参赛照片（或音乐或视频展示图）</label>
-					<div class="col-sm-9 col-xs-12">
-						{php echo tpl_form_field_image('photo', $item['photo'])}
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label">参赛其他照片</label>
-					<div class="col-sm-9 col-xs-12">
-						<?php 
-							for ($i = 1; $i <= $reply['tpxz']; $i++) {				
-						?>
-						{php echo tpl_form_field_image('picarr_'.$i, $picarr[$n])}						
-						<?php }?>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label">好声音</label>
-					<div class="col-sm-9 col-xs-12">
-						{php echo tpl_form_field_audio('music', $item['music'])}
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="col-xs-12 col-sm-3 col-md-2 control-label">视频</label>
-					<div class="col-sm-9 col-xs-12">
-						{php echo tpl_form_field_audio('vedio', $item['vedio'])}
-					</div>
-				</div>
-				-->
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span>票数</label>
 					<div class="col-sm-9 col-xs-12">

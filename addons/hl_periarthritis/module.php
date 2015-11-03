@@ -2,7 +2,6 @@
 /**
  * 肩周炎抽奖模块
  *
- * [微动力] www.weixiamen.cn 5517286
  */
 defined('IN_IA') or exit('Access Denied');
 

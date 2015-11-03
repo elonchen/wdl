@@ -21,6 +21,7 @@
 	.template .item-bg{width:100%; height:342px; background:#000; position:absolute; z-index:1; opacity:0.5; margin:-5px 0 0 -5px;}
 	.template .item-build-div1{position:absolute; z-index:2; margin:-5px 10px 0 5px; width:168px;}
 	.template .item-build-div2{text-align:center; line-height:30px; padding-top:150px;}
+	@media screen and (min-width:992px){#ListStyle{width:890px; margin:100px auto;}}
 </style>
 
 <div class="main">
@@ -32,7 +33,7 @@
 				{if !empty($category['name'])}
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-4 col-md-3 col-lg-2 control-label">访问地址</label>
-					<div class="col-sm-8 col-xs-12">
+					<div class="col-sm-8">
 						<div class="form-control-static"><a href="{$_W['siteroot']}/app/index.php?c=site&a=site&cid={$category['id']}&i={$_W['uniacid']}" target="_blank">/app/index.php?c=site&a=site&cid={$category['id']}&i={$_W['uniacid']}</a></div>
 						<span class="help-block">您可以根据此地址，添加回复规则，设置访问。</span>
 					</div>
@@ -41,32 +42,32 @@
 				{if !empty($parentid)}
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-4 col-md-3 col-lg-2 control-label">上级分类</label>
-					<div class="col-sm-8 col-xs-12">
+					<div class="col-sm-8">
 						<div class="form-control-static">{$parent['name']}</div>
 					</div>
 				</div>
 				{/if}
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-4 col-md-3 col-lg-2 control-label">排序</label>
-					<div class="col-sm-8 col-xs-12">
+					<div class="col-sm-8">
 						<input type="text" name="displayorder" class="form-control" value="{$category['displayorder']}" />
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-4 col-md-3 col-lg-2 control-label">分类名称</label>
-					<div class="col-sm-8 col-xs-12">
+					<div class="col-sm-8">
 						<input type="text" name="cname" class="form-control" value="{$category['name']}" />
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-4 col-md-3 col-lg-2 control-label">分类描述</label>
-					<div class="col-sm-8 col-xs-12">
+					<div class="col-sm-8">
 						<textarea name="description" class="form-control" cols="70">{$category['description']}</textarea>
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-4 col-md-3 col-lg-2 control-label">是否添加微站首页导航</label>
-					<div class="col-sm-8 col-xs-12">
+					<div class="col-sm-8">
 						<label for="isnav_1" class="radio-inline"><input type="radio" name="isnav" id="isnav_1" value="1" autocomplete="off" {if !empty($category['nid'])} checked{/if}/> 是</label>
 						<label for="isnav_2" class="radio-inline"><input type="radio" name="isnav" id="isnav_2" value="0" autocomplete="off" {if empty($category['nid'])} checked{/if}/> 否</label>
 						<div class="help-block">开启此选项后,系统在微站首页导航自动生成以分类名称为导航名称的记录.关闭此选项后,系统将删除对应的导航记录</div>
@@ -74,7 +75,7 @@
 				</div>
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-4 col-md-3 col-lg-2 control-label">是否作为首页使用</label>
-					<div class="col-sm-8 col-xs-12">
+					<div class="col-sm-8">
 						<label for="radio_1" class="radio-inline"><input type="radio" name="ishomepage" id="radio_1" value="1" autocomplete="off" {if !empty($category['ishomepage'])} checked{/if}/> 是</label>
 						<label for="radio_2" class="radio-inline"><input type="radio" name="ishomepage" id="radio_2" value="0" autocomplete="off" {if empty($category['ishomepage'])} checked{/if}/> 否</label>
 						<div class="help-block">注意：该选项仅对父级分类有效。开启此选项后，分类模板将直接引用首页模板（home.html[注:该文件在home文件夹下面]]），分类的二级分类将作为导航显示</div>
@@ -85,25 +86,9 @@
 				</div>
 
 				<div class="form-group">
-					<label class="col-xs-12 col-sm-4 col-md-3 col-lg-2 control-label">当前分类风格</label>
-					<div class="col-sm-8 col-xs-12">
-						<div class="template">
-							<div class="item item-style">
-								<div class="title">
-									<div style="overflow:hidden; height:28px;" id="current-title">{$category['style']['name']}</div>
-									<a href="javascript:;">
-										<img src="{$_W['siteroot']}app/themes/{$category['style']['tname']}/preview.jpg" id="current-preview" class="img-rounded">
-									</a>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<div class="form-group">
 					<label class="col-xs-12 col-sm-4 col-md-3 col-lg-2 control-label">选择分类风格</label>
 					<div class="col-sm-8 col-xs-12">
-						<button type="button" class="btn btn-success" data-toggle="modal" data-target="#ListStyle">选择风格</button>
+						<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#ListStyle">选择风格</button>
 						<input type="hidden" name="styleid" id="styleid" value="{$category['styleid']}" />
 						<span class="help-block">
 							新建分类风格时，请在您选择的风格对应的模板目录下新建“site”文件夹，默认的列表页面为list.html，默认的内容页面为detail.html。
@@ -113,38 +98,38 @@
 
 				<!-- 风格列表 -->
 				<div class="modal fade" id="ListStyle" aria-hidden="false" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-					<div class="modal-dialog modal-lg">
-						<div class="modal-content">
-							<div class="modal-header">
-								<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
-								<h4 class="modal-title">微站模板风格列表</h4>
-							</div>
-							<div class="modal-body template clearfix">
-								{loop $styles $style}
-								<div class="item item-style {if $category['styleid'] == $style['id']} active {/if}">
-									<div class="title">
-										<div class="title-{$style['id']}" style="overflow:hidden; height:28px;">{$style['name']} ({$style['tname']})</div>
-										<a href="javascript:;" class="change-style" data-styleid="{$style['id']}">
-											<img src="{$_W['siteroot']}app/themes/{$style['tname']}/preview.jpg" class="img-rounded preview-{$style['id']}">
-										</a>
-										<span class="fa fa-check"></span>
-									</div>
-									<div class="btn-group  btn-group-justified">
-										<a href="javascript:;" class="btn btn-default btn-xs change-style" data-styleid="{$style['id']}">选择风格</a>
-									</div>
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+							<h4 class="modal-title">微站模板风格列表</h4>
+						</div>
+						<div class="modal-body template clearfix">
+
+							{loop $styles $style}
+							<div class="item item-style {if $category['styleid'] == $style['id']} active {/if}">
+								<div class="title">
+									<div style="overflow:hidden; height:28px;">{$style['name']} ({$style['tname']})</div>
+									<a href="javascript:;" onclick="$('#styleid').val({$style['id']});$('#ListStyle').modal('hide');">
+										<img src="{$_W['siteroot']}app/themes/{$style['tname']}/preview.jpg" class="img-rounded">
+									</a>
+									<span class="fa fa-check"></span>
 								</div>
-								{/loop}
+								<div class="btn-group  btn-group-justified">
+									<a href="javascript:;" class="btn btn-default btn-xs" onclick="$('#styleid').val({$style['id']});$('#ListStyle').modal('hide');">选择风格</a>
+								</div>
 							</div>
-							<div class="modal-footer">
-								<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-							</div>
+							{/loop}
+
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
 						</div>
 					</div>
 				</div>
 
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-4 col-md-3 col-lg-2 control-label">直接链接</label>
-					<div class="col-sm-8 col-xs-12">
+					<div class="col-sm-8">
 						<input type="text" class="form-control" placeholder="" name="linkurl" value="{$category['linkurl']}">
 						<span class="help-block">链接必须是以http://或是https://开头</span>
 					</div>
@@ -157,7 +142,7 @@
 			<div class="panel-body">
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-4 col-md-3 col-lg-2 control-label">图标类型</label>
-					<div class="col-sm-8 col-xs-12">
+					<div class="col-sm-8">
 						<label for="icontype1" class="radio-inline"><input type="radio" {if empty($category['icontype']) || $category['icontype'] == 1} checked{/if} value="1" name="icontype" id="icontype1" onclick="$('#iconsys').show();$('#iconuser').hide();colorpicker();" autocomplete="off"> 系统内置</label>&nbsp;&nbsp;&nbsp;
 						<label for="icontype2" class="radio-inline"><input type="radio" {if $category['icontype'] == 2} checked{/if} value="2" name="icontype" id="icontype2" onclick="$('#iconsys').hide();$('#iconuser').show();" autocomplete="off"> 自定义上传</label>
 					</div>
@@ -165,7 +150,7 @@
 				<div class="" id="iconsys" {if $category['icontype'] == 2} style="display:none;"{/if}>
 					<div class="form-group">
 						<label class="col-xs-12 col-sm-4 col-md-3 col-lg-2 control-label">系统图标</label>
-						<div class="col-sm-8 col-xs-12">
+						<div class="col-sm-8">
 							<div class="input-group"">
 								{php echo tpl_form_field_icon('icon[icon]', $category['css']['icon']['icon']);}
 							</div>
@@ -173,14 +158,14 @@
 					</div>
 					<div class="form-group">
 						<label class="col-xs-12 col-sm-4 col-md-3 col-lg-2 control-label">图标颜色</label>
-						<div class="col-sm-8 col-xs-12">
+						<div class="col-sm-8">
 							{php echo tpl_form_field_color('icon[color]', $category[css]['icon']['color']);}
 							<span class="help-block">图标颜色，上传图标时此设置项无效</span>
 						</div>
 					</div>
 					<div class="form-group">
 						<label class="col-xs-12 col-sm-4 col-md-3 col-lg-2 control-label">图标大小</label>
-						<div class="col-sm-8 col-xs-12">
+						<div class="col-sm-8">
 							<div class="input-group">
 								<input class="form-control" type="text" name="icon[size]" id="icon" value="{if $category[css]['icon']['width']}{$category[css]['icon']['width']}{else}35{/if}">
 								<span class="input-group-addon">PX</span>
@@ -192,7 +177,7 @@
 				<div class="" id="iconuser" {if empty($category['icontype']) || $category['icontype'] == 1} style="display:none;"{/if}>
 					<div class="form-group">
 						<label class="col-xs-12 col-sm-3 col-md-2 control-label">上传图标</label>
-						<div class="col-sm-9 col-xs-12">
+						<div class="col-sm-9">
 							{php echo tpl_form_field_image('iconfile', $category['icon']);}
 							<span class="help-block">自定义上传图标图片，“系统图标”优先于此项</span>
 						</div>
@@ -211,25 +196,14 @@
 </div>
 <script type="text/javascript">
 <!--
-	$("#form1").submit(function(){
-		if($("input[name='cname']").val() == '') {
-			util.message('请输入分类名称', '', 'error');
-			return false;
-		}
+	require(['jquery', 'util'], function($, u){
+		$("#form1").submit(function(){
+			if($("input[name='cname']").val() == '') {
+				u.message('请输入分类名称', '', 'error');
+				return false;
+			}
+		});
 	});
-
-	$('.change-style').click(function() {
-		var styleId = parseInt($(this).data('styleid'));
-		var title = $('.title-' + styleId).text();
-		var preview = $('.preview-' + styleId).attr('src');
-		$('.item-style').removeClass('active');
-		$('#styleid').val(styleId);
-		$('#current-title').text(title);
-		$('#current-preview').attr('src', preview);
-		$(this).parent().parent().addClass('active');
-		$('#ListStyle').modal('hide');
-	});
-
 //-->
 </script>
 {elseif $do == 'display'}

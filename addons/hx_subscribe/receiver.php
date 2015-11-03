@@ -3,7 +3,7 @@
  * 推荐关注模块订阅器
  *
  * @author 华轩科技
- * @url http://bbs.wdlcms.com/
+ * @url http://bbs.012wz.com/
  */
 defined('IN_IA') or exit('Access Denied');
 
@@ -14,6 +14,10 @@ class Hx_subscribeModuleReceiver extends WeModuleReceiver {
 		load()->func('communication');
 		$event = $this->message['event'];
 		$openid = $this->message['from'];
+		$status = isset($this->module['config']['status']) ? $this->module['config']['status'] : '0';
+		if ($status == 0) {
+			return '';
+		}
 		$f_log = pdo_fetch("SELECT * FROM ".tablename('mc_mapping_fans') . " WHERE `uniacid` = '{$_W['uniacid']}' AND `openid` = '{$openid}'");
 		if ($f_log['uid'] != 0) {
 			pdo_update('hx_subscribe_data', array('uid'=>$f_log['uid']), array('openid' => $openid));
@@ -22,7 +26,7 @@ class Hx_subscribeModuleReceiver extends WeModuleReceiver {
 			$default_groupid = pdo_fetchcolumn('SELECT groupid FROM ' .tablename('mc_groups') . ' WHERE uniacid = :uniacid AND isdefault = 1', array(':uniacid' => $_W['uniacid']));
 			$data = array(
 				'uniacid' => $_W['uniacid'],
-				'email' => md5($openid).'@wdlcms.com',
+				'email' => md5($openid).'@012wz.com',
 				'salt' => random(8),
 				'groupid' => $default_groupid,
 				'createtime' => TIMESTAMP,

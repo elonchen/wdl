@@ -3,7 +3,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 <meta name="format-detection" content="telephone=no">
 <title>我的菜单</title>
-<link rel="stylesheet" type="text/css" href="../addons/weisrc_dish/template/css/1/wei_canyin_v1.8.4.css?v=1.1" media="all">
+<link rel="stylesheet" type="text/css" href="../addons/weisrc_dish/template/css/1/wei_canyin_v1.8.4.css?v=1.1.2" media="all">
 <link rel="stylesheet" type="text/css" href="../addons/weisrc_dish/template/css/1/wei_dialog_v1.2.1.css?v=1.0" media="all">
 <script type="text/javascript" src="../addons/weisrc_dish/template/js/1/wei_webapp_v2_common_v1.9.4.js"></script>
 <script type="text/javascript" src="../addons/weisrc_dish/template/js/1/wei_dialog_v1.9.9.js?v=1"></script>
@@ -44,8 +44,8 @@
         text-align:center;
         padding:0 5px;
         color:#fff;
-        background:-webkit-gradient(linear, 0 0, 0 100%, from(#fdb338), to(#fdb338));
-        border:1px solid #fdb338;
+        background:-webkit-gradient(linear, 0 0, 0 100%, from(#F03C03), to(#F03C03));
+        border:1px solid #F03C03;
         border-radius:3px;
         font-size:15px;
     }
@@ -131,7 +131,7 @@
         pointer-events:none;
     }
     .group_radio input[type="radio"]:checked{
-        background:-webkit-gradient(linear, 0 0, 0 100%, from(#fdb338), to(#fdb338));
+        background:-webkit-gradient(linear, 0 0, 0 100%, from(#F03C03), to(#F03C03));
     }
     .group_radio input[type="radio"]:checked+label{
         color:#fff;
@@ -149,7 +149,7 @@
         border:1px solid #dedede;
         display:inline-block;
         height:35px;
-        background:url(../addons/weisrc_dish/template/images/btn1.png#1), -webkit-gradient(linear, 0 0, 0 100%, from(#fdb338), to(#fdb338));
+        background:url(../addons/weisrc_dish/template/images/btn1.png#1), -webkit-gradient(linear, 0 0, 0 100%, from(#F03C03), to(#F03C03));
         background-size:auto 32px, auto auto;
         background-position:right center;
         background-repeat: no-repeat;
@@ -158,7 +158,7 @@
         background-position:0px center;
     }
     .btn_myorder {
-        padding: 5px 8px; border: 0; border-radius: 2px; cursor: pointer; background-color: #fdb338; color: #fff;
+        padding: 5px 8px; border: 0; border-radius: 2px; cursor: pointer; background-color: #F03C03; color: #fff;
     }
 </style>
 </head>
@@ -176,11 +176,11 @@
             请叫服务员下单
             {/if}
         </span>
-        <label><i>共计：</i><b class="duiqi" id="total">0</b><b class="duiqi">元</b></label>
+        <label><i>商品共计：</i><b class="duiqi" id="total">0</b><b class="duiqi">元</b></label>
     </header>
     <section style="margin-bottom: 10px;">
         <article style="overflow: hidden;">
-            <a href="{php echo $this->createMobileurl('orderlist', array('from_user' => $from_user, 'storeid' => $storeid), true)}" class="btn_add btn_myorder" style="color:#fff;">我的订单</a>
+            <a href="{php echo $this->createMobileurl('order', array(), true)}" class="btn_add btn_myorder" style="color:#fff;">我的订单</a>
             <span style="float: right;">{$my_order_total}</span>
         </article>
     </section>
@@ -188,7 +188,7 @@
         <article>
             <h2>我的菜单
                 <button class="btn_add emptyIt" id="clearBtn">清空</button>
-                <button class="btn_add" onclick="location.href='{php echo $this->createMobileUrl('waplist', array('storeid' => $storeid), true)}'">+加菜</button>
+                <button class="btn_add" onclick="location.href='{php echo $this->createMobileUrl('waplist', array('storeid' => $storeid), true)}'">+增加</button>
             </h2>
             <ul class="myorder" id="myorder">
                 {loop $cart $item}
@@ -223,7 +223,7 @@
                         <td style="width: 80px;">验证码：</td>
                         <td colspan="2">
                             <input type="number" placeholder="验证码：" name="entry_checkcode" id="entry_checkcode" maxlength="10" class="input" style="width: 100px;"/>
-                            <input type="button" onclick="getReceiveMemberCardVCode(this, event,'form2', 'entry_mobile',2);" class="button vcode" value="获取验证码" style="width: 100px;"/>
+                            <input type="button" onclick="getReceiveMemberCardVCode(this, event,'form2', 'entry_mobile',2);" class="button vcode" value="获取验证码" style="width: 100px;height: 40px"/>
                         </td>
                     </tr>
                     </tbody>
@@ -288,10 +288,6 @@
                                 <label>外卖</label>
                             </span>
                             {/if}
-                            <!--<span>-->
-                                <!--<input type="radio" name="order_type" value="3">-->
-                                <!--<label>预订</label>-->
-                            <!--</span>-->
                             </div>
                         </td>
                     </tr>
@@ -302,36 +298,32 @@
                     </tr>
                     <tr>
                         <td style="width: 80px;">用户姓名：</td>
-                       <td colspan="2">
+                        <td style="width: 50%;">
                             <input type="text" name="guest_name" id="name" value="{if !empty($user['realname'])}{$user['realname']}{else}(必填*)请输入您的真实姓名{/if}" maxlength="10" style="width: 100px;">
                         </td>
-                       
-                    </tr>
-                    <tr> 
-                                 <td style="width: 80px;">用户性别：</td> <td>
-                             <div class="group_radio">
-                                <span>
-                                    <input type="radio" name="sex" value="2">
-                                    <label>先生</label>
-                                </span>
-                                <span>
-                                    <input type="radio" name="sex" value="1">
-                                    <label>女士</label>
-                                </span>
+                        <td>
+                            <div class="group_checkbox" style="width: 70px; display: inline;">
+                                <input type="checkbox" value="1" name="sex" checked="checked">
                             </div>
-                            
-                           
                         </td>
                     </tr>
                     <tr class="out">
                         <td style="width: 80px;">送达时间：</td>
                         <td colspan="2">
                             <select name="meal_time" id="meal_time">
-                                <option value="尽快送出">尽快送出</option>
-                                {loop $mealtimes $item}
-                                <option value="{$item['begintime']}~{$item['endtime']}">{$item['begintime']}~{$item['endtime']}</option>
-                                {/loop}
+                                <!--<option value="尽快送出">尽快送出</option>-->
+                                {if empty($select_mealtime)}
+                                <option value="休息中">休息中</option>
+                                {else}
+                                {$select_mealtime}
+                                {/if}
                             </select>
+                        </td>
+                    </tr>
+                    <tr class="out">
+                        <td style="width: 80px;">配送费用：</td>
+                        <td colspan="2">
+                            {$store['dispatchprice']} {if $store['freeprice']!=0.00}(<font color="#f00">消费满{$store['freeprice']}免配送费用</font>){/if}
                         </td>
                     </tr>
                     <tr class="in">
@@ -632,7 +624,6 @@ _onPageLoaded(function(){
     });
 
     $("#submit_form2").click(function () {
-
         var mobile = $("#entry_mobile").val();
         var checkcode = $("#entry_checkcode").val();
         if (mobile == "") {
@@ -653,14 +644,11 @@ _onPageLoaded(function(){
 });
 
 function checkItem() {
-
-    var ordertype = $(':radio[name="order_type"]:checked').val(); 
-    
+    var ordertype = $(':radio[name="order_type"]:checked').val();
     if ($("#tel").val() == "" || $("#tel").val() == "(必填*)请输入您的手机号码") { alert("请输入您的电话号码！"); return false; }
-
-    if ($("#name").val() == "" || $("#name").val() == "(必填*)请输入您的真实姓名") { alert("请输入您的真实姓名！"); return false; } 
-    if ($("input:radio[name='sex']:checked").attr("checked") == undefined) { alert("请选择性别！"); return false; }
-    if ($("#total").text() == "0") { alert("金额为0，请选择菜品！"); return false; }   
+//    if (!/^1[3|4|5|8][0-9]\d{8}$/.test($("#tel").val())) { alert("请输入正确的电话号码！"); return false; }
+    if ($("#name").val() == "" || $("#name").val() == "(必填*)请输入您的真实姓名") { alert("请输入您的真实姓名！"); return false; }
+    if ($("#total").text() == "0") { alert("金额为0，请选择菜品！"); return false; }
     if (ordertype == 1) {
         if ($("#counts").val() == "") { alert("请输入预定人数！"); return false; }
         if (!new RegExp("^[0-9]*$").test($("#counts").val())) { alert("预定人数只能为数字！"); return false; }
@@ -709,7 +697,10 @@ function postmain() {
                 if (data.message['code'] != 0) {
                     //alert(data.message['msg']);
                     //跳转去我的订单
-                    window.location.href = "{php echo $this->createMobileUrl('orderconfirm', array('storeid' => $storeid, 'from_user' => $from_user), true)}"+"&orderid="+data.message['orderid'];
+                    //window.location.href = "{php echo $this->createMobileUrl('orderconfirm', array('storeid' => $storeid, 'from_user' => $from_user), true)}"+"&orderid="+data.message['orderid'];
+
+                    var url = "{php echo $this->createMobileUrl('pay', array(), true)}"+"&orderid="+data.message['orderid'];
+                    location.href = url;
                 } else {
                     alert(data.message['msg']);
                     //'网络不稳定，请重新尝试!'

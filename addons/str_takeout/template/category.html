@@ -7,16 +7,7 @@
 	<i class="fa fa-info-circle"></i>
 	当前门店名称: {$store['title']}
 </div>
-<ul class="nav nav-tabs">
-	<li><a href="{php echo $this->createWebUrl('store');}"><i class="fa fa-reply-all"></i> 返回门店列表</a></li>
-	<li {if $op == 'post'}class="active"{/if}><a href="{php echo $this->createWebUrl('store', array('op' => 'post', 'id' => $sid));}">门店信息</a></li>
-	<li {if $op == 'cate_list'}class="active"{/if}><a href="{php echo $this->createWebUrl('manage', array('op' => 'cate_list'));}">菜品分类</a></li>
-	<li {if $op == 'cate_post' && !$id} class="active"{/if}><a href="{php echo $this->createWebUrl('manage', array('op' => 'cate_post'));}">添加菜品分类</a></li>
-	<li {if $op == 'dish_list'}class="active"{/if}><a href="{php echo $this->createWebUrl('manage', array('op' => 'dish_list'));}">菜品列表</a></li>
-	<li {if $op == 'dish_post' && !$id} class="active"{/if}><a href="{php echo $this->createWebUrl('manage', array('op' => 'dish_post'));}">添加菜品</a></li>
-	{if $op == 'dish_post' && $id} <li><a href="{php echo $this->createWebUrl('manage', array('op' => 'dish_post', array('id' => $id)));}">编辑菜品</a></li>{/if}
-	<li {if $op == 'order'}class="active"{/if}><a href="{php echo $this->createWebUrl('manage', array('op' => 'order', array('id' => $id)));}">订单管理</a></li>
-</ul>
+{template 'nav'}
 {if $op == 'cate_post'}
 	<form class="form-horizontal form" id="form1" action="" method="post" enctype="multipart/form-data">
 		<input type="hidden" name="sid" value="{$sid}">
@@ -43,7 +34,7 @@
 					<div class="form-group">
 						<label class="col-xs-12 col-sm-3 col-md-2 control-label">分类排序</label>
 						<div class="col-sm-9 col-xs-12" style="padding-top:7px">
-							<a href="javascript:;" id="post-add"><i class="fa fa-plus-circle"></i> 继续添加</a>
+							<a href="javascipt:;" id="post-add"><i class="fa fa-plus-circle"></i> 继续添加</a>
 						</div>
 					</div>
 				</div>

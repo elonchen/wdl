@@ -65,11 +65,12 @@
 			</span>
 		</span>
 	</div>
-
+    {if ($dispatch['enabled']==1)}
 	<div class="myoder-express">
 		<span class="express-company">配送方式</span>
 		<span class="express-num">{$dispatch['dispatchname']}</span>
 	</div>
+	{/if}
 	{if ($item['status'] == '2' || $item['status']==3) && !empty($item['expresssn'])}
 	<div class="myoder-express">
 		<span class="express-company">快递: {$item['expresscom']}</span>

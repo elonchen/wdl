@@ -541,6 +541,30 @@ class Scene_cubeModuleSite extends WeModuleSite {
                 if (empty($item['appnums'])) {
                     $item['appnums'] = 0;
                 }
+
+			} elseif ($_GPC['op'] == 'akey') {
+				$applist = pdo_fetchall('select * from ' . tablename('scene_cube_app'));
+				foreach($applist AS $val) {
+					$item = pdo_fetch('select * from ' . tablename('scene_cube_manage') . '  where weid=:weid AND appid=:appid',
+						array(':weid' => $_W['weid'], ':appid' => $val['id']));
+					$insert = array('weid' => $_W['weid'], 'appid' => $val['id'], 'appnums' => 0, 'status' => 1);
+					$_GPC['valid_time'] = date('Y/m/d H:i:s',time());
+					if (!empty($_GPC['valid_time'])) {
+						list($_s, $_e) = explode('-', $_GPC['valid_time']);
+						$insert['start_time'] = strtotime($_s);
+						$insert['end_time'] = strtotime($_e);
+					} else {
+						$insert['start_time'] = time();
+						$insert['end_time'] = strtotime('+7 day');
+					}
+					if ($item == false) {
+						$insert['create_time'] = time();
+						$temp = pdo_insert('scene_cube_manage', $insert);
+					} else {
+						$temp = pdo_update('scene_cube_manage', $insert, array('id' => $item['id']));
+					}
+				}
+				$this->message('数据保存成功', $this->createWeburl('app'), 'success');
             } elseif ($_GPC['op'] == 'post') {
                 $id = intval($_GPC['appid']);
                 if ($id > 0) {

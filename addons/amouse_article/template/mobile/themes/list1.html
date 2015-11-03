@@ -6,9 +6,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="format-detection" content="telephone=no">
+    {php echo register_jssdk(false);}
     <meta name="description" content="{if $title}{$title}{else}{if !empty($_W['account']['name'])}{$_W['account']['name']}{/if}{/if}{if $_W['account']['siteinfo']['sitename']}{$_W['account']['siteinfo']['sitename']}{/if}">
-    <link rel="stylesheet" href="/addons/amouse_article/template/mobile/css/common.css?v=20150320">
-    <link rel="stylesheet" href="../addons/amouse_article/template/mobile/css/site.css?v=20150320">
+    <link rel="stylesheet" href="{RES}css/common.css?v=20150320">
+    <link rel="stylesheet" href="{RES}css/site.css?v=20150320">
     <link rel="stylesheet" href="http://static.resource.qudao.weijuju.com/css/plugin/swipeslide.css?v=20150401">
     <script type="text/javascript" src="http://static.resource.qudao.weijuju.com/js/plugin/zepto.min.js?v=20150401"></script>
     <script type="text/javascript" src="http://static.resource.qudao.weijuju.com/js/plugin/swipeslide.js?v=20150401"></script>
@@ -27,8 +28,7 @@
 <body>
 <div id="page">
     <div id="image" class="swipe ui-swipeslide ui-swipeslide-horizontal" style="visibility: visible;">
-        <div class="swipe-wrap ui-swipeslide-reel" data-id="0"
-             style="width: 1690px; -webkit-transform: translate3d(0px, 0px, 0px); -webkit-transition-property: -webkit-transform; transition-property: -webkit-transform; -webkit-transition-duration: 0.4s; transition-duration: 0.4s; -webkit-transition-timing-function: ease-out; transition-timing-function: ease-out;">
+        <div class="swipe-wrap ui-swipeslide-reel" data-id="0"  style="width: 1690px; -webkit-transform: translate3d(0px, 0px, 0px); -webkit-transition-property: -webkit-transform; transition-property: -webkit-transform; -webkit-transition-duration: 0.4s; transition-duration: 0.4s; -webkit-transition-timing-function: ease-out; transition-timing-function: ease-out;">
             {loop $advlist $adv}
             <div class="swipe-item ui-swipeslide-slide" style="width: 338px;">
                 <a href="{$adv[link]}">
@@ -97,6 +97,7 @@
         <ul>
         {data func="amouse_article_site_category" parentid=$cid return="true" assign="navs"}
         {if empty($navs)}
+
             {data module="amouse_article" func="amouse_article_site_article" cid=$cid return="true" assign="result"}
             {loop $result['list'] $row}
             <li>
@@ -113,7 +114,7 @@
         {else}
         {loop $navs $nav}
         <li>
-            <a href="{php echo $this->createMobileUrl("index",array("cid" => $nav['id']),true)}">
+            <a href="{php echo $this->createMobileUrl("second",array("parentid"=>$nav['parentid'],"cid" => $nav['id']),true)}">
             <p class="title"  title="{$nav[name]}"> {php echo cutstr($nav[name],12)}</p>
             <p class="summary" title="{$nav[description]}">
                 {php echo cutstr($nav[description],6)} </p>
@@ -135,7 +136,7 @@
 
 <div id="toTop" style="position: fixed; display: none; bottom: 0px; left: 10px; z-index: 998; opacity: 0.8;">
     <a href="javascript:void(0);" onclick="javascript:window.scrollTo(0,0);">
-        <img style="width:46px;height:46px;"  src="../addons/amouse_article/template/mobile/images/topplus.png" align="absmiddle">
+        <img style="width:46px;height:46px;"  src="{RES}images/topplus.png" align="absmiddle">
     </a>
 </div>
 
@@ -144,32 +145,27 @@
         background: rgba(0, 0, 0, 0);
     }
 </style>
-<script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+
 <script language='javascript'>
-    <?php
-        $jssdk = new JSSDK();
-        $signPackage = $jssdk->GetSignPackage();
-    ?>
-    wx.config({
-        debug:false,
-        appId: "{$_W['account']['appid_share']}",
-        timestamp: {$signPackage["timestamp"]},
-        nonceStr: '{$signPackage["nonceStr"]}',
-        signature: '{$signPackage["signature"]}',
-        jsApiList: [
-            'onMenuShareTimeline','onMenuShareAppMessage','onMenuShareWeibo'
-        ]
-    });
-    var shareMeta = {
-        imgUrl:"{$shareimg}",
-        link:"{$url}",
-        desc:"{if !empty($category['description'])}{$category['description']}{else}{$_W['account']['name']}的精美图文{/if}",
-        title:"{if !empty($category['title'])}{$category['title']}{else}{$_W['account']['name']}的精美图文{/if}"
-    };
-    wx.ready(function(){
+
+    wx.ready(function () {
+        shareMeta = {
+            imgUrl:"{$shareimg}",
+            link:"{$url}",
+            desc:"{if !empty($category['description'])}{$category['description']}{else}{$_W['account']['name']}的精美图文{/if}",
+            title:"{if !empty($category['title'])}{$category['title']}{else}{$_W['account']['name']}的精美图文{/if}",
+            success: function(){
+
+            },
+            cancel: function(){
+                // alert("分享失败，可能是网络问题，一会儿再试试？");
+            }
+        };
         wx.onMenuShareTimeline(shareMeta);
         wx.onMenuShareAppMessage(shareMeta);
         wx.onMenuShareWeibo(shareMeta);
+        wx.onMenuShareQQ(shareMeta);
+        wx.onMenuShareQZone(shareMeta);
     });
 </script>
 </body>

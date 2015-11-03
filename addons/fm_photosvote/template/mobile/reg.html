@@ -3,13 +3,13 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-	<title>{php if(isset($title)) $_W['page']['title'] = $title}{if !empty($_W['page']['title'])}{$_W['page']['title']} - {/if}{if !empty($_W['account']['name'])}{$_W['account']['name']}{/if}{if !empty($_W['page']['sitename'])} - {$_W['page']['sitename']}{else}{if IMS_FAMILY != 'x'} - Powered by wdlcms.com{/if}{/if}</title>
+	<title>{php if(isset($title)) $_W['page']['title'] = $title}{if !empty($_W['page']['title'])}{$_W['page']['title']} - {/if}{if !empty($_W['account']['name'])}{$_W['account']['name']}{/if}{if !empty($_W['page']['sitename'])} - {$_W['page']['sitename']}{else}{if IMS_FAMILY != 'x'} - Powered by 012wz.com{/if}{/if}</title>
 	<meta name="format-detection" content="telephone=no, address=no">
 	<meta name="apple-mobile-web-app-capable" content="yes" /> <!-- apple devices fullscreen -->
 	<meta name="apple-touch-fullscreen" content="yes"/>
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-	<meta name="keywords" content="{if empty($_W['page']['keywords'])}{if IMS_FAMILY != 'x'}微赞科技,微信,微信公众平台,wdlcms.com{/if}{else}{$_W['page']['keywords']}{/if}" />
-	<meta name="description" content="{if empty($_W['page']['description'])}{if IMS_FAMILY != 'x'}公众平台自助引擎（www.wdlcms.com），简称微赞科技，微赞科技是一款免费开源的微信公众平台管理系统，是国内最完善移动网站及移动互联网技术解决方案。{/if}{else}{$_W['page']['description']}{/if}" />
+	<meta name="keywords" content="{if empty($_W['page']['keywords'])}{if IMS_FAMILY != 'x'}微赞科技,微信,微信公众平台,012wz.com{/if}{else}{$_W['page']['keywords']}{/if}" />
+	<meta name="description" content="{if empty($_W['page']['description'])}{if IMS_FAMILY != 'x'}公众平台自助引擎（www.012wz.com），简称微赞科技，微赞科技是一款免费开源的微信公众平台管理系统，是国内最完善移动网站及移动互联网技术解决方案。{/if}{else}{$_W['page']['description']}{/if}" />
 	<link rel="shortcut icon" href="{$_W['siteroot']}{$_W['config']['upload']['attachdir']}/{if !empty($_W['setting']['copyright']['icon'])}{$_W['setting']['copyright']['icon']}{else}images/global/wechat.jpg{/if}" />
 	<link href="{$_W['siteroot']}app/resource/css/bootstrap.min.css" rel="stylesheet">
 	<link href="{$_W['siteroot']}app/resource/css/font-awesome.min.css" rel="stylesheet">
@@ -295,6 +295,36 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
 						</dt>
 						<dd style="text-align:center; text-decoration: none;"><strong >{php echo cutstr($mygift['nickname'], '20')}</strong></dd>
 						<dd>
+							
+													
+								<form class="form-horizontal" role="form" id="formbasic" name="formbasic" method="post" action="" enctype="multipart/form-data">					
+									<input type="hidden" name="i" id = "i" value="{$uniacid}" />
+									<input type="hidden" name="c" id="c" value="entry" />
+									<input type="hidden" name="m" id="m" value="fm_photosvote" />
+									<input type="hidden" name="do" id="do" value="treg" />
+									<input type="hidden" name="treg" id="treg" value="1" />
+									<input type="hidden" name="rid" id="rid" value="{$rid}" />
+									<input type="hidden" name="from_user" id="from_user" value="{$from_user}" />
+									<input type="hidden" name="token" id="token" value="{$_W['token']}"/>
+								{if $reply['isrealname'] == 1}
+								<dd class="pull-left s">真实姓名</dd>
+								<dd><input type="text" id="realname" name="realname" value="{$mygift['realname']}"></dd>{/if}					
+								{if $reply['ismobile'] == 1}														
+								<dd class="pull-left s">手机</dd>
+								<dd><input type="text" id="mobile" name="mobile" value="{$mygift['mobile']}" /></dd>{/if}		
+
+								<dd class="">参赛主题宣言</dd>
+								<dd><input type="text" id="photoname" name="photoname"  class=" w" value="{$mygift['photoname']}"></dd>
+								
+								<dd class="">介绍（投票宣言或个人介绍）</dd>
+								<dd>
+								  <textarea style="height:50px; " class="span7 richtext-clone w" id="description" name="description" cols="70">{$mygift['description']}</textarea>
+								</dd>
+								
+												
+								
+								
+
 							<dd >
 								<div class="container" style="  max-width: 640px;">
 									<div class="col-md-11">
@@ -364,7 +394,7 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
 												
 												<div class="modal-footer">
 													<!--<input type="submit" name="tijiao" id="tijiao" class="btn btn-success" value="开始上传">-->
-													<button type="button" class="btn btn-danger" data-dismiss="modal">上传完成,自动返回</button>
+													<button type="button" class="btn btn-danger" data-dismiss="modal">关闭</button>
 												</div>
 											</form>
 										</div><!-- /.modal-content -->
@@ -373,189 +403,166 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
 								
 								
 								<div class="modal fade" id="Modalp" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="  margin-top: 60px;">
-								<div class="modal-dialog">
-									<div class="modal-content">
-										<div class="modal-header">
-											<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-											<h4 class="modal-title">上传相册图片</h4>
-										</div>
-										<form class="form-inline" role="form" id="uploadforp" name="uploadforp" method="post" action="" enctype="multipart/form-data">					
-												<input type="hidden" name="i" id = "i" value="{$uniacid}" />
-												<input type="hidden" name="c" id="c" value="entry" />
-												<input type="hidden" name="m" id="m" value="fm_photosvote" />
-												<input type="hidden" name="do" id="do" value="treg" />
-												<input type="hidden" name="rid" id="rid" value="{$rid}" />
-												<input type="hidden" name="upphotos" id="upphotos" value="start" />
-												<input type="hidden" name="from_user" id="from_user" value="{$from_user}" />
-												<input type="hidden" name="token" id="token" value="{$_W['token']}"/>
-											<div class="modal-body">
-												<style>
-												.form-group {  margin-bottom: 15px;  clear: both;  margin-top: 15px;}
-												</style>
-												<div class="form-group label label-info" style="padding: 2px 20px;">您还可以上传 {$reply['tpxz']} 张照片</div>
-												<?php for ($i = 1; $i <= $reply['tpxz']; $i++) {
-												$n = $i - 1;
-												?>				
-												
-														
-														<div class="form-group">
-															<label>请选择相册照片：</label>
-															<input class="form-control" type="file" name="picarr_{$i}" id="picarr{$i}" accept="image/*" readonly="readonly" capture="camera" onchange="changeone('picarr{$i}', '{$i}')" >
-														<img src="" id="uploadimg{$i}"  onclick="showpic();" name="uploadimg{$i}" style="display:none">
-														<img src="{php echo toimage($mygift['picarr_'.$i])}" id="preview{$i}" name="pic{$i}" style="width:100px;"  >
-														<div style="text-align:right; background-color: transparent;">
-															<div id="progressNumber{$i}" style="  text-align:center;color: #000;  font-size: 15px;  margin-top: 0px;"></div>
-															<div style="  margin: 0 90px;   position: relative;  left: 60px;  top: 10px;"><div id="progress{$i}">&nbsp;</div></div>
-															
-															<div class="upsuccess"><div id="upsuccess" class="label label-danger" style="display:none;">&nbsp;</div></div>
-														</div>
-														
-														</div>
-														
-												<?php } ?>
+									<div class="modal-dialog">
+										<div class="modal-content">
+											<div class="modal-header">
+												<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+												<h4 class="modal-title">上传相册图片</h4>
 											</div>
-											<div class="modal-footer">
-												<!--<input type="submit" name="tijiaop" id="tijiaop" class="btn btn-success" value="开始上传">-->
-												<button type="button" class="btn btn-danger" data-dismiss="modal">完成</button>
-											</div>
-										</form>
-									</div><!-- /.modal-content -->
-								</div><!-- /.modal-dialog -->
-							</div><!-- /.modal -->
-									
-									<div class="modal fade" id="Modal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="  margin-top: 60px;">
-										<div class="modal-dialog">
-											<div class="modal-content">
-												<div class="modal-header">
-													<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-													<h4 class="modal-title">上传好声音</h4>
-												</div>
-												<form class="form-inline" role="form" id="uploadformm" name="uploadformm" method="post" action="" enctype="multipart/form-data">					
-														<input type="hidden" name="i" id = "i" value="{$uniacid}" />
-														<input type="hidden" name="c" id="c" value="entry" />
-														<input type="hidden" name="m" id="m" value="fm_photosvote" />
-														<input type="hidden" name="do" id="do" value="treg" />
-														<input type="hidden" name="rid" id="rid" value="{$rid}" />
-														<input type="hidden" name="upaudios" id="upaudios" value="start" />
-														<input type="hidden" name="audiotype" id="audiotype" value="music" />
-														<input type="hidden" name="from_user" id="from_user" value="{$from_user}" />
-														<input type="hidden" name="token" id="token" value="{$_W['token']}"/>
-																	
-													<div class="modal-body">
-															<div class="form-group">
-																<label>请选择好声音：</label>
-																<input class="form-control" type="file" name="music" id="music"  readonly="readonly" accept="audio/*" capture="microphone"> <!--onchange="changeaudios('music', 'm')"-->
-																<div style="text-align:right; background-color: transparent;">
-																	<div id="progressNumberm" style="  text-align:center;color: #000;  font-size: 15px;  margin-top: 0px;"></div>
-																	<div style="    margin: 0 20px;  position: relative;  /* left: 60px; */  top: 10px;  margin-bottom: 20px;"><div id="progressm">&nbsp;</div></div>
-																</div>
-															</div>
-															<div id="uploadm"  onclick="showmusic();" name="uploadm" ></div>
-															<input value="{$mygift['music']}"  name="music" id="previewm" type="text"  placeholder="请在此输入远程音频地址" style="width: 100%; "/>
-													</div>
-													<div class="modal-footer">
-														<input type="submit" name="tijiaom" id="tijiaom" class="btn btn-success" value="开始上传">
-														<button type="button" class="btn btn-danger" data-dismiss="modal">上传完成,自动返回</button>
-													</div>
-												</form>
-											</div><!-- /.modal-content -->
-										</div><!-- /.modal-dialog -->
-									</div><!-- /.modal -->
-																		
-								
-									
-									<div class="modal fade" id="Modal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="  margin-top: 60px;">
-										<div class="modal-dialog">
-											<div class="modal-content">
-												<div class="modal-header">
-													<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-													<h4 class="modal-title">上传视频</h4>
-												</div>
-												<form class="form-inline" role="form" id="uploadformv" name="uploadformv" method="post" action="" enctype="multipart/form-data">					
-														<input type="hidden" name="i" id = "i" value="{$uniacid}" />
-														<input type="hidden" name="c" id="c" value="entry" />
-														<input type="hidden" name="m" id="m" value="fm_photosvote" />
-														<input type="hidden" name="do" id="do" value="treg" />
-														<input type="hidden" name="rid" id="rid" value="{$rid}" />
-														<input type="hidden" name="upaudios" id="upaudios" value="start" />
-														<input type="hidden" name="audiotype" id="audiotype" value="vedio" />
-														<input type="hidden" name="from_user" id="from_user" value="{$from_user}" />
-														<input type="hidden" name="token" id="token" value="{$_W['token']}"/>
-																	
-													<div class="modal-body">
-															<div class="form-group">
-																<label>请选择视频 （<a onclick="webinfo();">上传说明</a>）：</label>
-																<input class="form-control" type="file" name="vedio" id="vedio" readonly="readonly" accept="video/*" capture="camcorder">
-																<div style="text-align:right; background-color: transparent;">
-																	<div id="progressNumberv" style="  text-align:center;color: #000;  font-size: 15px;  margin-top: 0px;"></div>
-																	<div style="    margin: 0 20px;  position: relative;  /* left: 60px; */  top: 10px;  margin-bottom: 20px;"><div id="progressv">&nbsp;</div></div>
-																</div>
-															</div>
-															<div id="uploadv"  onclick="showvedio();" name="uploadv"></div>
-															<input value="{$mygift['vedio']}"  name="vedio" id="previewv" type="text" placeholder="请在此输入远程视频地址" style="width: 100%; "/>	
-													</div>
-													<div class="modal-footer">
-														<input type="submit" name="tijiaov" id="tijiaov" class="btn btn-success" value="开始上传">
-														<button type="button" class="btn btn-danger" data-dismiss="modal">上传完成,自动返回</button>
-													</div>
-												</form>
-											</div><!-- /.modal-content -->
-										</div><!-- /.modal-dialog -->
-									</div><!-- /.modal -->
-								
+											<form class="form-inline" role="form" id="uploadforp" name="uploadforp" method="post" action="" enctype="multipart/form-data">					
+													<input type="hidden" name="i" id = "i" value="{$uniacid}" />
+													<input type="hidden" name="c" id="c" value="entry" />
+													<input type="hidden" name="m" id="m" value="fm_photosvote" />
+													<input type="hidden" name="do" id="do" value="treg" />
+													<input type="hidden" name="rid" id="rid" value="{$rid}" />
+													<input type="hidden" name="upphotos" id="upphotos" value="start" />
+													<input type="hidden" name="from_user" id="from_user" value="{$from_user}" />
+													<input type="hidden" name="token" id="token" value="{$_W['token']}"/>
+												<div class="modal-body">
+													<style>
+													.form-group {  margin-bottom: 15px;  clear: both;  margin-top: 15px;}
+													</style>
+													<div class="form-group label label-info" style="padding: 2px 20px;">您还可以上传 {$reply['tpxz']} 张照片</div>
+													<?php for ($i = 1; $i <= $reply['tpxz']; $i++) {
+													$n = $i - 1;
+													?>				
 													
-								<form class="form-horizontal" role="form" id="formbasic" name="formbasic" method="post" action="" enctype="multipart/form-data">					
-									<input type="hidden" name="i" id = "i" value="{$uniacid}" />
-									<input type="hidden" name="c" id="c" value="entry" />
-									<input type="hidden" name="m" id="m" value="fm_photosvote" />
-									<input type="hidden" name="do" id="do" value="treg" />
-									<input type="hidden" name="treg" id="treg" value="1" />
-									<input type="hidden" name="rid" id="rid" value="{$rid}" />
-									<input type="hidden" name="from_user" id="from_user" value="{$from_user}" />
-									<input type="hidden" name="token" id="token" value="{$_W['token']}"/>
-								<dd class="">照片主题宣言</dd>
-								<dd><input type="text" id="photoname" name="photoname"  class=" w" value="{$mygift['photoname']}"></dd>
-								
-								<dd class="">介绍（投票宣言或个人介绍）</dd>
+															
+															<div class="form-group">
+																<label>请选择相册照片：</label>
+																<input class="form-control" type="file" name="picarr_{$i}" id="picarr{$i}" accept="image/*" readonly="readonly" capture="camera" onchange="changeone('picarr{$i}', '{$i}')" >
+															<img src="" id="uploadimg{$i}"  onclick="showpic();" name="uploadimg{$i}" style="display:none">
+															<img src="{php echo toimage($mygift['picarr_'.$i])}" id="preview{$i}" name="pic{$i}" style="width:100px;"  >
+															<div style="text-align:right; background-color: transparent;">
+																<div id="progressNumber{$i}" style="  text-align:center;color: #000;  font-size: 15px;  margin-top: 0px;"></div>
+																<div style="  margin: 0 90px;   position: relative;  left: 60px;  top: 10px;"><div id="progress{$i}">&nbsp;</div></div>
+																
+																<div class="upsuccess"><div id="upsuccess" class="label label-danger" style="display:none;">&nbsp;</div></div>
+															</div>
+															
+															</div>
+															
+													<?php } ?>
+												</div>
+												<div class="modal-footer">
+													<!--<input type="submit" name="tijiaop" id="tijiaop" class="btn btn-success" value="开始上传">-->
+													<button type="button" class="btn btn-danger" data-dismiss="modal">完成</button>
+												</div>
+											</form>
+										</div><!-- /.modal-content -->
+									</div><!-- /.modal-dialog -->
+								</div><!-- /.modal -->
+									
+								<div class="modal fade" id="Modal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="  margin-top: 60px;">
+									<div class="modal-dialog">
+										<div class="modal-content">
+											<div class="modal-header">
+												<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+												<h4 class="modal-title">上传好声音</h4>
+											</div>
+											<form class="form-inline" role="form" id="uploadformm" name="uploadformm" method="post" action="" enctype="multipart/form-data">					
+													<input type="hidden" name="i" id = "i" value="{$uniacid}" />
+													<input type="hidden" name="c" id="c" value="entry" />
+													<input type="hidden" name="m" id="m" value="fm_photosvote" />
+													<input type="hidden" name="do" id="do" value="treg" />
+													<input type="hidden" name="rid" id="rid" value="{$rid}" />
+													<input type="hidden" name="upaudios" id="upaudios" value="start" />
+													<input type="hidden" name="audiotype" id="audiotype" value="music" />
+													<input type="hidden" name="from_user" id="from_user" value="{$from_user}" />
+													<input type="hidden" name="token" id="token" value="{$_W['token']}"/>
+																
+												<div class="modal-body">
+														<div class="form-group">
+															<label>请选择好声音：</label>
+															<input class="form-control" type="file" name="music" id="music"  readonly="readonly" accept="audio/*" capture="microphone"> <!--onchange="changeaudios('music', 'm')"-->
+															<div style="text-align:right; background-color: transparent;">
+																<div id="progressNumberm" style="  text-align:center;color: #000;  font-size: 15px;  margin-top: 0px;"></div>
+																<div style="    margin: 0 20px;  position: relative;  /* left: 60px; */  top: 10px;  margin-bottom: 20px;"><div id="progressm">&nbsp;</div></div>
+															</div>
+														</div>
+														<div id="uploadm"  onclick="showmusic();" name="uploadm" ></div>
+														<input value="{$mygift['music']}"  name="music" id="previewm" type="text"  placeholder="请在此输入远程音频地址" style="width: 100%; "/>
+												</div>
+												<div class="modal-footer">
+													<input type="submit" name="tijiaom" id="tijiaom" class="btn btn-success" value="开始上传">
+													<button type="button" class="btn btn-danger" data-dismiss="modal">关闭</button>
+												</div>
+											</form>
+										</div><!-- /.modal-content -->
+									</div><!-- /.modal-dialog -->
+								</div><!-- /.modal -->
+										
+								<div class="modal fade" id="Modal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="  margin-top: 60px;">
+									<div class="modal-dialog">
+										<div class="modal-content">
+											<div class="modal-header">
+												<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+												<h4 class="modal-title">上传视频</h4>
+											</div>
+											<form class="form-inline" role="form" id="uploadformv" name="uploadformv" method="post" action="" enctype="multipart/form-data">					
+													<input type="hidden" name="i" id = "i" value="{$uniacid}" />
+													<input type="hidden" name="c" id="c" value="entry" />
+													<input type="hidden" name="m" id="m" value="fm_photosvote" />
+													<input type="hidden" name="do" id="do" value="treg" />
+													<input type="hidden" name="rid" id="rid" value="{$rid}" />
+													<input type="hidden" name="upaudios" id="upaudios" value="start" />
+													<input type="hidden" name="audiotype" id="audiotype" value="vedio" />
+													<input type="hidden" name="from_user" id="from_user" value="{$from_user}" />
+													<input type="hidden" name="token" id="token" value="{$_W['token']}"/>
+																
+												<div class="modal-body">
+														<div class="form-group">
+															<label>请选择视频 （<a onclick="webinfo();">上传说明</a>）：</label>
+															<input class="form-control" type="file" name="vedio" id="vedio" readonly="readonly" accept="video/*" capture="camcorder">
+															<div style="text-align:right; background-color: transparent;">
+																<div id="progressNumberv" style="  text-align:center;color: #000;  font-size: 15px;  margin-top: 0px;"></div>
+																<div style="    margin: 0 20px;  position: relative;  /* left: 60px; */  top: 10px;  margin-bottom: 20px;"><div id="progressv">&nbsp;</div></div>
+															</div>
+														</div>
+														<div id="uploadv"  onclick="showvedio();" name="uploadv"></div>
+														<input value="{$mygift['vedio']}"  name="vedio" id="previewv" type="text" placeholder="请在此输入远程视频地址" style="width: 100%; "/>	
+												</div>
+												<div class="modal-footer">
+													<input type="submit" name="tijiaov" id="tijiaov" class="btn btn-success" value="开始上传">
+													<button type="button" class="btn btn-danger" data-dismiss="modal">关闭</button>
+												</div>
+											</form>
+										</div><!-- /.modal-content -->
+									</div><!-- /.modal-dialog -->
+								</div><!-- /.modal -->
+							</dd>	
+
+							{if $reply['mediatypev']}
+								<dd class="">网络视频  (<a onclick="webinfo();">查看上传说明</a>)</dd>
 								<dd>
-								  <textarea style="height:50px; " class="span7 richtext-clone w" id="description" name="description" cols="70">{$mygift['description']}</textarea>
+								  <textarea style="height:50px; " class="span7 richtext-clone w" id="youkuurl" name="youkuurl" cols="70">{$mygift['youkuurl']}</textarea>
 								</dd>
-								{if $reply['mediatypev']}
-									<dd class="">网络视频  (<a onclick="webinfo();">查看上传说明</a>)</dd>
-									<dd>
-									  <textarea style="height:50px; " class="span7 richtext-clone w" id="youkuurl" name="youkuurl" cols="70">{$mygift['youkuurl']}</textarea>
-									</dd>
-								{/if}
-								{if $reply['isrealname'] == 1}
-								<dd class="pull-left s">真实姓名</dd>
-								<dd><input type="text" id="realname" name="realname" value="{$mygift['realname']}"></dd>{/if}					
-								{if $reply['ismobile'] == 1}														
-								<dd class="pull-left s">手机</dd>
-								<dd><input type="text" id="mobile" name="mobile" value="{$mygift['mobile']}" /></dd>{/if}						
-								{if $reply['isweixin'] == 1}
-								<dd class="pull-left s">微信号</dd>
-								<dd><input type="text" id="weixin" name="weixin" value="{$mygift['weixin']}"></dd>			
-								{/if}					
-								{if $reply['isqqhao'] == 1}
-								<dd class="pull-left s">QQ</dd>
-								<dd><input type="text" id="qqhao" name="qqhao" value="{$mygift['qqhao']}" /></dd>{/if}					
-								{if $reply['isemail'] == 1}				
-								<dd class="pull-left s">Email</dd>
-								<dd><input type="text" id="email" name="email" value="{$mygift['email']}"></dd>
-								{/if}				
-								{if $reply['isjob'] == 1}				
-								<dd class="pull-left s">职业</dd>
-								<dd><input type="text" id="job" name="job" value="{$mygift['job']}"></dd>
-								{/if}				
-								{if $reply['isxingqu'] == 1}				
-								<dd class="pull-left s">兴趣</dd>
-								<dd><input type="text" id="xingqu" name="xingqu" value="{$mygift['xingqu']}"></dd>
-								{/if}			
-								{if $reply['isaddress'] == 1}
-								<dd class="pull-left s">详细地址</dd>
-								<dd><input type="text" id="address" name="address" value="{$mygift['address']}"></dd>			
-								{/if}
-								<dd style="margin: 0 auto;  text-align: center;">
+							{/if}
+
+							{if $reply['isweixin'] == 1}
+							<dd class="pull-left s">微信号</dd>
+							<dd><input type="text" id="weixin" name="weixin" value="{$mygift['weixin']}"></dd>			
+							{/if}					
+							{if $reply['isqqhao'] == 1}
+							<dd class="pull-left s">QQ</dd>
+							<dd><input type="text" id="qqhao" name="qqhao" value="{$mygift['qqhao']}" /></dd>{/if}					
+							{if $reply['isemail'] == 1}				
+							<dd class="pull-left s">Email</dd>
+							<dd><input type="text" id="email" name="email" value="{$mygift['email']}"></dd>
+							{/if}				
+							{if $reply['isjob'] == 1}				
+							<dd class="pull-left s">职业</dd>
+							<dd><input type="text" id="job" name="job" value="{$mygift['job']}"></dd>
+							{/if}				
+							{if $reply['isxingqu'] == 1}				
+							<dd class="pull-left s">兴趣</dd>
+							<dd><input type="text" id="xingqu" name="xingqu" value="{$mygift['xingqu']}"></dd>
+							{/if}			
+							{if $reply['isaddress'] == 1}
+							<dd class="pull-left s">详细地址</dd>
+							<dd><input type="text" id="address" name="address" value="{$mygift['address']}"></dd>			
+							{/if}
+							<dd style="margin: 0 auto;  text-align: center;">
 									<input type="hidden" name="token" value="{$_W['token']}" /><input type="submit" class="btn btn-large btn-info submit" onclick = "" style="  padding: 6px 44%;" value="提交" name="submit">
 								</dd>	
 									
@@ -818,18 +825,18 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
 								$(upload).text(result.imgurl);
 								var myinfo = "{$mygift}";
 								var myinfophotoname = "{$mygift['photoname']}";
-								if (!myinfo || !myinfophotoname) {
-									fminfo('恭喜你，上传成功！请继续完成以下资料来完成报名');
+								//if (!myinfo || !myinfophotoname) {
+									fminfo('恭喜你，上传成功！');
 									if (mid == 'm') {
 										sendmusic();
 									}else {
 										sendvedio();
 									}
-								}else {
-									setTimeout(function () {								
+								//}else {
+									/**setTimeout(function () {								
 										window.location.reload();
-									},3000)
-								}
+									},3000)**/
+								//}
 								return 
 							} else {
 								if (result.success == 3) {
@@ -935,7 +942,7 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
 				
 				// 也可以传入图片路径：lrz('../demo.jpg', ...
 				lrz(filename.files[0], {
-					//width: width,
+					zwidth: width,
 					quality:zl,
 					before: function() {
 						document.getElementById('progressNumber' + mid).innerHTML = '正在压缩图片...' ;
@@ -1022,23 +1029,22 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
 									//document.getElementById(fmupimg).innerHTML = result.imgurl;
 									var myinfo = "{$mygift}";
 									var myinfophotoname = "{$mygift['photoname']}";
-									if (!myinfo || !myinfophotoname) {
-										fminfo('恭喜你，上传成功！请继续完成以下资料来完成报名');
-										if (mid == 0) {
-											sendpic();
-										}else {
-											sendp();
-										}
-									}else {
+									//if (!myinfo || !myinfophotoname) {
 										
 										if (mid == 0) {
+											fminfo('恭喜你，上传成功！');
+											sendpic();
+										}
+									//}else {
+										
+										/**if (mid == 0) {
 											setTimeout(function () {								
 												window.location.reload();
 											},3000)
 											return 
 										}
-										
-									}
+										**/
+									//}
 								} else {
 									if (result.success == 3) {
 										//windows.location.href = result.linkurl;

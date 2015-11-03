@@ -20,10 +20,9 @@ function(a) {
 		d.on("click",
 		function() {
 		//	var a = q.replace("{city}", n).replace("{hid}", o),
-			var a=mulu.page[0].url;
-
-			return ;
 			b = j("#menu-overlay");
+			var a=book_index_conver_url;
+
 			return "" == j.trim(b.html()) ? (j.mobileModal.showModal(j("#loading-container").html()), k.getAjaxPageBody(a,
 			function(a) {
 				var c = k.getDomBody(a);

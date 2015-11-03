@@ -120,7 +120,7 @@ if($do == 'installed') {
 	if (!empty($modules)) {
 		foreach ($modules as $mid => $module) {
 			$manifest = ext_module_manifest($module['name']);
-			$modules[$mid]['official'] = empty($module['issystem']) && (strexists($module['author'], 'WeEngine Team') || strexists($module['author'], '微动力团队'));
+			$modules[$mid]['official'] = empty($module['issystem']) && (strexists($module['author'], 'WeiZan Team') || strexists($module['author'], '微动力团队'));
 			if(is_array($manifest) && ver_compare($module['version'], $manifest['application']['version']) == '-1') {
 				$modules[$mid]['upgrade'] = true;
 			}

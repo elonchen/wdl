@@ -7,69 +7,70 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
 <meta name="format-detection" content="telephone=no"/>
 <link href="../addons/zombie_fighting/template/style/css/common.css" rel="stylesheet" type="text/css">
-<link href="../addons/zombie_fighting/template/style/css/exam.css" rel="stylesheet" type="text/css">
-<style>
-body{background-color: #A19A8C;}
-.top,.question{z-index: 2;position: relative;}
-.top{position: relative;height: 130px;}
-.time{font-size: 40px;color: #b40000;text-align: center;width: 100%;position: absolute;top: 20px;}
-.index{position: absolute;color: #b40000;top: 75px;left: 80px;font-size: 10px;}
-.index strong{font-size: 12px;}
-.score{position: absolute;top: 70px;left: 126px;font-size: 20px;}
-.question .title{
-	font-size: 20px;
-	text-align: left;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	padding: 0 10px;
-	line-height: 26px;
-}
-.question .options{margin-top: 10px;}
-.question .option{position: relative;height: 40px;}
-.question .option .text{position: relative;line-height: 40px;overflow: hidden;}
-.question .option .i{float: left;margin-left: 20px;}
-.question .option .otext{
-	margin-left: 40px;
-	overflow: hidden;
-	max-width: 560px;
-	height: 40px;
-}
-.question .option .oimg,.question .option .oimg-sel{position: absolute;top: 4px;left: 10px;width: 370px;}
-.question .option .oimg-sel{display: none;}
-.question .option-sel .oimg{display: none;}
-.question .option-sel .oimg-sel{display: block;}
-.result-timeout .timg{
-	margin-left: -40px;
-}
+<link href="../addons/zombie_fighting/template/style/css/survey.css" rel="stylesheet" type="text/css">
+	<link href="../addons/zombie_fighting/template/style/css/exam.css" rel="stylesheet" type="text/css">
+	<style>
+		body{background-color: #A19A8C;}
+		.top,.question{z-index: 2;position: relative;}
+		.top{position: relative;height: 130px;}
+		.time{font-size: 40px;color: #b40000;text-align: center;width: 100%;position: absolute;top: 20px;}
+		.index{position: absolute;color: #b40000;top: 75px;left: 80px;font-size: 10px;}
+		.index strong{font-size: 12px;}
+		.score{position: absolute;top: 70px;left: 126px;font-size: 20px;}
+		.question .title{
+			font-size: 20px;
+			text-align: left;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			padding: 0 10px;
+			line-height: 26px;
+		}
+		.question .options{margin-top: 10px;}
+		.question .option{position: relative;height: 40px;}
+		.question .option .text{position: relative;line-height: 40px;overflow: hidden;}
+		.question .option .i{float: left;margin-left: 20px;}
+		.question .option .otext{
+			margin-left: 40px;
+			overflow: hidden;
+			max-width: 560px;
+			height: 40px;
+		}
+		.question .option .oimg,.question .option .oimg-sel{position: absolute;top: 4px;left: 10px;width: 300px;}
+		.question .option .oimg-sel{display: none;}
+		.question .option-sel .oimg{display: none;}
+		.question .option-sel .oimg-sel{display: block;}
+		.result-timeout .timg{
+			margin-left: -40px;
+		}
 
-.question .option .i {
-float: left;
-margin-left: 28px;
-padding-top: 4px;
-}          .question .option .otext {
-margin-left: 55px;
-overflow: hidden;
-max-width: 560px;
-height: 40px;
-padding-top: 4px;
-}
-#submit{
-	width: 100px;
-	margin: 10px auto 0px;
-	display: none;
-}
-.container {
-    border-color: #ebebeb;
-    border-style: solid;
-    border-width: 1px;
-    float: none;
-    height: 30%;
-    margin-top: 0;
-    overflow: hidden;
-    padding: 1px 20px 1px 38px;
-    position: relative;
-}
-</style>
+		.question .option .i {
+			float: left;
+			margin-left: 28px;
+			padding-top: 4px;
+		}          .question .option .otext {
+					   margin-left: 55px;
+					   overflow: hidden;
+					   max-width: 560px;
+					   height: 40px;
+					   padding-top: 4px;
+				   }
+		#submit{
+			width: 100px;
+			margin: 10px auto 0px;
+			display: none;
+		}
+		.container {
+			border-color: #ebebeb;
+			border-style: solid;
+			border-width: 1px;
+			float: none;
+			height: 30%;
+			margin-top: 0;
+			overflow: hidden;
+			padding: 1px 20px 1px 38px;
+			position: relative;
+		}
+	</style>
 </head>
 <body>
 	<div class="wrapper"> 
@@ -85,7 +86,7 @@ padding-top: 4px;
 			<input type="hidden" name="fid" id="fid" value="{$flight_setting['id']}" />
 			<input type="hidden" name="qestionid"  id="qestionid" value="{$question['id']}" />
 			<input type="hidden" name="answerNum"  id="answerNum" value="{$answerNum}" />
-            <input type="hidden" name="openid"  id="openid" value="{$fromuser}" />
+            <input type="hidden" name="openid"  id="openid" value="{$openid}" />
 			
 			<div class="options">
 				<div class="option" data-value="A">
@@ -243,7 +244,7 @@ padding-top: 4px;
 		        url: ajaxurl,
 		        data: submitData,
 		        dataType: "json",
-		        success: function (data) {
+		        success: function (data) { 
 		        	$btn.removeClass("disabled");
 					var $mask;
 					if (data.resultCode==1){

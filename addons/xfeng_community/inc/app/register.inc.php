@@ -12,18 +12,18 @@ defined('IN_IA') or exit('Access Denied');
 	global $_GPC,$_W;
 	//个人信息
 	$title = '用户注册';
-	WeSession::$expire = 600;
-	WeSession::start();
+	WeSession::start($_W['uniacid'],$_W['fans']['from_user'],60);
 	//判断验证码是否正确
 	if($this->module['config']['verifycode']){
 		if($_W['ispost'] && empty($_SESSION['isstatus'])){
 				$verifycode = $_GPC['verifycode'];
 				if($verifycode == $_SESSION['code']){
 					$_SESSION['isstatus']=1;
-					message('验证成功！',$this->createMobileUrl('register'),'success');
+					$forward = $this->createMobileUrl('register');
+					header("Location:{$forward}");exit();
 					
 				}else{
-					message('验证码失效,请重新获取！',referer(),'success');
+					message('验证码失效,请重新获取！',referer(),'success');exit();
 				}
 		}
 	}

@@ -1,6 +1,6 @@
 <?php
-
- $template_id = $reply['shmessagetemplate'];//消息模板id 微信的模板id
+$messagetemplate = iunserializer($reply['mtemplates']);
+ $template_id = $messagetemplate['shmessagetemplate'];//消息模板id 微信的模板id
  $body = "";
  $keyword1 = "";
  if (!empty($template_id)) {

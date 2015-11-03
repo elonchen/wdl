@@ -70,7 +70,7 @@
 				<td>{$li['uid']}</td>
 				<td>{$groups[$li['groupid']]['title']}</td>
 				<td>{if $li['mobile']}{$li['mobile']}{else}未完善{/if}</td>
-				<td>{if $li['email']}{$li['email']}{else}未完善{/if}</td>
+				<td>{if $li['email_effective'] == 1}{$li['email']}{else}未完善{/if}</td>
 				<td>{if $li['nickname']}{$li['nickname']}{else}未完善{/if}</td>
 				<td>{if $li['realname']}{$li['realname']}{else}未完善{/if}</td>
 				<td>{php echo date('Y-m-d H:i',$li['createtime'])}</td>

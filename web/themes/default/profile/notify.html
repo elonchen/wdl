@@ -7,11 +7,9 @@
 	<li{if $do == 'app'} class="active"{/if}><a href="{php echo url('profile/notify/app')}">自有APP通知(未开放)</a></li>
 </ul>
 <script type="text/javascript">
-	require(['jquery'], function($){
-		{if $notify['mail']['smtp']['type'] == 'custom'}
-			$("#smtp").show();
-		{/if}
-	});
+	{if $notify['mail']['smtp']['type'] == 'custom'}
+		$("#smtp").show();
+	{/if}
 </script>
 <div class="main">
 	<form id="payform" action="{php echo url('profile/notify')}" method="post" class="form-horizontal form">
@@ -62,7 +60,7 @@
 				</div>
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">smtp客户端授权密码</label>
-					<div class="col-sm-9 col-xs-12">
+					<div class="col-sm-9">
 						<input type="password" name="password" class="form-control" value="{$notify['mail']['password']}" />
 						<div class="help-block">指定发送邮件的密码</div>
 					</div>

@@ -181,7 +181,7 @@
 		</script>
 	{/if}
 	{if $step == 'scripts'}
-		{if empty($packet['scripts']) }
+		{if empty($packet['scripts']) || !empty($packet['type'])}
 			<!-- 如果是更新模块,跳转到extension/module/upgrade -->
 			{if $is_upgrade == 1}
 				{if $packet['type'] == 'theme'}
@@ -242,7 +242,7 @@
 						});
 					}
 					var proc = function() {
-						var script = $scope.scripts.pop();
+						var script = $scope.scripts.shift();
 						if(!script) {
 							if($scope.fails.length > 0) {
 								error();

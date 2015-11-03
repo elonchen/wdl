@@ -55,8 +55,7 @@
 			<tbody>
 				{loop $list $row}
 				<tr>
-					<td class="with-checkbox">
-						<input type="checkbox" name="check" value="{$row['id']}"></td>
+					<td class="with-checkbox">{if $row['uniacid']==$_W['uniacid']}<input type="checkbox" name="check" value="{$row['id']}">{/if}</td>
 					<td><img src="{php echo toimage($row['seedimg'])}" width="120px"></td>
 					<td>{$row['seedname']}</td>
 					<td>{$row['seed01']} </td>
@@ -67,9 +66,8 @@
 					<td>{$row['seed06']} </td>
 					<td>{$row['seed07']} </td>
 					<td>{$row['seed08']} </td>
-					<td>
-					<a class="btn btn-default" data-toggle="tooltip" data-placement="top" href="{php echo url('site/entry/seededit',array('id' => $row['id'], 'm' => 'stonefish_planting'))}" title="编辑种子"><i class="fa fa-edit"></i></a>
-					<a class="btn btn-default" data-toggle="tooltip" data-placement="top" href="#" onclick="drop_confirm('您确定要删除吗?', '{php echo $this->createWebUrl('deleteseed',array('id'=>$row['id']))}');" title="删除"><i class="fa fa-times"></i></a>
+					<td>{if $row['uniacid']==$_W['uniacid']}<a class="btn btn-default" data-toggle="tooltip" data-placement="top" href="{php echo url('site/entry/seededit',array('id' => $row['id'], 'm' => 'stonefish_planting'))}" title="编辑种子"><i class="fa fa-edit"></i></a>
+					<a class="btn btn-default" data-toggle="tooltip" data-placement="top" href="#" onclick="drop_confirm('您确定要删除吗?', '{php echo $this->createWebUrl('deleteseed',array('id'=>$row['id']))}');" title="删除"><i class="fa fa-times"></i></a>{else}默认不可修改{/if}
                   	</td>
 				</tr>
 				{/loop}

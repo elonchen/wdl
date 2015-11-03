@@ -41,22 +41,67 @@ defined('IN_IA') or exit('Access Denied');
 		//查小区编号
 		$member = $this->changemember();
 		$data = array(
-				'weid'       =>$_W['weid'],
-				'regionid'   =>$member['regionid'],
-				'title'      =>$_GPC['title'],
-				'content'    =>htmlspecialchars_decode($_GPC['content']),
-				'createtime' =>$_W['timestamp'],
-				'status'     =>$_GPC['status'],
-				'author'     =>$_W['account']['name'],
-			);
-		if($_W['ispost']){
+					'weid'       => $_W['uniacid'],
+					'regionid'   =>$member['regionid'],
+					'title'      =>$_GPC['title'],
+					'createtime' =>$_W['timestamp'],
+					'status'     =>$_GPC['status'],
+					'enable'     =>$_GPC['enable'],
+					'datetime'   =>$_GPC['datetime'],
+					'location'   =>$_GPC['location'],
+					'reason'     =>$_GPC['reason'],
+					'remark'     =>$_GPC['remark'],
+				);
+		if(checksubmit('submit')){
 			if (empty($id)) {
 				pdo_insert("xcommunity_announcement",$data);
-				message('发布成功',$this->createMobileUrl('announcement',array('op' => 'display' )),'success');
+				$id = pdo_insertid();
 			}else{
 	    		pdo_update("xcommunity_announcement",$data,array('id' => $id,'weid' => $_W['weid'] ));
-	    		message('更新成功',$this->createMobileUrl('announcement',array('op' => 'display')),'success');
 			}
+			//是否启用模板消息
+			if ($_GPC['status'] == 2) {
+
+				load()->classs('weixin.account');
+				load()->func('communication');
+				$obj = new WeiXinAccount();
+				$access_token = $obj->fetch_available_token();
+				$templates =pdo_fetch("SELECT * FROM".tablename('xcommunity_notice_setting')."WHERE uniacid='{$_W['uniacid']}'");
+				$key = 'template_id_'.$_GPC['enable'];
+				$template_id = $templates[$key];
+				$openids = pdo_fetchall("SELECT openid FROM".tablename('xcommunity_member')."WHERE weid='{$_W['uniacid']}' AND regionid='{$member['regionid']}'");
+				$url = $_W['siteroot']."app/index.php?i={$_W['uniacid']}&c=entry&id={$id}&op=detail&do=announcement&m=xfeng_community";
+				foreach ($openids as $key => $value) {
+					$data = array(
+							'touser' => $value['openid'],
+							'template_id' => $template_id,
+							'url' => $url,
+							'topcolor' => "#FF0000",
+							'data' => array(
+									'first' => array(
+											'value' => $_GPC['title'],
+										),
+									'time' => array(
+											'value' => $_GPC['datetime'],
+										),
+									'location'	=> array(
+											'value' => $_GPC['location'],
+										),
+									'reason'    => array(
+											'value' => $_GPC['reason'],
+										),
+									'remark'    => array(
+											'value' => $_GPC['remark'],
+										),	
+								)
+						);
+					$json = json_encode($data);
+					$url = 'https://api.weixin.qq.com/cgi-bin/message/template/send?access_token='.$access_token;
+					$ret = ihttp_post($url,$json);
+				}
+			}
+			message('提交成功',$this->createMobileUrl('announcement',array('op' => 'display' )),'success');
+
 		}
 	}elseif($op == 'verify'){
 		//公告状态

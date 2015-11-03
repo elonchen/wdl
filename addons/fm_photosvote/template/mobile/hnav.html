@@ -105,7 +105,7 @@
 		  transition: border linear 0.2s, box-shadow linear 0.2s;
 	}	
 	        #speaker {
-			{if $reply['istopheader']}
+			{if $istop['istopheader']}
 				top: 50px;
 			{else}
 				top: 0px;
@@ -127,7 +127,7 @@
             width: 20px;
             height: 20px;
             position: fixed;
-			{if $reply['istopheader']}
+			{if $istop['istopheader']}
 				top: 60px;
 			{else}
 				top: 10px;
@@ -158,7 +158,7 @@
             width: 15px;
             height: 15px;
             position: fixed;
-			{if $reply['istopheader']}
+			{if $istop['istopheader']}
 				top: 62px;
 			{else}
 				top: 12px;
@@ -175,20 +175,22 @@
   overflow-y: auto;
   z-index: 111111111;
 }
+
 </style>
-{if $reply['istopheader']}
-{if $reply['addpvapp'] == 1}
- 	{if !empty($mygift)}
-		<div class="top"><div><span style="  width: 60%;  height: auto;  float: left;  line-height: 20px;"><a href="{php echo $this->createMobileUrl('photosvoteview', array('rid' => $rid))}" >{$reply['title']}</a></span><a href="{php echo $this->createMobileUrl('tuser', array('rid' => $rid, 'tfrom_user' => $from_user))}" class="topa"><strong style="position: relative;left: 45px;">我的</strong></a></div></div>
-	{else}
-		<div class="top"><div><span style="  width: 60%;  height: auto;  float: left;  line-height: 20px;"><a href="{php echo $this->createMobileUrl('photosvoteview', array('rid' => $rid))}">{$reply['title']}</a></span><a href="{php echo $this->createMobileUrl('reg', array('rid' => $rid))}" class="topa"><strong style="position: relative;left: 33px;">我要报名</strong></a></div></div>
-	{/if}
-{else}
-	<div class="top"><div><span><a href="{php echo $this->createMobileUrl('photosvoteview', array('rid' => $rid))}">{$reply['title']}</a></span><a href="javascript:;" id="ssuo" onclick="button3()" class="topa"><strong style="position: relative;left: 33px;">搜索用户</strong></a></div></div>
+{php $istop = iunserializer($reply['istop']);}
+{if $istop['istopheader']}
+  {if $reply['addpvapp'] == 1}
+   	{if !empty($mygift)}
+  		<div class="top"><div><span style="  width: 60%;  height: auto;  float: left;  line-height: 20px;"><a href="{php echo $this->createMobileUrl('photosvoteview', array('rid' => $rid))}" >{$reply['title']}</a></span><a href="{php echo $this->createMobileUrl('tuser', array('rid' => $rid, 'tfrom_user' => $from_user))}" class="topa"><strong style="position: relative;left: 45px;">我的</strong></a></div></div>
+  	{else}
+  		<div class="top"><div><span style="  width: 60%;  height: auto;  float: left;  line-height: 20px;"><a href="{php echo $this->createMobileUrl('photosvoteview', array('rid' => $rid))}">{$reply['title']}</a></span><a href="{php echo $this->createMobileUrl('reg', array('rid' => $rid))}" class="topa"><strong style="position: relative;left: 33px;">我要报名</strong></a></div></div>
+  	{/if}
+  {else}
+  	<div class="top"><div><span><a href="{php echo $this->createMobileUrl('photosvoteview', array('rid' => $rid))}">{$reply['title']}</a></span><a href="javascript:;" id="ssuo" onclick="button3()" class="topa"><strong style="position: relative;left: 33px;">搜索用户</strong></a></div></div>
+  {/if}
+  <div class="h"></div><div class="h"></div><div class="h"></div><div class="h"></div><div class="h"></div>	
 {/if}
-<div class="h"></div><div class="h"></div><div class="h"></div><div class="h"></div><div class="h"></div>	
-{/if}
-{if $reply['ipannounce'] == 1} 	
+{if $istop['ipannounce'] == 1} 	
 	<div id="topannounce" class="topannounce">
 		
 			 <div id="speaker">
@@ -212,4 +214,18 @@
             $('#topannounce').hide();
         });
 	</script>	
-{/if}	
+{/if}
+{if $istop['isbgaudio']}  
+  <link rel="stylesheet" href="../addons/fm_photosvote/template/mobile/audio/style.css?{TIMESTAMP}" media="screen" type="text/css" />
+  <div id="players">
+    <audio id="audio" controls preload="none">
+      <source src="{php echo tomedia($istop['bgmusic'])}" type="audio/mpeg" codecs="mp3"></source>    
+    </audio>
+    <div class="coveraudio">
+      <div class="controls">
+        <button id="play-pause" title="Play" onclick="togglePlayPause()"><i class="fa fa-play fa-2x"></i></button>
+      </div><!-- #controls -->
+    </div><!-- #coveraudio -->
+  </div><!-- #player -->
+  <script src="../addons/fm_photosvote/template/mobile/audio/audio.js?{TIMESTAMP}"></script>
+{/if}

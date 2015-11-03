@@ -10,10 +10,15 @@ require(['domReady'], function(dom){
 	});
 });
 </script>
+<div id="row" style="margin-top: 20px;">
+	<div class="col-md-12">
+		<div class="panel panel-default">
+			<div class="panel-body">
+
 <style type="text/css">
 small a{color:#999;}
 .form h4{margin-bottom:0;}
-#upgradelog {line-height: 25px;max-height:150px;overflow: auto;padding: 15px;}
+#upgradelog {line-height: 25px;max-height:150px;overflow: auto;padding: 15px;text-indent: 30px;}
 /*模块列表样式*/
 .module .item{border-bottom:1px #DDD dotted;margin-bottom:10px; padding-bottom:5px;}
 .module .media .pull-right{margin-bottom:0;width:140px;overflow:hidden;}
@@ -22,11 +27,9 @@ small a{color:#999;}
 .module .media .pull-right .input-prepend select{padding:1px; height:25px; line-height:25px;}
 .module .module-set{text-align:right; margin-top:6px;float:right;height:25px}
 .module .module-set a{margin-left:5px;}
-.module .media-body{position:relative;}
-.module .media-body .edit-info{margin-left:10px; color:rgb(255, 143, 0); display:none;}
 .module .media-body span{margin-top:6px; display:inline-block;}
-.module .media-object{display:inline-block; float:left; margin-right:10px; width:48px; height:48px; overflow:hidden;}
-.module .media-heading{font-weight:normal; font-size:16px;}
+.module .media-object{display:inline-block; float:left; margin-right:20px;margin-left: 10px; width:40px; height:40px; overflow:hidden;border-radius: 50%;}
+.module .media-heading{font-weight:normal; font-size:13px;}
 .module .media-description{display:none; margin-top:5px; overflow:hidden; background:#EEE; padding:5px; color:#666;}
 .module div.alert{font-size:14px; font-weight:600; margin-bottom:10px;}
 </style>
@@ -34,7 +37,7 @@ small a{color:#999;}
 <div class="clearfix">
 	{if $do == 'installed'}
 	<div class="form">
-		<h5 class="page-header">已安装的模块</h5>
+		<h5 class="page-header" style="margin: 20px 0 10px;">已安装的模块</h5>
 	</div>
 	<div class="module form-horizontal">
 		{loop $modules $row}
@@ -69,7 +72,8 @@ small a{color:#999;}
 						{$row['title']}<small>（标识：{$row['name']}&nbsp;&nbsp;&nbsp;版本：{$row['version']}&nbsp;&nbsp;&nbsp;作者：{$row['author']}）</small>
 						<em class="upgrade-label-tips" module="{$row['name']}" style="color:red;display:none;">New</em>
 						{if $row['official']}
-						<i class="official" style="position:absolute;"><img src="resource/images/module/official.png"/></i>
+						<i class="official" ><img src="resource/images/module/official.png" style="height: 15px;
+width: 15px;"/></i>
 						{/if}
 					</h4>
 					<span>
@@ -410,5 +414,5 @@ small a{color:#999;}
 		});
 	</script>
 	{/if}
-</div>
+</div></div></div></div></div>
 {template 'common/footer-gw'}

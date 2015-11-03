@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{if $item['type']=='0'}出租{elseif $item['type']=='1'}求租{elseif $item['type']==2}出售{elseif $item['type']==3}求购{/if}{$item['title']} - 本地时尚生活互动平台</title>
-<meta name="keywords" content="本地时尚生活互动平台 招聘" />
+<meta name="keywords" content="本地时尚生活互动平台二手房" />
 <meta name="description" content="{$item['title']}{if $item['type']=='0'}出租{elseif $item['type']=='1'}求租{elseif $item['type']==2}出售{elseif $item['type']==3}求购 {/if}" />
 <link href="../addons/amouse_house/ui/css/bootstrap.css?v=20150314" rel="stylesheet">
 <link href="../addons/amouse_house/ui/css/main.css?v=20150314" rel="stylesheet">
@@ -134,7 +134,6 @@ body{
         color: #000000;
     }
     a:hover{text-decoration: none;}
-
 </style>
 
 <header class="header" style="">
@@ -148,7 +147,6 @@ body{
     </a>
 </div>
 </header>
-
 <h4 style="margin-top:50px;margin-bottom: 8px;padding-top:8px;font-size: 16px;color: rgb(3, 3, 3);">
     <img style="width: 40px;margin-top: -6px;" src="../addons/amouse_house/ui/images/zhiwei.png" >
     <span style="color:green;">
@@ -156,52 +154,59 @@ body{
     </span>
     {$item['title']}
 </h4>
-
 <ul class="selfinfo"  style="background: white;margin: 0 2%;width: 94%;padding: 0 0 8px 2%;border: 1px solid rgb(223, 226, 223);">
     {if $item['type']==2||$item['type']==3}
     <li>总价：<span>{$item['price']} 万元</span></li>
     {else}
     <li>租金：<span>{$item['price']}元/月</span></li>
     {/if}
-
     <li>面积：<span>{$item['area']}平米</span></li>
     <li>楼层：<span>{$item['floor']}</span></li>
     <li>户型：<span>{$item['house_type']}</span></li>
+    {if $item['brokerage']}
+    <li>佣金：<span>{$item['brokerage']}</span></li>
+    {/if}
     <li>发布：<span>{php echo date('Y-m-d',$item['createtime'])}</span></li>
 </ul>
 
 <ul class="selfinfo"  style="background: white;margin: 0 2%;width: 94%;padding: 0 0 8px 2%;border: 1px solid rgb(223, 226, 223);">
-    <li>电话：<a href="tel:{$item['phone']}"><span>{$item[phone]}</span></a></li>
-    <li>联系人：<span>{$item[contacts]}</span>
-    </li>
+    {if $setting&&$setting['isshow']==0}
+    <li>电话：<a href="tel:{$setting['jjrmobile']}"><span>{$setting[jjrmobile]}</span></a> </li>
+    <li>经纪人：<span>{$setting['broker']}</span> </li>
+    {else}
+        <li>电话：<a href="tel:{$item['phone']}"><span>{$item[phone]}</span></a></li>
+        <li>联系人：<span>{$item['contacts']}</span> </li>
+    {/if}
 </ul>
 
 <div  class="well" style="padding: 0px;margin: 10px 0 20px 0px;float: left;background:#f5f5f6;box-shadow: none;border: none;width: 100%;">
-    <h4 style="padding-bottom: 8px;color: rgb(91,170,0);"> <img style="width: 40px;margin-top: -6px;" src="../addons/amouse_house/ui/images/selfintro.png" >
+    <h4 style="padding-bottom: 8px;color: rgb(91,170,0);">
+        <img style="width: 40px;margin-top: -6px;" src="../addons/amouse_house/ui/images/selfintro.png" >
         {if $item['type']=='0'||$item['type']=='1'}租房{else}房产{/if}描述
     </h4>
     <div style=" padding: 8px 16px; background: white; margin: 0 2%;border: 1px solid rgb(223, 226, 223);"> {$item[introduction]}<br/>
-        {if !empty($item['thumb1'])}<img src="{php echo strpos($item['thumb1'], 'http://') === FALSE ? ($_W['attachurl']. $item['thumb1']): $item['thumb1']}" style="height: 100px;width: 100px;"/>   {/if}
+        {if !empty($item['thumb1'])}
+        <img  src="{php echo strpos($item['thumb1'], 'http://') === FALSE ? ($_W['attachurl']. $item['thumb1']): $item['thumb1']}" style="height: 100px;width: 100px;"/>
+        {/if}
+        &nbsp;&nbsp;{if !empty($item['thumb2'])}<img id="example2" src="{php echo strpos($item['thumb2'], 'http://') === FALSE ? ($_W['attachurl']. $item['thumb2']): $item['thumb2']}" style="height: 100px;width: 100px;"/> {/if}
 
-        {if !empty($item['thumb2'])}<img src="{php echo strpos($item['thumb2'], 'http://') === FALSE ? ($_W['attachurl']. $item['thumb2']): $item['thumb2']}" style="height: 100px;width: 100px;"/> {/if}
+        &nbsp;&nbsp;{if !empty($item['thumb3'])}<img src="{php echo strpos($item['thumb3'], 'http://') === FALSE ? ($_W['attachurl']. $item['thumb3']) : $item['thumb3']}" style="height: 100px;width: 100px;"/> {/if}
 
-        {if !empty($item['thumb3'])}<img src="{php echo strpos($item['thumb3'], 'http://') === FALSE ? ($_W['attachurl']. $item['thumb3']) : $item['thumb3']}" style="height: 100px;width: 100px;"/> {/if}
-
-        {if !empty($item['thumb4'])}<img src="{php echo strpos($item['thumb4'], 'http://') === FALSE ? ($_W['attachurl']. $item['thumb4']) : $item['thumb4']}" style="height: 100px;width: 100px;"/>{/if}
+        &nbsp;&nbsp;{if !empty($item['thumb4'])}<img src="{php echo strpos($item['thumb4'], 'http://') === FALSE ? ($_W['attachurl']. $item['thumb4']) : $item['thumb4']}" style="height: 100px;width: 100px;"/>{/if}
 
     </div>
 </div>
 <div id="mess_share" style="margin: auto;width: 100%;float: left;">
-    <div id="share_1"  style="width: 30%;float:left;margin: 0 5% 0 15%;">
+    <div id="share_1"  style="width: 25%;float:left;margin: 0 5% 0 15%;">
         {if $item['type']=='0'||$item['type']=='1'}
         <button class="button2 button"  onclick="location.href='{php echo $this->createMobileUrl('new',array('a'=>'rent','openid'=>$item['openid']),true)}'">发布房产</button>
         {else}
         <button class="button2 button" onclick="location.href='{php echo $this->createMobileUrl('new',array('a'=>'house','openid'=>$item['openid']),true)}'">发布房产</button>
         {/if}
     </div>
-    <div id="share_2"  style="width: 30%;float: left;margin: 0 15% 0 5%;">
+    <div id="share_2"  style="width: 35%;float: left;margin: 0 15% 0 5%;">
         <button   class="button2 button" title="{if empty($setting['copyright'])}{$_W['account']['name']} {else} {$setting['copyright']}{/if}"  onclick="location.href='{$setting[guanzhuUrl]}'">
-        关注{if empty($setting['copyright'])}{php echo cutstr($_W['account']['name'],3)}{else} {php echo cutstr($setting['copyright'],3)}{/if}
+        {if empty($setting['copyright'])}{$_W['account']['name']}{else} {$setting['copyright']}{/if}
         </button>
     </div>
     <div class="clear"></div>
@@ -225,7 +230,8 @@ body{
 <div class="hidden" id="weixinshare">
     <img src="../addons/amouse_house/ui/images/xitieshare.png"/>
 </div>
-<script src="../addons/amouse_house/ui/js/jquery.js?v=20150313" language="javascript"></script>
+<script src="../addons/amouse_house/ui/js/jquery.min.js?v=20150313" language="javascript"></script>
+
 <script type="text/javascript">
     $(".button").bind("click", function(){
         $(".button").each(function(){
@@ -256,31 +262,36 @@ body{
 </div>
 </body>
 <script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
-<script language='javascript'>
-    <?php
-      $jssdk = new JSSDK();
-      $signPackage = $jssdk->GetSignPackage();
-    ?>
+{php $signPackage=$_W['account']['jssdkconfig'];}
+<script>
     wx.config({
-        debug:false,
-        appId: "{$_W['account']['appid_share']}",
-        timestamp: {$signPackage["timestamp"]},
-        nonceStr: '{$signPackage["nonceStr"]}',
-        signature: '{$signPackage["signature"]}',
-        jsApiList: [
-            'onMenuShareTimeline','onMenuShareAppMessage','onMenuShareWeibo'
-        ]
+        debug: false,
+        appId: '<?php echo $signPackage["appId"];?>',
+        timestamp: '<?php echo $signPackage["timestamp"];?>',
+        nonceStr: '<?php echo $signPackage["nonceStr"];?>',
+        signature: '<?php echo $signPackage["signature"];?>',
+        jsApiList: ['checkJsApi','onMenuShareTimeline','onMenuShareAppMessage','onMenuShareQQ','onMenuShareWeibo']
     });
-    var shareMeta = {
-        imgUrl:"{php echo $_W['siteroot'];}addons/amouse_house/icon.jpg",
-        link :  "{$url}",
-        desc : "{$item['title']}{$item['floor']}",
-        title : "{$item['title']}{$item['floor']}{$item['introduction']}"
-    };
-    wx.ready(function(){
-        wx.onMenuShareTimeline(shareMeta);
-        wx.onMenuShareAppMessage(shareMeta);
-        wx.onMenuShareWeibo(shareMeta);
+
+    wx.ready(function () {
+        var shareData = {
+            imgUrl:"{php echo $_W['siteroot'];}addons/amouse_house/icon.jpg",
+            link :  "{$url}",
+            desc : "{$item['title']}{$item['floor']}",
+            title : "{$item['title']}{$item['floor']}{$item['introduction']}",
+            trigger: function (res) {},
+            complete: function (res) {},
+            success: function (res) {
+            },
+            cancel: function (res) {
+            },
+            fail: function (res) {
+            }
+        };
+        wx.onMenuShareAppMessage(shareData);
+        wx.onMenuShareQQ(shareData);
+        wx.onMenuShareWeibo(shareData);
+        wx.onMenuShareTimeline(shareData);
     });
 </script>
 </html>

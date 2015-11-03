@@ -1,29 +1,12 @@
 
-<div class="navbar-fixed-bottom">
-	
-	<div class="top-bar">
-		<a href="{php echo $this->createMobileUrl('home')}">
-			<i class="glyphicon glyphicon-home"></i>
-			<br>首页
-		</a>
-		<a href="{php echo $this->createMobileUrl('announcement',array('op' => 'display'))}">
-			<i class="fa fa-envelope"></i>
-			<br>通知
-		</a>
+<ul class="nav nav-bardown nav-justified" style="z-index:10;height:45px;">
+    <li><a href="{php echo $this->createMobileUrl('home')}"><i class="glyphicon glyphicon-home" style='font-size:20px;'></i> <span>首页</span></a></li>
+    <li><a href="{php echo $this->createMobileUrl('announcement',array('op' => 'display'))}" class="active"><i class="fa fa-envelope" style='font-size:20px;'></i> <span>通知</span></a></li>
+    <li><a href="tel:{php echo $this->module['config']['tel'];}"><i class="glyphicon glyphicon-phone-alt" style='font-size:20px;'></i> <span>电话</span></a></li>
+    <li><a href="{php echo $this->createMobileUrl('member')}"><i class="fa fa-user" style='font-size:20px;'></i> <span>我的</span></a></li>
+</ul>
 
-		<a href="tel:{php echo $this->module['config']['tel'];}">
-			<i class="glyphicon glyphicon-phone-alt"></i>
-			<br>电话
-		</a>
-	
-		<a href="{php echo $this->createMobileUrl('member')}">
-			<i class="glyphicon glyphicon-user"></i>
-			<br>我
-		</a>
-	</div>
-	
-	
-</div>
+
 
 		{if !empty($_W['quickmenu']['menus']) && empty($_W['quickmenu']['disabled'])}
 			<?php include_once template($_W['quickmenu']['template'], TEMPLATE_INCLUDEPATH);?>

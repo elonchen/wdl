@@ -54,6 +54,13 @@
                     	<input type="text" class="form-control" name="pretotal" value="{if !empty($activity['pretotal'])}{$activity['pretotal']}{else}1{/if}" />
                     </div>
                 </div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">预约总人数</label>
+					<div class="col-xs-12 col-sm-9">
+						<input type="text" class="form-control" name="alltotal" value="{if !empty($activity['alltotal'])}{$activity['alltotal']}{else}1{/if}" />
+						<span class="help-block">预约总人数限制，超过该人数活动将自动结束</span>
+					</div>
+				</div>
                 <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-2 control-label">状态</label>
                     <div class="col-xs-12 col-sm-9">
@@ -64,13 +71,13 @@
                 <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-2 control-label">开始时间</label>
                     <div class="col-xs-12 col-sm-9">
-                  		{php echo tpl_form_field_date('starttime', $activity['starttime'], true)}
+                  		{php echo tpl_form_field_date('starttime', date('Y-m-d H:i', $activity['starttime']), true)}
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-2 control-label">结束时间</label>
                     <div class="col-xs-12 col-sm-9">
-                 		{php echo tpl_form_field_date('endtime', $activity['endtime'], true)}
+                 		{php echo tpl_form_field_date('endtime', date('Y-m-d H:i', $activity['endtime']), true)}
                     </div>
                 </div>
                 <div class="form-group">
@@ -86,6 +93,12 @@
              			<input type="text" class="form-control" name="noticeemail" value="{$activity['noticeemail']}" />
                     </div>
                 </div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">接收通知手机号</label>
+					<div class="col-xs-12 col-sm-9">
+						<input type="text" class="form-control" name="mobile" value="{$activity['mobile']}" maxlength="11" />
+					</div>
+				</div>
             </div>
         </div>
         <div class="panel panel-default">
@@ -126,7 +139,7 @@
 									{/loop}
 								</select>
 								<input type="hidden" name="value[]" value="{$r['value']}"/>
-								<input type="hidden" name="desc[]" value="{$r['desc']}"/>
+								<input type="hidden" name="desc[]" value="{$r['description']}"/>
 								<input type="hidden" name="essentialvalue[]" value="{if $r['essential']}true{else}false{/if}"/>
 							</td>
 							<td>
@@ -200,6 +213,7 @@
 		$('#re-items').find(':text,:checkbox,select').attr('disabled', 'disabled');
 		{/if}
 	});
+
 	function setValues(o) {
 		var v = $(o).parent().prev().find(':hidden[name="value[]"]').val();
 		v = decodeURIComponent(v);
@@ -217,6 +231,7 @@
 		$('#dialog').modal({keyboard: false});
 		currentItem = o;
 	}
+
 	function addItem() {
 		var html = '' + 
 				'<tr>' +
@@ -225,13 +240,19 @@
 					'<td style="text-align:center;"><input name="essential[]" type="checkbox" title="必填项" /></td>' +
 					'<td>' +
 						'<select name="type[]" class="form-control">' +
-						{loop $types $k $v}'<option value="{$k}">{$v}</option>' + {/loop}
+						{loop $types $k $v}
+						'<option value="{$k}">{$v}</option>' +
+						{/loop}
 						'</select>' +
 					'</td>' +
 					'<td>' +
 						'<select name="bind[]" class="form-control">' +
 							'<option value="">不关联粉丝数据</option>' +
-						{loop $fields $k $v}{if !empty($v)}'<option value="{$k}">{$v}</option>' + {/if}{/loop}
+							{loop $fields $k $v}
+							{if !empty($v)}
+								'<option value="{$k}">{$v}</option>' +
+							{/if}
+							{/loop}
 						'</select>' +
 						'<input type="hidden" name="value[]" />' +
 						'<input type="hidden" name="desc[]" />' +
@@ -244,14 +265,17 @@
 				'</tr>';
 		$('#re-items').append(html);
 	}
+
 	function deleteItem(o) {
 		$(o).parent().parent().remove();
 	}
+
     function message(msg){
         require(['util'],function(util){
             util.message(msg);
         });
     }
+
 	function validate() {
 		if($.trim($(':text[name="activity"]').val()) == '') {
 			message('必须填写预约活动标题.', '', 'error');
@@ -304,5 +328,7 @@
 		});
 		return true;
 	}
+
 </script>
+
 {template 'common/footer'}

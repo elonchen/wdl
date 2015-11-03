@@ -3,7 +3,7 @@
  * 弹死你模块定义
  *
  * @author 华轩科技
- * @url 
+ * @url http://bbs.wdlcms.com/
  */
 defined('IN_IA') or exit('Access Denied');
 
@@ -11,10 +11,10 @@ class Hx_alertModule extends WeModule {
 
 	public $reply = 'hx_alert_reply';
 	public $list = 'hx_alert_list';
-	
+
 	public function fieldsFormDisplay($rid = 0) {
 		global $_W;
-		if (!empty($rid)) {
+        if (!empty($rid)) {
             $reply = pdo_fetch("SELECT * FROM " . tablename($this->reply) . " WHERE rid = :rid ORDER BY `id` DESC", array(':rid' => $rid));
         }
         include $this->template('form');

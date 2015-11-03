@@ -1,5 +1,8 @@
 {template 'common/header'}
 <div class="main">
+<div class="alert alert-danger">
+		<i class="fa fa-exclamation-triangle"></i> 需要认证公众号才可以使用，否则无法录音，点击停止录音无效！！
+				</div>
 	<form class="form-horizontal form" id="" action="" method="post">
 		<div class="panel panel-default">
 			<div class="panel-heading">
@@ -8,6 +11,7 @@
 			<div class="panel-body">
 				
 				<div class="form-group">
+				
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">引导关注素材链接</label>
 					<div class="col-sm-8">
 						<input class="form-control" name="subscribe_url" type="text" value="{$settings['subscribe_url']}">&nbsp;&nbsp;设置一条引导关注的素材链接引导,用户关注公众号。例: <a href="javascript:;" data-toggle="modal" data-target="#subscribeurl">点击查看</a>

@@ -1,13 +1,19 @@
 {template 'common/header'}
 <div class='container' style='padding:0 5px 10px;margin:0;width:100%'>
 <ul class="nav nav-tabs">
+    <li {if $op == 'post' && empty($id)}class="active"{/if}><a href="{php echo $this->createWebUrl('house', array('op' => 'post'));}">添加二手房</a> </li>
+    <li {if $op == 'display'}class="active"{/if}><a href="{php echo $this->createWebUrl('house', array('op' => 'display'));}">房产管理</a> </li>
+    {if !empty($id) && $op == 'post'} <li class="active">  <a href="{php echo $this->createWebUrl('house',array('op'=>'post','id'=>$id));}">编辑二手房</a> </li> {/if}
+</ul>
+    {if $op == 'display'}
+<ul class="nav nav-tabs">
     <li {if $op == 'display' && $status == ''}class="active"{/if}><a href="{php echo $this->createWebUrl('house', array('op' => 'display'))}">全部房产</a></li>
     <li {if $op == 'display' && $status == '1'}class="active"{/if}><a href="{php echo $this->createWebUrl('house', array('op' => 'display', 'status' => 1))}">已审核</a></li>
     <li {if $op == 'display' && $status == '0'}class="active"{/if}><a href="{php echo $this->createWebUrl('house', array('op' => 'display', 'status' =>0))}">待确认</a></li>
 </ul>
+    {/if}
 
 {if $op =='display'}
-
 <div class="panel panel-info">
     <div class="panel-heading">筛选</div>
     <div class="panel-body">
@@ -52,10 +58,6 @@
         </form>
     </div>
 </div>
-
-<!--<a href="{php echo $this->createWebUrl('export')}" title="导出数据" class="btn btn-mini btn-primary">
-    <i class="fa fa-print"></i>
-</a>-->
 
 <div style="padding:15px;">
     <form id="form2" class="form-horizontal" method="post">
@@ -108,9 +110,13 @@
                         <i class="fa fa-chevron-down"></i>
                     </a>
                     {/if}
+                    {if $_W['isfounder']}
+                    <a href="{php echo $this->createWebUrl('house', array('op' => 'post', 'id' => $v['id']))}" title="编辑" class="btn btn-default btn-sm"><i class="fa fa-edit"></i></a>
+                    {/if}
                     <a onclick="return confirm('此操作不可恢复，确认吗？'); return false;" href="{php echo $this->createWebUrl('house', array('id' => $v['id'],'op'=>'del'))}" title="删除" class="btn btn-default btn-sm">
                         <i class="fa fa-times"></i>
                     </a>
+
                 </td>
             </tr>
             {/loop}
@@ -148,154 +154,148 @@
     </script>
 
 </div>
-{elseif $op == 'detail'}
-<div class="panel panel-success">
-    <div class="panel-heading">主要业务 >> 嗨修保养 >> {if !empty($id) && $op == 'detail'} 查看{/if}订单</div>
-</div>
-<div class="main">
-    <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data" onsubmit="return validate(this);">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                操作订单
-            </div>
-            <div class="panel-body">
-                <input type="hidden" name="id" value="{$item[id]}">
+    {elseif $op == 'post'}
+    <div class="main">
+        <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data" onsubmit="return validate(this);">
+            <div class="panel panel-default">
+                <div class="panel-heading"><h4>编辑房产</h4></div>
+                <div class="panel-body">
+                    <input type="hidden" name="id" value="{$item[id]}" >
+                    <input type="hidden" name="type" value="{$item[type]}" >
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">
+                            <span style='color:red'>*</span>房产名称：</label>
+                        <div class="col-sm-4">
+                            <input type="text" name="title" id="title" class="form-control" value="{$item['title']}" />
+                        </div>
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">
+                            <span style='color:red'>*</span>联系人：</label>
+                        <div class="col-sm-4">
+                            <input type="text" name="contacts" id="contacts" class="form-control" value="{$item['contacts']}" />
+                        </div>
+                    </div>
 
-                <div class="form-group">
-                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">订单号:</label>
-                    <div class="col-sm-4">
-                        <span class="label label-info">{$item['ordersn']} </span>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">
+                            联系电话：
+                        </label>
+                        <div class="col-sm-4">
+                            <input type="text" name="phone" class="form-control" value="{$item['phone']}"   />
+                        </div>
+                        {if $item['type']=='0'||$item['type']=='1'}
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">
+                            租金：
+                        </label>
+                        {else}
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">
+                            总价：
+                        </label>
+                        {/if}
+                        <div class="col-sm-4">
+                            <input type="text" name="price" class="form-control" value="{$item['price']}"  />
+                        </div>
                     </div>
-                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">客户姓名:</label>
-                    <div class="col-sm-4">
-                        <span class="label label-info">{$item['username']} </span>
-                    </div>
-                </div>
-
-
-                <div class="form-group">
-                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">手机号:</label>
-                    <div class="col-sm-4">
-                        <span class="label label-info">{$item['mobile']} </span>
-                    </div>
-                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">车辆品牌:</label>
-                    <div class="col-sm-4">
-                        <span class="label label-info">{$brandtitle} </span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">车系:</label>
-                    <div class="col-sm-4">
-                        <span class="label label-info"> {$series} </span>
-                    </div>
-                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">年款:</label>
-                    <div class="col-sm-4">
-                        <span class="label label-info">{$style}</span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">套餐:</label>
-                    <div class="col-sm-9">
-                        <span class="label label-info">{$meal['title']}--{$meal['content']}</span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">参与活动:</label>
-                    <div class="col-sm-9">
-                        <span class="label label-info">{$activity['title']}--{$activity['content']}</span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">总价:</label>
-                    <div class="col-sm-4">
-                        <span class="label label-info">{$item['price']} 元</span>
-                    </div>
-                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">订单状态:</label>
-                    <div class="col-sm-4">
-                <span class="label label-info">
-                  {if $item['status'] == 0}<span class="label label-info">待确认</span>{/if}
-                  {if $item['status'] == 1}<span class="label label-info">已确认</span>{/if}
-                  {if $item['status'] == -1}<span class="label label-success">已关闭</span>{/if}
-                </span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">预约时间:</label>
-                    <div class="col-sm-4">
-                        <select name="appointmenttime" id="appointmenttime" class="form-control">
-                            {loop $ret $key $value}
-                            <option {if $item['appointmenttime']==$value}selected="selected"{/if} value="{$value}">{$value}</option>
-                            {/loop}
-                        </select>
-                    </div>
-                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">预约时段:</label>
-                    <div class="col-sm-4">
-                        <select name="timezone" id="timezone" class="form-control">
-                            <option {if $item[timezone]=='9:00-12:00'}selected="selected"{/if} value="9:00-12:00">9:00-12:00</option>
-                            <option {if $item[timezone]=='12:00-17:0'}selected="selected"{/if}value="12:00-17:00">12:00-17:00</option>
-                            <option {if $item['timezone']=='17:30-21:00'}selected="selected"{/if}value="12:00-17:00">17:30-21:00</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">车牌号:</label>
-                    <div class="col-sm-4">
-                        <span class="label label-info"> {$item['carprefix']}{$item['carNo']} </span>
-                    </div>
-                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">微信昵称:</label>
-                    <div class="col-sm-4">
-                        <span class="label label-info">{$nicknames['nickname']}</span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">
-                        <span style='color:red'>*</span>指定上门技师:
-                    </label>
-                    <div class="col-sm-4">
-                        <input type="text" name="jsname" class="form-control" value="{$item['jsname']}" />
-                    </div>
-                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">
-                        客户预定区域:
-                    </label>
-                    <div class="col-sm-4">
-                        <span class="label label-info">{$item['residecity']}{$item['residedist']} </span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">客户地址:</label>
-                    <div class="col-sm-4">
-                        <span class="label label-info">{$item['address']} </span>
-                    </div>
-                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">保养类别:</label>
-                    <div class="col-sm-4">
-                        <span class="label label-info">{if $meal['type']==1}小保养{else}大保养{/if} </span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
-                    <input type="hidden" name="id" value="{$item[id]}">
-                    <input type="hidden" name="token" value="{$_W['token']}" />
-                    <div class="col-sm-4">
-                        {if $item['status'] != 1}
-                        <button type="submit" class="btn btn-primary" onclick="return confirm('确认完成此订单吗？'); return false;" name="finish" onclick="" value="yes">确认订单</button>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        <button type="submit" class="btn  label-danger" name="close" onclick="return confirm('确认关闭此订单，确认吗？'); return false;" value="关闭">关闭订单</button>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">
+                            面积：
+                        </label>
+                        <div class="col-sm-4">
+                            <input type="text" name="area" class="form-control" value="{$item['area']}"   />
+                        </div>
+                        {if $item['type']=='2'||$item['type']=='3'}
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">
+                            每平方：
+                        </label>
+                        <div class="col-sm-4">
+                            <input type="text" name="square_price" class="form-control" value="{$item['square_price']}"   />
+                        </div>
                         {/if}
                     </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">
+                            户型：
+                        </label>
+                        <div class="col-sm-4">
+                            <input type="text" name="house_type" class="form-control" value="{$item['house_type']}"   />
+                        </div>
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">
+                            朝向：
+                        </label>
+                        <div class="col-sm-4">
+                            <input type="text" name="orientation" class="form-control" value="{$item['orientation']}"   />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">
+                            楼层：
+                        </label>
+                        <div class="col-sm-4">
+                            <input type="text" name="floor" class="form-control" value="{$item['floor']}"   />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">详细描述:</label>
+                        <div class="col-sm-9">
+                            <textarea id="introduction" name="introduction" class="form-control" cols="60">{$item['introduction']}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">所在地区</label>
+                        <div class="col-sm-9 col-xs-12">
+                            {php echo tpl_form_field_district('district',array('province'=>$item['location_p'],'city'=>$item['location_c'],'district'=>$item['location_a']))}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">公司地址</label>
+                        <div class="col-sm-9 col-xs-12">
+                            <input type="text" id="place" name="place"  class="form-control" value="{$item['place']}">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">公司坐标</label>
+                        <div class="col-sm-9 col-xs-12">
+                            {php echo tpl_form_field_coordinate('baidumap',$item)}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">图片1</label>
+                        <div class="col-sm-9">
+                            {php echo tpl_form_field_image('thumb1', $item['thumb1'])}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">图片2</label>
+                        <div class="col-sm-9">
+                            {php echo tpl_form_field_image('thumb2', $item['thumb2'])}
+
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">图片3</label>
+                        <div class="col-sm-9">
+                            {php echo tpl_form_field_image('thumb3', $item['thumb3'])}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
+                        <div class="col-sm-4">
+                            <input type="hidden" name="id" value="{$item[id]}">
+                            <input type="hidden" name="token" value="{$_W['token']}" />
+                            <input name="submit" type="submit" value="提交" class="btn btn-primary span3" />
+                        </div>
+                    </div>
                 </div>
 
+
             </div>
-    </form>
-</div>
+        </form>
+    </div>
 {/if}
 </div>
-{template 'common/footer'}

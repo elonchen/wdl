@@ -1,7 +1,15 @@
 {template 'common/header'}
 {template 'nav'}
 {php load()->func('tpl')}
-<div class="main">
+<script src="{MODULE_URL}template/js/galleria.js"></script>
+<style type="text/css">
+    #galleria img{
+   display: block; position: relative; left: 50px; top: 30px;
+   height: 0px;
+   width: 0px;
+}
+</style>
+<div class="main" id='list'>
     {if $op == 'post'}
     <ul class="nav nav-tabs">
         <li>
@@ -105,6 +113,29 @@
             </tr>
         </table>
     </form>
+    <div id="galleria"></div>
+    <script>
+    // Load theme
+    Galleria.loadTheme('{MODULE_URL}template/lightbox/galleria.lightbox.js');
+
+    $('#galleria').galleria({
+        data_source: '#list',
+        extend: function() {
+            this.bind(Galleria.LOADFINISH, function(e) {
+                $(e.imageTarget).click(this.proxy(function(e) {
+                    e.preventDefault();
+                    this.next();
+                }))
+            })
+        },
+        keep_source: true,
+        data_config: function(img) {
+            return {
+                description: $(img).next('.caption').html()
+            }
+        }
+    });
+</script>
     {elseif $op == 'display'}
     <ul class="nav nav-tabs">
         <li class="active"><a href="{php echo $this->createWebUrl('repair', array('op' => 'display','regionid'=>$_GPC['regionid']));}">管理</a>

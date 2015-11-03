@@ -44,7 +44,7 @@
 											
 				<li><a href="{php echo $this->createMobileUrl('album')}">车型欣赏</a></li>
 											
-				<li><a href="{php echo $this->createMobileUrl('guanhuai')}">车主关怀</a></li>
+				<li><a href="{php echo murl('mc')}">会员中心</a></li>
 											
 				<li><a href="{php echo $this->createMobileUrl('tool')}">实用小工具</a></li>
 			</ul>
@@ -96,13 +96,7 @@
 			</ul>
 		</div>
 	</section>
-	<footer class="nav_footer">
-		<ul class="box">
-			<li><a href="javascript:history.go(-1);" >返回</a></li>
-			<li><a href="javascript:history.go(1);" >前进</a></li>
-			<li><a href="{php echo $this->createMobileUrl('index',array('op'=>'index'))}">首页</a></li>
-			<li><a href="javascript:location.reload();" >刷新</a></li>
-		</ul>
-	</footer>
+
+	{template 'share'}
 	
 {template 'footer'}

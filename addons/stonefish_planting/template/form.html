@@ -113,19 +113,38 @@
             </div>
         </div>
 		<div class="form-group">
+ 			<label class="col-xs-12 col-sm-3 col-md-2 control-label">抽奖类型</label>
+            <div class="col-sm-9 col-xs-6">
+               	<div class="input-group">
+					<label for="award_type0" class="radio-inline"><input type="radio" name="award_type" value="0" id="award_type0" {if empty($reply) || $reply['award_type'] == 0}checked="true"{/if}/> 越级忽略</label>&nbsp;&nbsp;&nbsp;
+					<label for="award_type1" class="radio-inline"><input type="radio" name="award_type" value="1" id="award_type1" {if $reply['award_type'] == 1}checked="true"{/if}/> 越级保留</label>
+				</div>
+				<div class="help-block">中间生长级别没有查看时是否保留抽奖的机会</div>
+            </div>
+        </div>
+		<div class="form-group">
             <label class="col-xs-12 col-sm-3 col-md-2 control-label">摇奖说明</label>
             <div class="col-sm-9 col-xs-12">
                	<textarea style="height:60px;" id='ticket_information' name="ticket_information" class="form-control" cols="60">{$reply['ticket_information']}</textarea>
             </div>
         </div>
 		<div class="form-group">
- 			<label class="col-xs-12 col-sm-3 col-md-2 control-label">兑奖类型</label>
+ 			<label class="col-xs-12 col-sm-3 col-md-2 control-label">兑奖方式</label>
             <div class="col-sm-9 col-xs-6">
                	<div class="input-group">
-					<label for="tickettype0" class="radio-inline"><input type="radio" name="tickettype" value="1" id="tickettype0" {if empty($reply) || $reply['tickettype'] == 1}checked="true"{/if}/> 后台兑奖</label>&nbsp;&nbsp;&nbsp;
+					<label for="tickettype0" class="radio-inline"><input type="radio" name="tickettype" value="1" id="tickettype0" {if $reply['tickettype'] == 1}checked="true"{/if}/> 后台兑奖</label>&nbsp;&nbsp;&nbsp;
 					<label for="tickettype1" class="radio-inline"><input type="radio" name="tickettype" value="2" id="tickettype1" {if $reply['tickettype'] == 2}checked="true"{/if}/> 店员兑奖</label>&nbsp;&nbsp;&nbsp;
 					{if $stonefish_branch}<label for="tickettype2" class="radio-inline"><input type="radio" name="tickettype" value="3" id="tickettype2" {if $reply['tickettype'] == 3}checked="true"{/if}/> 商家网点兑奖</label>{/if}
 				</div>				
+            </div>
+        </div>
+		<div class="form-group">
+ 			<label class="col-xs-12 col-sm-3 col-md-2 control-label">兑奖类型</label>
+            <div class="col-sm-9 col-xs-6">
+               	<div class="input-group">
+					<label for="duijiangtype1" class="radio-inline"><input type="radio" name="duijiangtype" value="1" id="duijiangtype1" {if $reply['duijiangtype'] == 1}checked="true"{/if}/> 抽中立即减少库存</label>&nbsp;&nbsp;&nbsp;
+					<label for="duijiangtype2" class="radio-inline"><input type="radio" name="duijiangtype" value="2" id="duijiangtype2" {if $reply['duijiangtype'] == 2}checked="true"{/if}/> 兑奖后才减少库存</label>
+				</div>
             </div>
         </div>
 		<div class="form-group">

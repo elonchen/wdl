@@ -1615,7 +1615,7 @@ pre code {
     position: relative;
     min-height: 1px;
     padding-right: 10px;
-    padding-left: 10px
+    padding-left: 11px
 }
 
 .col-xs-1, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9, .col-xs-10, .col-xs-11, .col-xs-12 {
@@ -6738,24 +6738,3 @@ button.close {
         display: none !important
     }
 }
-
-/*new*/
-.page-header2{padding-bottom:9px;margin:30px 10 20px;border-bottom:1px solid #e2e2e2}ul,ol{margin-top:0;margin-bottom:10px}ul ul,ol ul,ul ol,ol ol{margin-bottom:0}
-.page-header2 h4 {
-font-size: 18px;
-}
-.fa2 {
-display: inline-block;
-font: normal normal normal 14px/1 FontAwesome;
-font-size: inherit;
-text-rendering: auto;
--webkit-font-smoothing: antialiased;
--moz-osx-font-smoothing: grayscale;
-transform: translate(0, 0);
-}
-.welcome-container2 .shortcut2 a{display:block;float:left;text-align:center;margin-right:1.2em;padding:8px 5px;width:7em;height:7em;overflow:hidden;color:#333;}
-.welcome-container2 .shortcut2 a:hover{text-decoration:none;background:#eee;border-radius:3px;padding:7px 4px;border:1px solid #d5d5d5;}
-.welcome-container2 .shortcut2 a i{display:block;font-size:3em;margin:.28em .2em;}
-.welcome-container2 .shortcut2 a img{display:block;height:3em;margin:.85em auto;}
-.welcome-container2 .shortcut2 a span{display:block;font-size:1em;overflow:hidden;white-space:nowrap;}
-.welcome-container2 .account2 img{width:6em;height:6em;}

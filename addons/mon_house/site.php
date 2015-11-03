@@ -612,6 +612,15 @@ class Mon_houseModuleSite extends WeModuleSite
         include $this->template("intro");
 
     }
+
+    public function doMobileBookIndexConver() {
+        global $_W, $_GPC;
+        $hid = $_GPC['hid'];
+        $house=$this->findHouse($hid);
+       // $mag_pages=pdo_fetchall("select * from ".tablename(DBUtil::$TABLE_MAGAZINE_PAGE)." where mid=:mid order by page asc ",array(":mid"=>$mid));
+
+        include $this->template("book_index_cover");
+    }
     /**
      * 顾问
      */

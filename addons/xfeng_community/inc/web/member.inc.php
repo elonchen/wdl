@@ -23,9 +23,9 @@ defined('IN_IA') or exit('Access Denied');
 			//显示住户信息
 			$pindex = max(1, intval($_GPC['page']));
 			$psize  = 10;
-			$sql    = "select * from ".tablename("xcommunity_member")."where weid='{$_W['weid']}' $condition and regionid='{$regionid}' LIMIT ".($pindex - 1) * $psize.','.$psize;
+			$sql    = "select * from ".tablename("xcommunity_member")."where weid='{$_W['weid']}' $condition and regionid='{$regionid}' order by id desc LIMIT ".($pindex - 1) * $psize.','.$psize;
 			$list   = pdo_fetchall($sql);
-			$total  = pdo_fetchcolumn('select count(*) from'.tablename("xcommunity_member")."where weid='{$_W['weid']}' $condition and regionid=:regionid",array(':regionid' => $regionid));
+			$total  = pdo_fetchcolumn('select count(*) from'.tablename("xcommunity_member")."where weid='{$_W['weid']}' $condition and regionid=:regionid order by id desc",array(':regionid' => $regionid));
 			$pager  = pagination($total, $pindex, $psize);
 
 	}elseif($op == 'post') {

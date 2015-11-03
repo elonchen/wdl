@@ -1,7 +1,7 @@
 <?php
 
 /**
- * [WeEngine System] Copyright (c) 2013 wdlcms.com
+ * [WeEngine System] Copyright (c) 2013 012wz.com
  */
 defined('IN_IA') or exit('Access Denied');
 define(EARTH_RADIUS, 6371); //地球半径，平均半径为6371km
@@ -21,42 +21,41 @@ class We7_businessModuleProcessor extends WeModuleProcessor {
 					 lat <= '{$point['left-top']['lat']}' AND lng >= '{$point['left-top']['lng']}' AND lng <= '{$point['right-bottom']['lng']}'";
         $result = pdo_fetchall($sql);
 
-        $stores = array();
+        if (empty($result)) {
+            $hintInfo = $this->module['config']['info'] ? $this->module['config']['info'] : '抱歉，系统中的商户不在您附近！';
+            return $this->respText($hintInfo);
+        }
 
         $news = array();
-        if (!empty($result)) {
-            $min = -1;
-            foreach ($result as &$row) {
-                $row['distance'] = $this->getDistance($lat, $lng, $row['lat'], $row['lng']);
-                if ($min < 0 || $row['distance'] < $min) {
-                    $min = $row['distance'];
-                }
+        $min = -1;
+        foreach ($result as &$row) {
+            $row['distance'] = $this->getDistance($lat, $lng, $row['lat'], $row['lng']);
+            if ($min < 0 || $row['distance'] < $min) {
+                $min = $row['distance'];
             }
-            unset($row);
-
-            $temp = array();
-            for ($i = 0; $i < 8; $i++) {
-                foreach ($result as $j => $row) {
-                    if (empty($temp['distance']) || $row['distance'] < $temp['distance']) {
-                        $temp = $row;
-                        $h = $j;
-                    }
-                }
-                if (!empty($temp)) {
-                    $news[] = array(
-                        'title' => $temp['title'] . '(距' . $temp['distance'] . '米)',
-                        'description' => cutstr(strip_tags($temp['content']), 300),
-                        'picurl' => $_W['attachurl'] . $temp['thumb'],
-                        'url' => $this->createMobileUrl('detail', array('id' => $temp['id'])),
-                    );
-                    unset($result[$h]);
-                    $temp = array();
-                }
-            }
-            return $this->respNews($news);
-        } else {
-            return $this->respText('抱歉，系统中的商户不在您附近！');
         }
+        unset($row);
+
+        $temp = array();
+        for ($i = 0; $i < 8; $i++) {
+            foreach ($result as $j => $row) {
+                if (empty($temp['distance']) || $row['distance'] < $temp['distance']) {
+                    $temp = $row;
+                    $h = $j;
+                }
+            }
+            if (!empty($temp)) {
+                $news[] = array(
+                    'title' => $temp['title'] . '(距' . $temp['distance'] . '米)',
+                    'description' => cutstr(strip_tags($temp['content']), 300),
+                    'picurl' => $_W['attachurl'] . $temp['thumb'],
+                    'url' => $this->createMobileUrl('detail', array('id' => $temp['id'])),
+                );
+                unset($result[$h]);
+                $temp = array();
+            }
+        }
+        return $this->respNews($news);
     }
 
     /**

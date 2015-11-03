@@ -22,6 +22,10 @@
 	{if $_GPC['do'] == 'adv'}
 		<li {if $_GPC['op'] == 'post'}class="active"{/if}><a href="{php echo $this->createWebUrl('adv', array('rid' => $rid, 'op' => 'post' ))}">添加赞助商</a></li>
 	{/if}
+	<li {if $_GPC['do'] == 'fmqf' && $_GPC['op'] <> 'post'}class="active"{/if}><a href="{php echo $this->createWebUrl('fmqf', array('rid' => $rid))}">群发</a></li>
+	{if $_GPC['do'] == 'fmqf'}
+		<li {if $_GPC['op'] == 'post'}class="active"{/if}><a href="{php echo $this->createWebUrl('fmqf', array('rid' => $rid, 'op' => 'post' ))}">添加群发</a></li>
+	{/if}
 	<li {if $_GPC['do'] == 'iplist'}class="active"{/if}><a href="{php echo $this->createWebUrl('iplist', array('rid' => $rid))}">禁止ip设置</a></li>
 	<li {if $_GPC['do'] == 'announce'}class="active"{/if}><a href="{php echo $this->createWebUrl('announce', array('rid' => $rid))}">公告</a></li>
 	<li {if $_GPC['do'] == 'index'}class="active"{/if}><a href="{php echo $this->createWebUrl('index', array('rid' => $rid))}">活动首页</a></li>	

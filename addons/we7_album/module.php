@@ -4,7 +4,7 @@
  * 微相册模块定义
  *
  * @author WeEngine Team
- * @url http://www.wdlcms.com
+ * @url http://www.012wz.com
  */
 defined('IN_IA') or exit('Access Denied');
 
@@ -51,21 +51,22 @@ class We7_albumModule extends WeModule {
         //删除规则时调用，这里 $rid 为对应的规则编号
     }
 
-    public function settingsDisplay($settings) {
-       global $_GPC, $_W;
-                                
-       load()->func('tpl');
-        if(checksubmit()) {
+    public function settingsDisplay($settings){
+        global $_GPC, $_W;
+
+        load()->func('tpl');
+        if (checksubmit('submit')) {
             $cfg = $settings;
             $cfg['album']['listtype'] = $_GPC['album']['listtype'];
             $cfg['album']['toppic'] = $_GPC['toppic'];
+            $cfg['album']['status'] = intval($_GPC['status']);
 
-            if($this->saveSettings($cfg)) {
-                message('保存成功', 'refresh');
+            if ($this->saveSettings($cfg)) {
+                message('微相册参数保存成功', 'refresh');
             }
         }
-               
-        include $this->template('setting'); 
+
+        include $this->template('setting');
     }
 
 }

@@ -23,7 +23,7 @@ class Ewei_examModuleSite extends WeModuleSite
 		global $_W;
 		$this->_weid = $_W['uniacid'];
 		$this->_member = exam_get_userinfo();
-		$this->_from_user = $this->_member['username'];
+		$this->_from_user = $_W['fans']['openid'];
 		$this->_set_info = get_ewei_exam_sysset();
 		$init_param = get_init_param();
 		$this->_types_config = $init_param['types_config'];
@@ -551,42 +551,42 @@ class Ewei_examModuleSite extends WeModuleSite
 //
 
 //
-//			$roomtitle = $_GPC['roomtitle'];
-//			$hoteltitle = $_GPC['hoteltitle'];
-//			$condition = '';
-//			$params = array();
-//			if (!empty($hoteltitle)) {
-//				$condition .= ' AND h.title LIKE :hoteltitle';
-//				$params[':hoteltitle'] = "%{$hoteltitle}%";
-//			}
-//			if (!empty($roomtitle)) {
-//				$condition .= ' AND r.title LIKE :roomtitle';
-//				$params[':roomtitle'] = "%{$roomtitle}%";
-//			}
+//            $roomtitle = $_GPC['roomtitle'];
+//            $hoteltitle = $_GPC['hoteltitle'];
+//            $condition = '';
+//            $params = array();
+//            if (!empty($hoteltitle)) {
+//                $condition .= ' AND h.title LIKE :hoteltitle';
+//                $params[':hoteltitle'] = "%{$hoteltitle}%";
+//            }
+//            if (!empty($roomtitle)) {
+//                $condition .= ' AND r.title LIKE :roomtitle';
+//                $params[':roomtitle'] = "%{$roomtitle}%";
+//            }
 //
-//			if (!empty($realname)) {
-//				$condition .= ' AND o.name LIKE :realname';
-//				$params[':realname'] = "%{$realname}%";
-//			}
-//			if (!empty($mobile)) {
-//				$condition .= ' AND o.mobile LIKE :mobile';
-//				$params[':mobile'] = "%{$mobile}%";
-//			}
+//            if (!empty($realname)) {
+//                $condition .= ' AND o.name LIKE :realname';
+//                $params[':realname'] = "%{$realname}%";
+//            }
+//            if (!empty($mobile)) {
+//                $condition .= ' AND o.mobile LIKE :mobile';
+//                $params[':mobile'] = "%{$mobile}%";
+//            }
 
-//			if(!empty($hotelid)){
-//				$condition.=" and o.hotelid=".$hotelid;
-//			}
-//			if(!empty($roomid)){
-//				$condition.=" and o.roomid=".$roomid;
-//			}
+//            if(!empty($hotelid)){
+//                $condition.=" and o.hotelid=".$hotelid;
+//            }
+//            if(!empty($roomid)){
+//                $condition.=" and o.roomid=".$roomid;
+//            }
 
 //
-//			$pindex = max(1, intval($_GPC['page']));
-//			$psize = 20;
-//			$list = pdo_fetchall("SELECT o.*,h.title as hoteltitle,r.title as roomtitle FROM " . tablename('hotel2_order') . " o left join " . tablename('hotel2') .
-//				"h on o.hotelid=h.id left join ".tablename("hotel2_room")." r on r.id = o.roomid  WHERE o.weid = '{$_W['uniacid']}' $condition ORDER BY o.id DESC LIMIT " . ($pindex - 1) * $psize . ',' . $psize,$params);
-//			$total = pdo_fetchcolumn('SELECT COUNT(*) FROM  ' . tablename('hotel2_order') . " o left join " . tablename('hotel2') .
-//				"h on o.hotelid=h.id left join ".tablename("hotel2_room")." r on r.id = o.roomid  WHERE o.weid = '{$_W['uniacid']}' $condition",$params);
+//            $pindex = max(1, intval($_GPC['page']));
+//            $psize = 20;
+//            $list = pdo_fetchall("SELECT o.*,h.title as hoteltitle,r.title as roomtitle FROM " . tablename('hotel2_order') . " o left join " . tablename('hotel2') .
+//                "h on o.hotelid=h.id left join ".tablename("hotel2_room")." r on r.id = o.roomid  WHERE o.weid = '{$_W['uniacid']}' $condition ORDER BY o.id DESC LIMIT " . ($pindex - 1) * $psize . ',' . $psize,$params);
+//            $total = pdo_fetchcolumn('SELECT COUNT(*) FROM  ' . tablename('hotel2_order') . " o left join " . tablename('hotel2') .
+//                "h on o.hotelid=h.id left join ".tablename("hotel2_room")." r on r.id = o.roomid  WHERE o.weid = '{$_W['uniacid']}' $condition",$params);
 
 
 			//$pager = pagination($total, $pindex, $psize);
@@ -602,8 +602,9 @@ class Ewei_examModuleSite extends WeModuleSite
 		$weid = $_W['uniacid'];
 		$types_config = $this->_types_config;
 
-
 		load()->func('file');
+		load()->func('tpl');
+
 		if ($op == 'edit') {
 			//编辑
 			$id = intval($_GPC['id']);
@@ -665,7 +666,6 @@ class Ewei_examModuleSite extends WeModuleSite
 				$insert['thumb'] = $_GPC['thumb'];
 				$insert['isimg'] = $isimg;
 
-				//print_r($_GPC);exit;
 				load()->func('file');
 				if ($isimg == 1 && ($type == 2 || $type == 3)) {
 					$img_items = array();
@@ -705,18 +705,18 @@ class Ewei_examModuleSite extends WeModuleSite
 					pdo_update('ewei_exam_question', $insert, array('id' => $id));
 
 					//排序表
-//					if (!empty($paperid)) {
-//						$paper_question_data['questionid'] = pdo_insertid();
-//						pdo_insert('exam_paper_question', $paper_question_data);
-//					} else {
-//						$order_id = pdo_fetch("select id from " . tablename('ewei_exam_paper_question') . " where questionid=:id limit 1", array(":id" => $id));
-//						if ($order_id) {
-//							pdo_update('exam_paper_question', $paper_question_data, array('questionid' => $id));
-//						} else {
-//							$paper_question_data['questionid'] = $id;
-//							pdo_insert('exam_paper_question', $paper_question_data);
-//						}
-//					}
+//                    if (!empty($paperid)) {
+//                        $paper_question_data['questionid'] = pdo_insertid();
+//                        pdo_insert('exam_paper_question', $paper_question_data);
+//                    } else {
+//                        $order_id = pdo_fetch("select id from " . tablename('ewei_exam_paper_question') . " where questionid=:id limit 1", array(":id" => $id));
+//                        if ($order_id) {
+//                            pdo_update('exam_paper_question', $paper_question_data, array('questionid' => $id));
+//                        } else {
+//                            $paper_question_data['questionid'] = $id;
+//                            pdo_insert('exam_paper_question', $paper_question_data);
+//                        }
+//                    }
 
 				}
 
@@ -794,10 +794,13 @@ class Ewei_examModuleSite extends WeModuleSite
 		} else if ($op == 'deleteFromPaper') {
 			$id = intval($_GPC['id']);
 			$paperid = intval($_GPC['paperid']);
+
 			if (!empty($id) && !empty($paperid)) {
 				pdo_delete("ewei_exam_paper_question", array("questionid" => $id, "paperid" => $paperid));
 				$this->check_paper_full($paperid);
+				//pdo_update("ewei_exam_paper_question",array("paperid" => 0),array("questionid" => $id, "paperid" => $paperid));
 			}
+
 			message("试题已经从该试卷删除!", referer(), "success");
 		} else if ($op == 'delete') {
 			$id = intval($_GPC['id']);
@@ -923,25 +926,20 @@ class Ewei_examModuleSite extends WeModuleSite
 				}
 			}
 		} else {
-			$sql = "";
-			$sql .= " FROM " . tablename('ewei_exam_question') . " q";
-			$sql .= " LEFT JOIN " . tablename('ewei_exam_pool') . " p ON q.poolid = p.id";
-			$sql .= " WHERE q.weid = '{$_W['uniacid']}'";
-
-			$params = array();
+			$where = ' FROM ' . tablename('ewei_exam_question') . ' AS `q` LEFT JOIN ' . tablename('ewei_exam_pool') .
+				' AS `p` ON `q`.`poolid` = `p`.`id` WHERE `q`.`weid` = :weid';
+			$params = array(':weid' => $_W['uniacid']);
 
 			if (!empty($_GPC['poolid'])) {
-				$sql .= ' AND q.poolid=:poolid';
+				$where .= ' AND q.poolid=:poolid';
 				$params[':poolid'] = intval($_GPC['poolid']);
 			}
-
 			if (!empty($_GPC['type'])) {
-				$sql .= ' AND q.type=:type';
+				$where .= ' AND q.type=:type';
 				$params[':type'] = intval($_GPC['type']);
 			}
-
 			if (!empty($_GPC['question'])) {
-				$sql .= ' AND q.question LIKE :question';
+				$where .= ' AND q.question LIKE :question';
 				$params[':question'] = "%{$_GPC['question']}%";
 			}
 
@@ -950,29 +948,67 @@ class Ewei_examModuleSite extends WeModuleSite
 				session_start();
 				$url = $_SESSION['last_url'];
 				$paperid = intval($_GPC['paperid']);
-				$sql .= ' AND q.id NOT IN(SELECT questionid FROM ' . tablename('ewei_exam_paper_question') . 'WHERE paperid =:paperid)';
+				$where .= ' AND q.id NOT IN(SELECT questionid FROM ' . tablename('ewei_exam_paper_question') . 'WHERE paperid =:paperid)';
 				$params[':paperid'] = $paperid;
 			} else {
 				$add_paper = 0;
 			}
 
-			$pindex = max(1, intval($_GPC['page']));
-			$psize = 100;
+			$sql = 'SELECT COUNT(q.id) ' . $where;
+			$total = pdo_fetchcolumn($sql, $params);
+			if ($total > 0) {
+				$pindex = max(1, intval($_GPC['page']));
+				$psize = 10;
 
-			$select_sql = "SELECT q.*, p.title as pooltitle " . $sql . " ORDER BY q.id DESC LIMIT " . ($pindex - 1) * $psize . ',' . $psize;
-			$count_sql = "SELECT COUNT(q.id) " . $sql;
+				$sql = 'SELECT `q`.*, `p`.`title` AS `pooltitle` ' . $where . ' ORDER BY `q`.`id` DESC LIMIT ' .
+						($pindex - 1) * $psize . ',' . $psize;
+				$list = pdo_fetchall($sql, $params);
 
-			$list = pdo_fetchall($select_sql, $params);
-			foreach ($list as &$row) {
-				$row['type_name'] = $this->_types_config[$row['type']];
-				$row['percent'] = round($row['correctnum'] / (empty($row['fansnum']) ? 1 : $row['fansnum']), 3) * 100;
+				foreach ($list as &$row) {
+					$row['type_name'] = $this->_types_config[$row['type']];
+					$row['percent'] = round($row['correctnum'] / (empty($row['fansnum']) ? 1 : $row['fansnum']), 3) * 100;
+				}
+				unset($row);
+
+				$pager = pagination($total, $pindex, $psize);
 			}
-			unset($row);
-			$total = pdo_fetchcolumn($count_sql, $params);
-			$pager = pagination($total, $pindex, $psize);
 
-			$poollist = pdo_fetchall("SELECT id, title from " . tablename('ewei_exam_pool') . " WHERE weid = :weid", array(':weid' => $this->_weid));
-			//print_r($poollist);exit;
+			// 导出数据
+			if (!empty($_GPC['export'])) {
+				/* 输入到CSV文件 */
+				$html = "\xEF\xBB\xBF";
+
+				/* 输出表头 */
+				$filter = array(
+					'question' => '试题',
+					'pooltitle' => '所属题库',
+					'type_name' => '类型',
+					'level' => '难度',
+					'fansnum' => '答题数',
+					'percent' => '正确率',
+				);
+
+				foreach ($filter as $key => $value) {
+					$html .= $value . "\t,";
+				}
+				$html .= "\n";
+
+				foreach ($list as $key => $value) {
+					foreach ($filter as $index => $title) {
+						$html .= trim($value[$index]) . "\t, ";
+					}
+					$html .= "\n";
+				}
+
+				/* 输出CSV文件 */
+				header("Content-type:text/csv");
+				header("Content-Disposition:attachment; filename=全部数据.csv");
+				echo $html;
+				exit();
+			}
+
+			$sql = 'SELECT * FROM ' . tablename('ewei_exam_pool') . ' WHERE `weid` = :weid';
+			$pools = pdo_fetchall($sql, array(':weid' => $_W['uniacid']));
 
 			include $this->template('question');
 		}
@@ -1052,23 +1088,23 @@ class Ewei_examModuleSite extends WeModuleSite
 	//检查试卷中是否已经存在该试题
 	public function autoAddQuestion($paperid, &$list, $count, $num)
 	{
-//		if ($num == 0) {
-//			return 1;
-//		}
+//        if ($num == 0) {
+//            return 1;
+//        }
 
 		$rand = rand(1, $count) - 1;
 		$questionid = $list[$rand]['id'];
 		$this->addQuestion($paperid, $questionid);
 		return 1;
 
-//		$check = $this->checkQuestion($paperid, $questionid);
-//		if w($check) {
-//			$num--;
-//			$this->autoAddQuestion($paperid, $list, $count, $num);
-//		} else {
-//			$this->addQuestion($paperid, $questionid);
-//			return 1;
-//		}
+//        $check = $this->checkQuestion($paperid, $questionid);
+//        if w($check) {
+//            $num--;
+//            $this->autoAddQuestion($paperid, $list, $count, $num);
+//        } else {
+//            $this->addQuestion($paperid, $questionid);
+//            return 1;
+//        }
 	}
 
 	//获取试卷中当前的考题和分数情况
@@ -1241,12 +1277,12 @@ class Ewei_examModuleSite extends WeModuleSite
 					} else {
 						foreach ($list as $k => $v) {
 							$this->addQuestion($paperid, $v['id']);
-//							$check = $this->checkQuestion($paperid, $v['id']);
-//							if ($check) {
-//								continue;
-//							} else {
-//								$this->addQuestion($paperid, $v['id']);
-//							}
+//                            $check = $this->checkQuestion($paperid, $v['id']);
+//                            if ($check) {
+//                                continue;
+//                            } else {
+//                                $this->addQuestion($paperid, $v['id']);
+//                            }
 						}
 					}
 				}
@@ -1374,10 +1410,10 @@ class Ewei_examModuleSite extends WeModuleSite
 	public function doWebPaper()
 	{
 		global $_GPC, $_W;
+
 		$op = $_GPC['op'];
 		$weid = $_W['uniacid'];
 		$types_config = $this->_types_config;
-
 		if ($op == 'edit') {
 			//编辑
 			$id = intval($_GPC['id']);
@@ -1416,6 +1452,10 @@ class Ewei_examModuleSite extends WeModuleSite
 				$paper_category = pdo_fetch("select id, cname as title from ".tablename('ewei_exam_paper_category')." where id=:id limit 1",array(':id'=>$item['pcate']));
 			}
 
+//            if(!empty($item)){
+//                $paper = pdo_fetch("select id,title from ".tablename('ewei_exam_paper')." where id=:id limit 1",array(':id'=>$item['paperid']));
+//            }
+
 			$type_item = pdo_fetch("select * from " . tablename('ewei_exam_paper_type') . " where id=:id limit 1", array(':id' => $tid));
 			$types = unserialize($type_item['types']);
 
@@ -1426,14 +1466,17 @@ class Ewei_examModuleSite extends WeModuleSite
 				$d_question = $this->getDefaultPaperQuestion($question_array);
 				$now_question_data = $d_question['data'];
 			}
+			//print_r($question_item);exit;
 			include $this->template('paper_form');
 
 		} else if ($op == 'editquestion') {
 			session_start();
 			$_SESSION['last_url'] = $_SERVER['REQUEST_URI'];
+
 			//编辑
 			$id = intval($_GPC['id']);
 			$tid = intval($_GPC['tid']);
+
 			if (checksubmit()) {
 				//更改排序
 				foreach ($_GPC['displayorder'] as $k => $v) {
@@ -1448,11 +1491,14 @@ class Ewei_examModuleSite extends WeModuleSite
 				$item = pdo_fetch("select * from " . tablename('ewei_exam_paper') . " where id=:id limit 1", array(":id" => $id));
 				$tid = $item['tid'];
 			}
+
 			if(!empty($item)){
 				$paper_category = pdo_fetch("select id, cname as title from ".tablename('ewei_exam_paper_category')." where id=:id limit 1",array(':id'=>$item['pcate']));
 			}
+
 			$type_item = pdo_fetch("select * from " . tablename('ewei_exam_paper_type') . " where id=:id limit 1", array(':id' => $tid));
 			$types = unserialize($type_item['types']);
+
 			if (!empty($id)) {
 				$question_array = array();
 				$question_array['id'] = $id;
@@ -1460,9 +1506,11 @@ class Ewei_examModuleSite extends WeModuleSite
 				$d_question = $this->getDefaultPaperQuestion($question_array);
 				$now_question_data = $d_question['data'];
 			}
-			$question_item = get_paper_question_list($id);
-			include $this->template('paper_question_form');
 
+			$question_item = get_paper_question_list($id);
+			//print_r($question_item);exit;
+
+			include $this->template('paper_question_form');
 		}else if ($op == 'delete') {
 			$id = intval($_GPC['id']);
 			pdo_delete("ewei_exam_paper_question", array("paperid" => $id));
@@ -1677,12 +1725,12 @@ class Ewei_examModuleSite extends WeModuleSite
 					$arr[$key]['one_score'] = 0;
 					$arr[$key]['sum_score'] = 0;
 
-//					$arr[] =array(
-//						"key"=>$key,
-//						"value"=>$value,
-//						"num"=>0,
-//						"score"=>0
-//					);
+//                    $arr[] =array(
+//                        "key"=>$key,
+//                        "value"=>$value,
+//                        "num"=>0,
+//                        "score"=>0
+//                    );
 				}
 			}
 
@@ -1721,9 +1769,9 @@ class Ewei_examModuleSite extends WeModuleSite
 					message('抱歉，姓名不能为空！', '', 'error');
 				}
 
-//				if (empty($_GPC['userid'])) {
-//					message('抱歉，用户名不能为空！', '', 'error');
-//				}
+//                if (empty($_GPC['userid'])) {
+//                    message('抱歉，用户名不能为空！', '', 'error');
+//                }
 
 				$data = array(
 					'weid' => $_W['uniacid'],
@@ -1800,25 +1848,36 @@ class Ewei_examModuleSite extends WeModuleSite
 				message('状态设置成功！', referer(), 'success');
 			}
 		} else {
-			$sql = "";
-			$params = array();
+			$where = ' WHERE `weid` = :weid';
+			$params = array(':weid' => $_W['uniacid']);
+
 			if (!empty($_GPC['username'])) {
-				$sql .= ' AND `username` LIKE :username';
+				$where .= ' AND `username` LIKE :username';
 				$params[':username'] = "%{$_GPC['username']}%";
 			}
 			if (!empty($_GPC['userid'])) {
-				$sql .= ' AND `userid` LIKE :userid';
+				$where .= ' AND `userid` LIKE :userid';
 				$params[':userid'] = "%{$_GPC['userid']}%";
 			}
 			if (!empty($_GPC['mobile'])) {
-				$sql .= ' AND `mobile` LIKE :mobile';
+				$where .= ' AND `mobile` LIKE :mobile';
 				$params[':mobile'] = "%{$_GPC['mobile']}%";
 			}
-			$pindex = max(1, intval($_GPC['page']));
-			$psize = 100;
-			$list = pdo_fetchall("SELECT * FROM " . tablename('ewei_exam_member') . " WHERE weid = '{$_W['uniacid']}' $sql ORDER BY id DESC LIMIT " . ($pindex - 1) * $psize . ',' . $psize, $params);
-			$total = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename('ewei_exam_member') . " WHERE weid = '{$_W['uniacid']}' $sql", $params);
-			$pager = pagination($total, $pindex, $psize);
+
+			$sql = 'SELECT COUNT(*) FROM ' . tablename('ewei_exam_member') . $where;
+			$total = pdo_fetchcolumn($sql, $params);
+
+			if ($total > 0) {
+				$pindex = max(1, intval($_GPC['page']));
+				$psize = 15;
+
+				$sql = 'SELECT * FROM ' . tablename('ewei_exam_member') . $where . ' ORDER BY `id` DESC LIMIT ' .
+						($pindex - 1) * $psize . ',' . $psize;
+				$list = pdo_fetchall($sql, $params);
+
+				$pager = pagination($total, $pindex, $psize);
+			}
+
 			include $this->template('member');
 		}
 	}
@@ -1934,7 +1993,7 @@ class Ewei_examModuleSite extends WeModuleSite
 				$data = array();
 				$data['realname'] = $username;
 				fans_update($this->_from_user, $data);
-				pdo_update('ewei_exam_member', array('username' => $this->_from_user), array('id' => $item['id']));
+				pdo_update('ewei_exam_member', array('from_user' => $this->_from_user), array('id' => $item['id']));
 				$url = $this->createMobileUrl('index');
 				exam_set_userinfo(1, $item);
 				die(json_encode(array("result" => 1, "url" => $url)));
@@ -1946,51 +2005,41 @@ class Ewei_examModuleSite extends WeModuleSite
 		}
 	}
 
-	public function check_member()
-	{
-		global $_W, $_GPC;
-		$weid = $this->_weid;
-		$member = exam_get_userinfo();
-		$username = $this->_member['username'];
-		$set = $this->_set_info;
-		$login_flag = $set['login_flag'];
-		//修正登录开关不同状态下的用户取值方法
-		if ($login_flag == 1) {
-			$user_info = pdo_fetch("SELECT * FROM " . tablename('ewei_exam_member') . " WHERE username = :username and weid = :weid limit 1", array(':username' => $username, ':weid' => $weid));
-			if (empty($user_info['username']) || empty($user_info['userid'])) {
-				//用户帐号不存在或者用户第一次登录，没有录入姓名 用户名,用户进入登录页
-				$url = $this->createMobileUrl('login');
-				header("Location: $url");
-				exit;
-			} else {
-				if ($user_info['status'] == 0) {
-					message('帐号被禁用，请联系管理员', '', 'error');
-					exit;
-				}
-			}
-		} else {
-			//修正取值方法
-			$user_info = pdo_fetch("SELECT * FROM " . tablename('ewei_exam_member') . " WHERE from_user = :from_user and weid = :weid limit 1", array(':from_user' => $_W['fans']['from_user'], ':weid' => $weid));
-			if (empty($user_info['id'])) {
-				//用户不存在，自动添加一个用户
-				$member = array();
-				$member['weid'] = $weid;
-				//修正from_user取值
-				$member['from_user'] = $_W['fans']['from_user'];
-				$member['createtime'] = time();
-				$member['status'] = 1;
-				pdo_insert('ewei_exam_member', $member);
-				$member['id'] = pdo_insertid();
-				//自动添加成功，将用户信息放入cookie
-				exam_set_userinfo(0, $member);
-			} else {
-				if ($user_info['status'] == 0) {
-					message('帐号被禁用，请联系管理员', '', 'error');
-					exit;
-				}
-			}
+	public function check_member() {
+		global $_W;
+		if ($this->_member) {
+			return true;
 		}
 
+		// 开启登录
+		if ($this->_set_info['login_flag'] > 0) {
+			header('Location:' . $this->createMobileUrl('login'));
+		}
+
+		$sql = 'SELECT * FROM ' . tablename('ewei_exam_member') . ' WHERE `weid` = :weid AND `from_user` = :from_user';
+		$params = array(':weid' => $this->_weid, ':from_user' => $this->_from_user);
+		$member = pdo_fetch($sql, $params);
+
+		if ($member) {
+			if ($member['status'] < 1) {
+				message('帐号被禁用，请联系管理员', '', 'error');
+			}
+		} else {
+			if (empty($_W['fans']['openid'])) {
+				message('请先关注公众号再来参加考试吧！');
+			}
+
+			$member = array(
+				'weid' => $this->_weid,
+				'from_user' => $this->_from_user,
+				'createtime' => TIMESTAMP,
+				'status' => 1
+			);
+			pdo_insert('ewei_exam_member', $member);
+			$member['id'] = pdo_insertid();
+		}
+
+		exam_set_userinfo(0, $member);
 	}
 
 
@@ -2174,10 +2223,10 @@ class Ewei_examModuleSite extends WeModuleSite
 				$year_array[] = $i;
 			}
 
-//			$sql = "SELECT id, cname, parentid FROM " .tablename('ewei_exam_paper_category');
-//			$sql .= " WHERE weid = :weid AND status = 1";
-//			$sql .= " ORDER BY displayorder DESC,parentid";
-//			$cate_list = pdo_fetchall($sql, $params);
+//            $sql = "SELECT id, cname, parentid FROM " .tablename('ewei_exam_paper_category');
+//            $sql .= " WHERE weid = :weid AND status = 1";
+//            $sql .= " ORDER BY displayorder DESC,parentid";
+//            $cate_list = pdo_fetchall($sql, $params);
 
 			//print_r($cate_list);exit;
 
@@ -2235,7 +2284,7 @@ class Ewei_examModuleSite extends WeModuleSite
 			$array['email'] = $email;
 
 			$params = array();
-			$params['from_user'] = $_w['fans']['from_user'];
+			$params['from_user'] = $this->_from_user;
 			$params['weid'] = $weid;
 			pdo_update('ewei_exam_member', $array, $params);
 			//插入学员考试记录
@@ -2531,9 +2580,7 @@ class Ewei_examModuleSite extends WeModuleSite
 			$url = $this->createMobileUrl('start', array('paperid' => $item['paperid'], 'recordid' => $item['id'], 'page' => $pageid));
 			header("Location:" . $url);
 		}
-		$indexUrl =  $this->createMobileUrl('index');
-		$indexUrl = $_W['siteroot'] . 'app' . ltrim($indexUrl, '.');
-		message('抱歉，没有查询到您有未完成的考试！',  $indexUrl, 'error');
+		message('抱歉，没有查询到您有未完成的考试！', referer(), 'error');
 	}
 
 	/**
@@ -2544,53 +2591,51 @@ class Ewei_examModuleSite extends WeModuleSite
 		global $_GPC, $_W;
 		$this->check_member();
 		$id = intval($_GPC['id']);
-		if (empty($id)) {
-			exit;
-		}
-		$weid = $_W['uniacid'];
-		$member_info = $this->getMemberInfo();
+		$member = $this->getMemberInfo();
 		$paper_info = $this->getPaperInfo($id);
-		if (checksubmit()) {
-			$username = trim($_GPC['username']);
-			$mobile = trim($_GPC['mobile']);
-			$email = trim($_GPC['email']);
-			$data = array();
-			$data['realname'] = $username;
-			$data['mobile'] = $mobile;
-			//修正会员更新
-			fans_update($_W['fans']['from_user'], $data);
-			//更新用户信息
-			$array = array();
-			$array['username'] = $username;
-			$array['mobile'] = $mobile;
-			$array['email'] = $email;
-			$params = array();
-			//修正from_user取值
-			$params['from_user'] = $_W['fans']['from_user'];
-			$params['weid'] = $weid;
-			pdo_update('ewei_exam_member', $array, $params);
-			//更新考试人数记录
+
+		if (!$paper_info['types']) {
+			message('试卷不存在或已经被删除！');
+		}
+
+		if (checksubmit('submit')) {
+			// 更新用户信息
+			$update = array(
+				'username' => trim($_GPC['username']),
+				'mobile' => trim($_GPC['mobile']),
+				'email' => trim($_GPC['email'])
+			);
+			$params = array(
+				'weid' => $_W['uniacid'],
+				'from_user' => $_W['fans']['openid']
+			);
+
+			pdo_update('ewei_exam_member', $update, $params);
+
+			// 更新考试人数记录
 			$this->updatePaperMemberNum($id, 1);
-			//插入学员考试记录
-			$data = array();
-			$data['weid'] = $weid;
-			$data['paperid'] = $id;
-			$data['memberid'] = $member_info['id'];
-			$data['times'] = 0;
-			$data['countdown'] = $paper_info['times'] * 60;
-			$data['score'] = 0;
-			$data['did'] = 0;
-			$data['createtime'] = time();
+
+			// 增加学员考试记录
+			$data = array(
+				'weid' => $_W['uniacid'],
+				'paperid' => $id,
+				'memberid' => $member['id'],
+				'times' => 0,
+				'countdown' => $paper_info['times'] * 60,
+				'score' => 0,
+				'did' => 0,
+				'createtime' => TIMESTAMP
+			);
+
 			pdo_insert('ewei_exam_paper_member_record', $data);
 			$recordid = pdo_insertid();
 			$url = $this->createMobileUrl('start', array('paperid' => $id, 'recordid' => $recordid, 'page' => 1));
-			die(json_encode(array("result" => 1, "url" => $url)));
-		} else {
-			//更新访问人数记录
-			$fans = fans_search($_W['fans']['from_user'],array('nickname','email','mobile'));
-			$this->updatePaperMemberNum($id, 0);
-			include $this->template('ready');
+			message(array("result" => 1, "url" => $url), '', 'ajax');
 		}
+
+		// 更新访问人数记录
+		$this->updatePaperMemberNum($id, 0);
+		include $this->template('ready');
 	}
 
 
@@ -2703,7 +2748,7 @@ class Ewei_examModuleSite extends WeModuleSite
 		}
 		$member_info = $this->getMemberInfo();
 		//提交答案
-		if (checksubmit()) {
+		if (checksubmit('submit')) {
 			$data = array();
 			$data['result'] = 1;
 			$count_flag = intval($_GPC['count_flag']);
@@ -2811,14 +2856,17 @@ class Ewei_examModuleSite extends WeModuleSite
 				if ($pindex > $total) {
 					$data['result'] = 0;
 					$data['error'] = "抱歉，题数参数错误";
+					echo 12345;exit;
 					die(json_encode($data));
 				}
+
 				$question_info = $question_item[($pindex - 1)];
 				if (!$question_info) {
 					$data['result'] = 0;
 					$data['error'] = "抱歉，试题错误";
 					die(json_encode($data));
 				}
+
 				//判断用户是否回答过
 				$params = array();
 				$params[':weid'] = $weid;
@@ -2949,6 +2997,9 @@ class Ewei_examModuleSite extends WeModuleSite
 		$data = array();
 		$data['data'] = $score_array;
 		$data['score'] = $score;
+
+		//print_r($data);exit;
+
 		return $data;
 	}
 
@@ -2972,9 +3023,11 @@ class Ewei_examModuleSite extends WeModuleSite
 		$item['types'] = unserialize($item['types']);
 
 		$total = 0;
-		foreach ($item['types'] as $k => $v) {
-			if ($v['has'] == 1) {
-				$total += $v['num'];
+		if (!empty($item['types'])) {
+			foreach ($item['types'] as $k => $v) {
+				if ($v['has'] == 1) {
+					$total += $v['num'];
+				}
 			}
 		}
 
@@ -2986,8 +3039,7 @@ class Ewei_examModuleSite extends WeModuleSite
 	//获取试卷和试卷类型的信息
 	public function getRecordInfo($recordid)
 	{
-		global $_GPC, $_W;
-
+		global $_W;
 		$weid = $_W['uniacid'];
 		$sql = "SELECT * FROM " . tablename('ewei_exam_paper_member_record');
 		$sql .= " WHERE id = :id AND weid = :weid";
@@ -2996,24 +3048,15 @@ class Ewei_examModuleSite extends WeModuleSite
 		$params = array();
 		$params[':id'] = intval($recordid);
 		$params[':weid'] = $weid;
-		$item = pdo_fetch($sql, $params);
-		return $item;
+		return pdo_fetch($sql, $params);
 	}
 
-	//获取用户的基本信息
-	public function getMemberInfo()
-	{
-		global $_GPC, $_W;
-		$weid = $_W['uniacid'];
-		//增加登录开关不同状态下用户的取值方法
-		$login_flag = $set['login_flag'];
-		if ($login_flag == 1) {
-			$item = pdo_fetch("SELECT * FROM " . tablename('ewei_exam_member') . " WHERE username = :username AND weid = :weid LIMIT 1", array(':username' => $this->_from_user, ':weid' => $weid));
-		} else {
-			$item = pdo_fetch("SELECT * FROM " . tablename('ewei_exam_member') . " WHERE from_user = :from_user AND weid = :weid LIMIT 1", array(':from_user' => $_W['fans']['from_user'], ':weid' => $weid));
-
-		}
-		return $item;
+	// 获取用户信息
+	public function getMemberInfo() {
+		global $_W;
+		$sql = 'SELECT * FROM ' . tablename('ewei_exam_member') . ' WHERE `weid` = :weid AND `from_user` = :from_user';
+		$params = array(':weid' => $_W['uniacid'], ':from_user' => $_W['fans']['openid']);
+		return pdo_fetch($sql, $params);
 	}
 
 	//ajax数据处理,包含 年份选择 分类选择

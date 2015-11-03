@@ -55,7 +55,7 @@ body {
 
 /*loading效果*/
 #load-layer {position: absolute; top:0; left:0; bottom:0; right:0; background-color: #ffffff; z-index: 999}
-#loading {width:60px;height:60px;background: url("../img/loading.png");position:absolute;top:50%;left:50%;margin:-30px 0 0 -30px;-webkit-animation:loading 1.2s infinite ease-in-out;animation: rotateplane 1.2s infinite ease-in-out;}
+#loading {width:60px;height:60px;position:absolute;top:50%;left:50%;margin:-30px 0 0 -30px;-webkit-animation:loading 1.2s infinite ease-in-out;animation: rotateplane 1.2s infinite ease-in-out;}
 @-webkit-keyframes loading {
 0% { -webkit-transform: perspective(120px) }
 50% { -webkit-transform: perspective(120px) rotateY(180deg) }

@@ -46,9 +46,12 @@
         </div>
     </div>
     <input type="hidden" name="storeid" value="{$storeid}" />
-    <div style="margin-top: 15px;margin-bottom: 15px;">
-        <a class="btn btn-primary" href="javascript:location.reload()"><i class="icon-refresh"></i> 刷新</a>
-        <a class="btn btn-primary" href="{php echo $this->createWebUrl('PrintOrder', array('op' => 'deleteprintorder', 'storeid' => $storeid))}" onclick="return confirm('此操作不可恢复，确认操作吗？');return false;"><i class="icon-plus"></i>取消未打印订单</a>
+
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <a class="btn btn-primary" href="javascript:location.reload()"><i class="fa fa-refresh"></i> 刷新</a>
+            <a class="btn btn-primary" href="{php echo $this->createWebUrl('PrintOrder', array('op' => 'deleteprintorder', 'storeid' => $storeid))}" onclick="return confirm('此操作不可恢复，确认操作吗？');return false;">取消未打印订单</a>
+        </div>
     </div>
     <form action="" method="post" class="form-horizontal form">
         <div class="panel panel-default">

@@ -15,14 +15,24 @@ class Zombie_fightingModuleProcessor extends WeModuleProcessor {
 		$from_user = $this->message['from'];
 		if($rid) {
 			$row = pdo_fetch("SELECT * FROM " . tablename('fighting_setting') . " WHERE rid = :rid", array(':rid' => $rid));
-			if($row) {
-                return $this->respNews(array(
-                    'title' => $row['title'] == '' ? '一站到底': $row['title'],
-                    'description' => strip_tags($row['description']) == '' ? '一站到底': strip_tags($row['description']),
-                    'picUrl' => $row['picture'],
-                    'url' => $this->createMobileUrl('index', array('id' => $rid,'openid'=>$from_user),true),
-                ));
-			}
+
+            if($row) {
+                if (time() < $row['start']) {//未开始
+                    return $this->respText($row['title'].'活动还未开始，请关注其他活动吧。');
+                } elseif ((time() > $row['end']) || ($row['status'] == 2)) {//活动已结束时回复语
+                    return $this->respText($row['title'].'活动活动已结束，请关注其他活动吧。');
+                } elseif ($row['status'] == 1) {//暂停
+                    return $this->respText($row['title'].'活动活动已暂停，请关注其他活动吧。');
+                }else{
+                    return $this->respNews(array(
+                        'title' => $row['title'] == '' ? '一站到底': $row['title'],
+                        'description' => strip_tags($row['description']) == '' ? '一站到底': strip_tags($row['description']),
+                        'picUrl' => $_W['attachurl'] . $row['picture'],
+                        'url' => $this->createMobileUrl('index', array('id' => $rid,'openid'=>$from_user),true),
+                    ));
+                }
+            }
+
 		}
 		return null;
 	}

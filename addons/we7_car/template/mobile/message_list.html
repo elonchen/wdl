@@ -143,6 +143,18 @@
             $(".ly2").slideToggle();
         });
     });
+
+    // 微汽车分享
+    wx.ready(function () {
+        sharedata = {
+            title: "{$shareTitle}",
+            desc: "{$shareDesc}",
+            link: "{$_W['siteurl']}",
+            imgUrl: "{$shareThumb}"
+        };
+        wx.onMenuShareAppMessage(sharedata);
+        wx.onMenuShareTimeline(sharedata);
+    });
 </script>
 
 <div class="history">

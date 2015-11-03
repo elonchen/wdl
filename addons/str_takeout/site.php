@@ -2,9 +2,10 @@
 /**
  * 微外卖模块微站定义
  * @author strday
- * @url http://bbs.wdlcms.com/
+ * @url http://bbs.012wz.com/
  */
 defined('IN_IA') or exit('Access Denied');
+
 class Str_takeoutModuleSite extends WeModuleSite {
 	public function doWebConfig() {
 		global $_W, $_GPC;
@@ -339,6 +340,189 @@ class Str_takeoutModuleSite extends WeModuleSite {
 			pdo_delete('str_order', array('uniacid' => $_W['uniacid'], 'id' => $id));
 			pdo_delete('str_dish_comment', array('uniacid' => $_W['uniacid'], 'oid' => $id));
 			message('删除订单成功', $this->createWebUrl('manage', array('op' => 'order')), 'success');
+		} elseif($op == 'print_post') {
+			$id = intval($_GPC['id']);
+			if($id > 0) {
+				$item = pdo_fetch('SELECT * FROM ' . tablename('str_print') . ' WHERE uniacid = :uniacid AND id = :id', array(':uniacid' => $_W['uniacid'], ':id' => $id));
+			} 
+			if(empty($item)) {
+				$item = array('status' => 1, 'print_nums' => 1);
+			}
+			if(checksubmit('submit')) {
+				$data['status'] = intval($_GPC['status']); 
+				$data['name'] = !empty($_GPC['name']) ? trim($_GPC['name']) : message('打印机名称不能为空', '', 'error');
+				$data['print_no'] = !empty($_GPC['print_no']) ? trim($_GPC['print_no']) : message('机器号不能为空', '', 'error');
+				$data['key'] = !empty($_GPC['key']) ? trim($_GPC['key']) : message('打印机key不能为空', '', 'error');
+				$data['print_nums'] = intval($_GPC['print_nums']) ? intval($_GPC['print_nums']) : 1;
+				if(!empty($_GPC['qrcode_link']) && (strexists($_GPC['qrcode_link'], 'http://') || strexists($_GPC['qrcode_link'], 'https://'))) {
+					$data['qrcode_link'] = trim($_GPC['qrcode_link']);
+				}
+				$data['uniacid'] = $_W['uniacid'];
+				$data['sid'] = $sid;
+				if(!empty($item) && $id) {
+					pdo_update('str_print', $data, array('uniacid' => $_W['uniacid'], 'id' => $id));
+				} else {
+					pdo_insert('str_print', $data);
+				}
+				message('更新打印机设置成功', $this->createWebUrl('manage', array('op' => 'print_list')), 'success');
+			}
+			include $this->template('print');
+		} elseif($op == 'print_list') {
+			$data = pdo_fetchall('SELECT * FROM ' . tablename('str_print') . ' WHERE uniacid = :uniacid AND sid = :sid', array(':uniacid' => $_W['uniacid'], ':sid' => $sid));
+			include $this->template('print');
+		} elseif($op == 'print_del') {
+			$id = intval($_GPC['id']);
+			pdo_delete('str_print', array('uniacid' => $_W['uniacid'], 'id' => $id));
+			message('删除打印机成功', referer(), 'success');
+		} elseif($op == 'log_del') {
+			$id = intval($_GPC['id']);
+			pdo_delete('str_order_print', array('uniacid' => $_W['uniacid'], 'id' => $id));
+			message('删除打印记录成功', referer(), 'success');
+		} elseif($op == 'print_log') {
+			$id = intval($_GPC['id']);
+			$item = pdo_fetch('SELECT * FROM ' . tablename('str_print') . ' WHERE uniacid = :uniacid AND id = :id', array(':uniacid' => $_W['uniacid'], ':id' => $id));
+			if(empty($item)) {
+				message('打印机不存在或已删除', $this->createWebUrl('manage', array('op' => 'print_list')), 'success');
+			}
+			if(!empty($item['print_no']) && !empty($item['key'])) {
+				include 'wprint.class.php';
+				$wprint = new wprint();
+				$status = $wprint->QueryPrinterStatus($item['print_no'], $item['key']);
+				if(is_error($status)) {
+					$status = '查询打印机状态失败。请刷新页面重试';
+				}
+			}
+			$condition = ' WHERE a.uniacid = :aid AND a.sid = :sid AND a.pid = :pid';
+			$params[':aid'] = $_W['uniacid']; 
+			$params[':sid'] = $sid; 
+			$params[':pid'] = $id; 
+			if(!empty($_GPC['oid'])) {
+				$oid = trim($_GPC['oid']);
+				$condition .= ' AND a.oid = :oid';
+				$params[':oid'] = $oid; 
+			}
+			$pindex = max(1, intval($_GPC['page']));
+			$psize = 20;
+
+			$total = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename('str_order_print') . ' AS a ' . $condition, $params);
+			$data = pdo_fetchall('SELECT a.*,b.username,b.mobile FROM ' . tablename('str_order_print') . ' AS a LEFT JOIN' . tablename('str_order') . ' AS b ON a.oid = b.id' . $condition . ' ORDER BY addtime DESC LIMIT ' . ($pindex - 1) * $psize . ',' . $psize, $params);
+			$pager = pagination($total, $pindex, $psize);
+			include $this->template('print');
+		} elseif($op == 'ajaxprint') {
+			$id = intval($_GPC['id']);
+			$order = pdo_fetch('SELECT * FROM ' . tablename('str_order') . ' WHERE uniacid = :aid AND sid = :sid AND id = :id', array(':aid' => $_W['uniacid'], ':sid' => $sid, ':id' => $id));
+			if(empty($order)) {
+				exit('订单不存在或已经删除');
+			}
+			$order['dish'] = iunserializer($order['dish']);
+			$pay_types = array(
+				'alipay' => '支付宝支付',
+				'wechat' => '微信支付',
+				'credit' => '余额支付',
+				'delivery' => '餐到付款',
+			);
+			$order['pay_type'] = !empty($pay_types[$order['pay_type']]) ? $pay_types[$order['pay_type']] : '其他支付方式';
+
+			//获取该门店的所有打印机
+			$prints = pdo_fetchall('SELECT * FROM ' . tablename('str_print') . ' WHERE uniacid = :aid AND sid = :sid AND status = 1', array(':aid' => $_W['uniacid'], ':sid' => $sid));
+			if(empty($prints)) {
+				exit('没有有效的打印机');
+			}
+			$store = pdo_fetch('SELECT title FROM ' . tablename('str_store') . ' WHERE uniacid = :aid AND id = :sid', array(':aid' => $_W['uniacid'], ':sid' => $sid));
+			
+			$orderinfo = '';
+			$orderinfo .= "<CB>{$store['title']}</CB>\n";
+			$orderinfo .= '名称　　　　　 单价  数量 金额\n';
+			$orderinfo .= '--------------------------------\n';
+			if(!empty($order['dish'])) {
+				foreach($order['dish'] as $di) {
+					$dan = ($di['price'] / $di['num']);
+					$orderinfo .= str_pad(cutstr($di['title'], 7), '21', '　', STR_PAD_RIGHT);
+					$orderinfo .= ' ' . str_pad($dan, '6', ' ', STR_PAD_RIGHT);
+					$orderinfo .= 'X ' . str_pad($di['num'], '3', ' ', STR_PAD_RIGHT);
+					$orderinfo .= ' ' . str_pad($di['price'], '5', ' ', STR_PAD_RIGHT);
+					$orderinfo .= '\n';
+				}
+			}
+			if(!empty($order['note'])) {
+				$orderinfo .='备注：' . $order['note'] . '\n';
+			}
+			$orderinfo .= '--------------------------------\n';
+			$orderinfo .= "合计：{$order['price']}元\n";
+			$orderinfo .= "下单人：{$order['username']}\n";
+			$orderinfo .= "送餐地址：{$order['address']}\n";
+			$orderinfo .= "联系电话：{$order['mobile']}\n";
+			$orderinfo .= "支付方式：{$order['pay_type']}\n";
+			if(!empty($order['delivery_time'])) {
+				$orderinfo .= "送餐时间：{$order['delivery_time']}";
+			}
+
+			include 'wprint.class.php';
+			foreach($prints as $li) {
+				if(!empty($li['qrcode_link'])) {
+					$orderinfo .= "<QR>{$li['qrcode_link']}</QR>\n";
+				}
+				if(!empty($li['print_no']) && !empty($li['key'])) {
+					$wprint = new wprint();
+					$status = $wprint->StrPrint($li['print_no'], $li['key'], $orderinfo, 1);
+					if(!is_error($status)) {
+						$i++;
+						$data = array(
+								'uniacid' => $_W['uniacid'],
+								'sid' => $sid,
+								'pid' => $li['id'],
+								'oid' => $id, //订单id
+								'status' => 1,
+								'foid' => $status,
+								'addtime' => TIMESTAMP
+							);
+						pdo_insert('str_order_print', $data);
+					}
+				}
+			}
+			if($i > 0) {
+				pdo_query('UPDATE ' . tablename('str_order') . " SET print_nums = print_nums + {$i} WHERE uniacid = {$_W['uniacid']} AND id = {$id}");
+			} else {
+				exit('发送打印指令失败。没有有效的机器号');
+			}
+			exit('success');
+		}
+
+		//账号管理员
+		if($op == 'ctrl') {
+			$accounts = uni_accounts();
+			foreach($accounts as $k => $li) {
+				if($li['level'] < 3) {
+					unset($li[$k]);
+				}
+			}
+			$config = pdo_fetch('SELECT notice_acid, groupid FROM ' . tablename('str_store') . ' WHERE uniacid = :uniacid AND id = :sid', array(':uniacid' => $_W['uniacid'], ':sid' => $sid));
+			if(!empty($config['notice_acid'])) {
+				$groups = pdo_fetch('SELECT * FROM ' . tablename('mc_fans_groups') . ' WHERE uniacid = :uniacid AND acid = :acid', array(':uniacid' => $_W['uniacid'], ':acid' => $config['notice_acid']));
+				!empty($groups) && ($groups = iunserializer($groups['groups']));
+ 			}
+			if(checksubmit('submit')) {
+				$acid = intval($_GPC['acid']);
+				$groupid = intval($_GPC['groupid']);
+				pdo_update('str_store', array('notice_acid' => $acid, 'groupid' => $groupid), array('uniacid' => $_W['uniacid'], 'id' => $sid));
+				message('设置微信管理员成功', referer(), 'success');
+			}
+			include $this->template('ctrl');
+		}
+
+		if($op == 'fangroup') {
+			$acid = intval($_GPC['acid']);
+			$data = pdo_fetch('SELECT * FROM ' . tablename('mc_fans_groups') . ' WHERE uniacid = :uniacid AND acid = :acid', array(':uniacid' => $_W['uniacid'], ':acid' => $acid));
+			$out['errcode'] = 0;
+			$out['errmsg'] = '';
+			if(empty($data)) {
+				$out['errcode'] = 1;
+				$out['errmsg'] = '请先更新粉丝分组';
+				exit(json_encode($out));
+			}
+			$data = iunserializer($data['groups']);
+			$out['errmsg'] = $data;
+			exit(json_encode($out));
 		}
 	}
 
@@ -372,7 +556,7 @@ class Str_takeoutModuleSite extends WeModuleSite {
 						}
 					}
 					$href = $this->createMobileUrl('dish', array('sid' => $da['id']));
-					$str .= '<li class="url" data-url='.$href.'>
+					$str .= '<li class="url no-position" data-url='.$href.' data-locax="'.$da['location_x'].'" data-locay="'.$da['location_y'].'">
 								<div class="img_tt">
 									<div>
 										<div class="nopic"'.($da['logo']?'style="background-image:url('.tomedia($da['logo']).');background-size: 100% 100%;"' : '').'></div>
@@ -555,6 +739,7 @@ class Str_takeoutModuleSite extends WeModuleSite {
 			$member = mc_fetch($_W['member']['uid'], array('realname', 'mobile', 'address'));
 		} else {
 			$sid = intval($_GPC['sid']);
+			$store = pdo_fetch('SELECT notice_acid,title,groupid FROM ' . tablename('str_store') . ' WHERE uniacid = :aid AND id = :id', array(':aid' => $_W['uniacid'], ':id' => $sid));
 			$rand = trim($_GPC['rand_order']);
 			$dish = iunserializer(base64_decode($_GPC['dish']));
 			$out['errno'] = 1;
@@ -602,6 +787,53 @@ class Str_takeoutModuleSite extends WeModuleSite {
 
 			$id = pdo_insertid();
 			if($id) {
+				//给管理员和订餐人发送消息
+				if(!empty($store['notice_acid']) && !empty($store['groupid'])) {
+					$fans = pdo_fetchall('SELECT openid FROM ' . tablename('mc_mapping_fans') . ' WHERE acid = :acid AND groupid = :id', array(':acid' => $store['notice_acid'], ':id' => $store['groupid']));
+					if(!empty($fans)) {
+						$orderinfo = '您有新的订单：\n';
+						$orderinfo .= "{$store['title']}\n";
+						$orderinfo .= '名称　　　　　　数量　金额\n';
+						$orderinfo .= '--------------------\n';
+						if(!empty($dish_data)) {
+							foreach($dish_data as $di) {
+								$dan = ($di['price'] / $di['num']);
+								$orderinfo .= str_pad(cutstr($di['title'], 9), '24', '　', STR_PAD_RIGHT);
+								$orderinfo .= ' X ' . str_pad($di['num'], '3', ' ', STR_PAD_RIGHT);
+								$orderinfo .= ' ' . str_pad($di['price'], '5', ' ', STR_PAD_RIGHT);
+								$orderinfo .= '\n';
+							}
+						}
+						if(!empty($data['note'])) {
+							$orderinfo .='备注：' . $data['note'] . '\n';
+						}
+						$orderinfo .= '--------------------\n';
+						$orderinfo .= "合计：{$data['price']}元\n";
+						$orderinfo .= "下单人：{$data['username']}\n";
+						$orderinfo .= "送餐地址：{$data['address']}\n";
+						$orderinfo .= "联系电话：{$data['mobile']}\n";
+						if(!empty($data['delivery_time'])) {
+							$orderinfo .= "送餐时间：{$data['delivery_time']}";
+						}
+
+						$send['msgtype'] = 'text';
+						$send['text'] = array('content' => urlencode($orderinfo));
+						$acc = WeAccount::create($store['notice_acid']);
+						if(!empty($_W['openid'])) {
+							$send['touser'] = trim($_W['openid']);
+							$data = $acc->sendCustomNotice($send);
+						}
+						foreach($fans as $li) {
+							if($i > 5) {
+								break;
+							} 
+							$send['touser'] = trim($li['openid']);
+							$data = $acc->sendCustomNotice($send);
+							$i++;
+						}
+					}
+				}
+
 				$out['errno'] = 0;
 				$out['url'] = $this->createMobileUrl('pay', array('id' => $id));
 			} else {
@@ -697,7 +929,7 @@ class Str_takeoutModuleSite extends WeModuleSite {
 		if ($params['type'] == 'delivery') {
 			$data['status'] = 3;
 		}
-		//pdo_update('str_order', $data, array('id' => $params['tid'], 'uniacid' => $_W['uniacid']));
+		pdo_update('str_order', $data, array('id' => $params['tid'], 'uniacid' => $_W['uniacid']));
 		$order = pdo_fetch('SELECT * FROM ' . tablename('str_order') . ' WHERE uniacid = :aid AND id = :id', array(':aid' => $_W['uniacid'], ':id' => $params['tid']));
 		//获取store信息
 		$store = pdo_fetch('SELECT email_notice, email FROM ' . tablename('str_store') . ' WHERE uniacid = :aid AND id = :id',  array(':aid' => $_W['uniacid'], ':id' => $order['sid']));
@@ -720,9 +952,9 @@ class Str_takeoutModuleSite extends WeModuleSite {
 				ihttp_email($store['email'], '微外卖订单提醒', $body);
 			}
 			if($params['type'] == 'credit') {
-				message('支付成功！', $_W['siteroot']."app/".$this->createMobileUrl('orderdetail', array('id' => $order['id'], 'sid' => $order['sid'])), 'success');
+				message('支付成功！', $this->createMobileUrl('orderdetail', array('id' => $order['id'], 'sid' => $order['sid'])), 'success');
 			} else {
-				message('支付成功！',$_W['siteroot']."app/".$this->createMobileUrl('orderdetail', array('id' => $order['id'], 'sid' => $order['sid'])), 'success');
+				message('支付成功！', '../../app/' .$this->createMobileUrl('orderdetail', array('id' => $order['id'], 'sid' => $order['sid'])), 'success');
 			}
 		}
 	}
@@ -847,13 +1079,31 @@ class Str_takeoutModuleSite extends WeModuleSite {
 	}
 	public function doWebCron() {
 		global $_W, $_GPC;
-		$paytime_limit = pdo_fetchcolumn('SELECT paytime_limit FROM ' . tablename('str_config') . ' WHERE uniacid = :aid', array(':aid' => $_W['uniacid']));
-		if(empty($paytime_limit)) {
-			$paytime_limit = 3600;
-		} else {
-			$paytime_limit = $paytime_limit * 60;
+		$op = trim($_GPC['op']) ? trim($_GPC['op']) : 'limit';
+		if($op == 'limit') {
+			$paytime_limit = pdo_fetchcolumn('SELECT paytime_limit FROM ' . tablename('str_config') . ' WHERE uniacid = :aid', array(':aid' => $_W['uniacid']));
+			if(empty($paytime_limit)) {
+				$paytime_limit = 3600;
+			} else {
+				$paytime_limit = $paytime_limit * 60;
+			}
+			pdo_query('UPDATE ' . tablename('str_order') . ' SET status = 5 WHERE uniacid = :aid AND addtime < :limittime', array(':aid' => $_W['uniacid'], ':limittime' => (TIMESTAMP - $paytime_limit)));
+		} elseif($op == 'print') {
+			$data = pdo_fetchall('SELECT a.foid, b.print_no, b.key FROM ' . tablename('str_order_print') . ' AS a LEFT JOIN '.tablename('str_print').' AS b ON a.pid = b.id WHERE a.uniacid = :aid AND a.sid = :sid AND a.status = 0 ORDER BY addtime ASC LIMIT 5', array(':aid' => $_W['uniacid'], ':sid' => $sid));
+			if(!empty($data)) {
+				include 'wprint.class.php';
+				foreach($data as $da) {
+					if(!empty($da['foid']) && !empty($da['print_no']) && !empty($da['key'])) {
+						$print = new wprint();
+						$status = $print->QueryOrderState($da['print_no'], $da['key'], $da['foid']);
+						if(!is_error($status)) {
+							pdo_update('str_order_print', array('status' => $status), array('uniacid' => $_W['uniacid'], 'sid' => $sid, 'foid' => $da['foid']));
+						}
+					}
+				}
+			}
+		
 		}
-		pdo_query('UPDATE ' . tablename('str_order') . ' SET status = 5 WHERE uniacid = :aid AND addtime < :limittime', array(':aid' => $_W['uniacid'], ':limittime' => (TIMESTAMP - $paytime_limit)));
 	}
 	public function doMobileCron() {
 		global $_W, $_GPC;

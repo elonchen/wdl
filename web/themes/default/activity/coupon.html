@@ -26,7 +26,7 @@
 			</div>
 			<div class="panel-body">
 				<div class="form-group">
-					<label class="col-sm-9 col-sm-3 col-md-2 control-label"><span class="text-danger"></span> 可用模块</label>
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="text-danger"></span> 可用模块</label>
 					<div class="col-sm-9 col-xs-12">
 						<a href="javascript:;" id="add-module" class="btn btn-default">选择模块</a>
 						<input type="hidden" name="module-select" value="{$item['module']}"/>
@@ -46,7 +46,7 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="col-sm-9 col-sm-3 col-md-2 control-label"><span class="text-danger">*</span> 满多少钱可打折</label>
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="text-danger">*</span> 满多少钱可打折</label>
 					<div class="col-sm-9 col-xs-12">
 						<input type="text" name="condition" class="form-control" value="{$item['condition']}" />
 						<span class="help-block">请填写整数。默认订单金额大于0元就可以使用</span>
@@ -148,90 +148,90 @@ $('#add-module').click(function(){
 	var obj = util.dialog('选择适用模块', ["{php echo url('activity/module')}"], $('#footer-location').html());
 	obj.modal('show');
 
-	obj.find('.btn.btn-primary').click(function(){
-		var chks = $('.module-list :checkbox:checked');
-		var modules = [];
-		var modules_detail = [];
-		var tmp = [];
+			obj.find('.btn.btn-primary').click(function(){
+				var chks = $('.module-list :checkbox:checked');
+				var modules = [];
+				var modules_detail = [];
+				var tmp = [];
 
-		if(chks.length>0){
-			chks.each(function(){
-				modules.push(this.value);
-				tmp['id'] = this.value;
-				tmp['title'] = $('#module-' + this.value + ' .title').html();
-				modules_detail.push(tmp);
-				tmp=[];
-			});
-			var s = modules.join('@');
-			$('#form1 input[name="module-select"]').val(s);
-
-			if(modules_detail) {
-				var str = '';
-				var len = modules_detail.length;
-				var yu = len % 7;
-				if(yu > 0) {
-					for(var j = 0; j < 7-yu;j++) {
-						tmp['id'] = '';
+				if(chks.length>0){
+					chks.each(function(){
+						modules.push(this.value);
+						tmp['id'] = this.value;
+						tmp['title'] = $('#module-' + this.value + ' .title').html();
 						modules_detail.push(tmp);
-					}
-				}
-				for(var i = 0;i<modules_detail.length;) {
-					if(i % 7 == 0) {
-						str += '<tr>';
-					}
-					if(modules_detail[i]['id']) {
-						str += '<td>'+modules_detail[i]['title']+'</td>';
-					} else {
-						str += '<td></td>';
-					}
-					i++;
-					if(i % 7 == 0) {
-						str += '</tr>';
-					}
-				}
-				$('#module-contain').html(str)
-				$('#module-contain').show();
-			}
-		} else {
-			$('#form1 input[name="module-select"]').val('');
-			$('#module-contain').html('')
-		}
-		obj.modal('hide');
-	});
-});
+						tmp=[];
+					});
+					var s = modules.join('@');
+					$('#form1 input[name="module-select"]').val(s);
 
-$('#step-control').click(function(){
-	if(this.innerText == '下一步'){
-		if($.trim($(':text[name="title"]').val()) == "") {
+					if(modules_detail) {
+						var str = '';
+						var len = modules_detail.length;
+						var yu = len % 7;
+						if(yu > 0) {
+							for(var j = 0; j < 7-yu;j++) {
+								tmp['id'] = '';
+								modules_detail.push(tmp);
+							}
+						}
+						for(var i = 0;i<modules_detail.length;) {
+							if(i % 7 == 0) {
+								str += '<tr>';
+							}
+							if(modules_detail[i]['id']) {
+								str += '<td>'+modules_detail[i]['title']+'</td>';
+							} else {
+								str += '<td></td>';
+							}
+							i++;
+							if(i % 7 == 0) {
+								str += '</tr>';
+							}
+						}
+						$('#module-contain').html(str)
+						$('#module-contain').show();
+					}
+				} else {
+			$('#form1 input[name="module-select"]').val('');
+					$('#module-contain').html('')
+				}
+				obj.modal('hide');
+			});
+		});
+
+		$('#step-control').click(function(){
+			if(this.innerText == '下一步'){
+				if($.trim($(':text[name="title"]').val()) == "") {
 			util.message("请填写折扣券名称",'','error');
-			return false;
-		}
-		var reg = /^0\.[1-9]\d*$/;
-		var re = new RegExp(reg);
-		var data = $.trim($(':text[name="discount"]').val());
-		if(!re.test(data)) {
+					return false;
+				}
+				var reg = /^0\.[1-9]\d*$/;
+				var re = new RegExp(reg);
+				var data = $.trim($(':text[name="discount"]').val());
+				if(!re.test(data)) {
 			util.message("请填写正确的折扣格式",'','error');
-			return false;
-		}
-		if($.trim($('select[name="group[]"]').val()) == "") {
+					return false;
+				}
+				if($.trim($('select[name="group[]"]').val()) == "") {
 			util.message("请选择可使用的会员组",'','error');
-			return false;
-		}
-		if($.trim($('input[name="thumb"]').val()) == "") {
+					return false;
+				}
+				if($.trim($('input[name="thumb"]').val()) == "") {
 			util.message("上传代金券缩略图",'','error');
-			return false;
-		}
-		$('#step1').hide();
-		$('#step2').show();
-		$('#submit').show();
-		this.innerText = '上一步';
-	}else{
-		$('#step2').hide();
-		$('#step1').show();
-		$('#submit').hide();
-		this.innerText = '下一步';
-	}
-});
+					return false;
+				}
+				$('#step1').hide();
+				$('#step2').show();
+				$('#submit').show();
+				this.innerText = '上一步';
+			}else{
+				$('#step2').hide();
+				$('#step1').show();
+				$('#submit').hide();
+				this.innerText = '下一步';
+			}
+		});
 
 $("#form1").submit(function(){
 	if($.trim($('select[name="credittype"]').val()) == "") {
@@ -295,25 +295,22 @@ $("#form1").submit(function(){
 		</form>
 	</div>
 </div>
-<div class="alert alert-info">
-	如果您希望在会员在线上消费时，可以使用优惠券来减免金额，请确保 <a href="{php echo url('profile/payment')}" target="_blank">支付参数</a> 中的卡券开关为："使用系统卡券"
-</div>
 <div class="panel panel-default">
 	<div class="table-responsive panel-body">
 		<table class="table table-hover">
 			<thead class="navbar-inner">
 				<tr>
-					<th style="width:50px;">缩略图</th>
+					<th style="width:60px;">缩略图</th>
 					<th style="width:100px;">标题</th>
 					<th style="width:160px;">序列号</th>
 					<th style="width:80px;">使用条件</th>
 					<th style="width:50px;">折扣</th>
 					<th style="width:80px;">领取条件</th>
-					<th style="width:100px;">可用次数</th>
+					<th style="width:80px;">可用次数</th>
 					<th style="width:60px;">总量</th>
-					<th style="width:100px;">已领取</th>
-					<th style="width:200px;">有效时间</th>
-					<th style="text-align:right; width:100px;">操作</th>
+					<th style="width:80px;">已领取</th>
+					<th style="width:140px;">有效时间</th>
+					<th style="text-align:right; width:130px;">操作</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -365,7 +362,7 @@ $("#form1").submit(function(){
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">用户ID</label>
 					<div class="col-sm-6 col-lg-8">
-						<input class="form-control" name="uid" id="" type="text" value="{$_GPC['uid']}">
+						<input class="form-control" name="uid" id="" type="text" value="{$_GPC['uid']}">	
 					</div>
 				</div>
 				<div class="form-group">

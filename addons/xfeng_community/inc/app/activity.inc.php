@@ -23,7 +23,13 @@ defined('IN_IA') or exit('Access Denied');
 		foreach ($rows as $key => $value) {
 			$regions = unserialize($value['regionid']);
 			if (@in_array($member['regionid'], $regions)) {
-				$list = $rows;
+				$list[$key]['title'] = $value['title'];
+				$list[$key]['starttime'] = $value['starttime'];
+				$list[$key]['endtime'] = $value['endtime'];
+				$list[$key]['resnumber'] = $value['resnumber'];
+				$list[$key]['createtime'] = $value['createtime'];
+				$list[$key]['id'] = $value['id'];
+				$list[$key]['picurl'] = $value['picurl'];
 			}
 		}
 		if ($op == 'more') {

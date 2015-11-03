@@ -30,7 +30,7 @@ class Hl_zzzModuleSite extends WeModuleSite {
             message('标识领奖成功！', $this->createWebUrl('awardlist', array('id' => $id, 'page' => $_GPC['page'])));
         }
         $pindex = max(1, intval($_GPC['page']));
-        $psize = 50;
+        $psize = 15;
         $where = '';
         $condition = array(
             'mobile' => " AND `b`.`mobile` LIKE '%" . $_GPC['profilevalue'] . "%'",
@@ -41,11 +41,44 @@ class Hl_zzzModuleSite extends WeModuleSite {
             $where .= $condition[$_GPC['profile']];
         }
 
-        $sql = 'SELECT `a`.`id`, `a`.`friendcount`, `a`.`points`, `a`.`createtime`, `b`.`realname`, `b`.`nickname`, `b`.`mobile` FROM ' .
-                tablename('zzz_user') . ' AS `a` LEFT JOIN ' . tablename('mc_mapping_fans') . ' AS `f` ON `f`.`fanid` = `a`.`fanid` LEFT
-                JOIN ' . tablename('mc_members') . " AS `b` ON `b`.`uid` = `f`.`uid`  WHERE `a`.`rid` = :rid $where ORDER BY `a`.`points`
-                DESC LIMIT " . ($pindex - 1) * $psize . ',' . $psize;
+        $sql = 'SELECT `a`.`id`, `a`.`friendcount`, `a`.`points`, `a`.`createtime`, `a`.`sharevalue`, `b`.`realname`, `b`.`nickname`,
+                `b`.`mobile` FROM ' . tablename('zzz_user') . ' AS `a` LEFT JOIN ' . tablename('mc_mapping_fans') . ' AS `f` ON
+                `f`.`fanid` = `a`.`fanid` LEFT JOIN ' . tablename('mc_members') . " AS `b` ON `b`.`uid` = `f`.`uid`  WHERE `a`.`rid` = :rid
+                $where ORDER BY `a`.`points` DESC ";
         $params = array(':rid' => $id);
+
+        if (empty($_GPC['export'])) {
+            $sql .= ' LIMIT ' . ($pindex - 1) * $psize . ',' . $psize;
+        } else {
+            $list = pdo_fetchall($sql, $params);
+            $tableHeader = array('realname' => '姓名', 'nickname' => '昵称', 'mobile' => '手机', 'points' => '分数');
+            $tableLength = count($tableHeader) + 1;
+
+            /* 输入到CSV文件 */
+            $html = "\xEF\xBB\xBF";
+
+            /* 输出表头 */
+            foreach ($tableHeader as $header) {
+                $html .= $header . "\t ,";
+            }
+            $html .= "创建时间\t, \n";
+
+            /* 输出内容 */
+            foreach ($list as $value) {
+                foreach ($tableHeader as $key => $header) {
+                    $html .= $value[$key] . "\t ,";
+                }
+                $html .= date('Y-m-d H:i:s', $value['createtime']) . "\t ,";
+                $html .= "\n";
+            }
+
+            /* 输出CSV文件 */
+            header("Content-type:text/csv");
+            header("Content-Disposition:attachment; filename=全部数据.csv");
+            echo $html;
+            exit();
+        }
+
         $list = pdo_fetchall($sql, $params);
         if (!empty($list)) {
             $sql = 'SELECT COUNT(*) FROM ' . tablename('zzz_user') . ' AS `a` LEFT JOIN ' . tablename('mc_mapping_fans') . ' AS `f` ON `f`.`fanid` =
@@ -59,11 +92,13 @@ class Hl_zzzModuleSite extends WeModuleSite {
     public function doMobileIntroduce() {
         global $_GPC, $_W;
         $id = intval($_GPC['id']);
-        $fromuser = $_W['fans']['from_user'];
         $zzz = pdo_fetch("SELECT * FROM " . tablename('zzz_reply') . " WHERE rid = '$id'");
+        $zzz['descriptions'] = str_replace(array("\r\n"), "", $zzz['description']);
+        $zzz['rule'] = preg_replace('/color:\s+\#\w+;/i', '', $zzz['rule']);
         $sql = 'SELECT * FROM ' . tablename('zzz_user') . ' WHERE `rid` =:rid AND `fanid` = :fanid';
         $params = array(':rid' => $id, ':fanid' => $_W['fans']['fanid']);
         $myuser = pdo_fetch($sql, $params);
+        $followInfo = empty($_W['fans']['openid']) ? '提示：必须关注公众号才可以进入游戏' : '';
         include $this->template('introduce');
     }
 
@@ -76,10 +111,10 @@ class Hl_zzzModuleSite extends WeModuleSite {
         if (empty($zzz)) {
             message('非法访问，请重新发送消息进入！');
         }
+        if (empty($_W['fans']['openid'])) {
+            message('必须关注公众号才可以进入游戏', $this->createMobileUrl('introduce', array('id' => $id)), 'error');
+        }
 
-        checkauth();
-        load()->model("mc");
-        $profile = mc_require($_W['member']['uid'], array('nickname', 'mobile'), '需要完善资料后才能继续.');
         $startgame = 1;
         if ($zzz['start_time'] > TIMESTAMP) {
             $startgame = 0;
@@ -88,15 +123,6 @@ class Hl_zzzModuleSite extends WeModuleSite {
         if ($zzz['end_time'] < TIMESTAMP) {
             $startgame = 0;
             $str = "活动已结束";
-        }
-        if (empty($_W['fans']['fanid'])) {
-            $sql = 'SELECT `fanid` FROM ' . tablename('mc_mapping_fans') . ' WHERE `uid` = :uid';
-            $params = array(':uid' => $_W['member']['uid']);
-            $fansId = pdo_fetchcolumn($sql, $params);
-            if (empty($fansId)) {
-                message('必须关注公众号才可以进入游戏', $this->createMobileUrl('introduce', array('id' => $id)), 'error');
-            }
-            $_W['fans']['fanid'] = $fansId;
         }
 
         $sql = 'SELECT * FROM ' . tablename('zzz_user') . ' WHERE `rid` = :rid AND `fanid` = :fanid';
@@ -128,7 +154,9 @@ class Hl_zzzModuleSite extends WeModuleSite {
             $shareInfo = pdo_fetchcolumn($sql, $params);
             if (empty($shareInfo)) {
                 pdo_insert('zzz_share', array('rid' => $id, 'fanid' => $_W['fans']['fanid'], 'sharefid' => $shareFid));
-                pdo_update('zzz_user', array('sharevalue' => $myuser['sharevalue'] + $zzz['sharevalue']), array('fanid' => $shareFid, 'rid' => $id));
+                $sql = 'UPDATE ' . tablename('zzz_user') . ' SET `sharevalue` = sharevalue + ' . $zzz['sharevalue'] .
+                        ' WHERE `rid` = :rid AND `fanid` = :fanid';
+                pdo_query($sql, array(':rid' => $id, ':fanid' => $shareFid));
             }
         }
         $energylimit = ($zzz['maxlottery'] + $zzz['prace_times']) * 10;
@@ -373,6 +401,21 @@ class Hl_zzzModuleSite extends WeModuleSite {
         ob_end_clean();
         echo $header_str;
         echo $file_str;
+    }
+
+    public function getHomeTiles() {
+        global $_W;
+        $urls = array();
+
+        $sql = 'SELECT `id`, `rid`, `title` FROM ' . tablename('zzz_reply') . ' WHERE `uniacid` = :uniacid';
+        $replies = pdo_fetchall($sql, array(':uniacid' => $_W['uniacid']));
+        if (!empty($replies)) {
+            foreach ($replies as $reply) {
+                $urls[] = array('title' => $reply['title'], 'url' => $this->createMobileUrl('lottery', array('id' => $reply['rid'])));
+            }
+        }
+
+        return $urls;
     }
 
 }

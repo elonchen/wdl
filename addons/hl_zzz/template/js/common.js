@@ -94,7 +94,6 @@ HL.COMMON = {
                 //wxUserId: window.wxUserId
             },
             success: function(data){
-                console.log(data);
 				var data = data.message;
 				$('#gatherNum').html(data.power);
 				$('#zzNum').html(parseInt(data.power / 2000));

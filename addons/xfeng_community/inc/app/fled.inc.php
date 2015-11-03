@@ -36,6 +36,7 @@ defined('IN_IA') or exit('Access Denied');
 				$list[$key]['regionname'] = $region['title'];
 			}
 		}
+
 		if ($op == 'more') {
 			include $this->template('fledindex_more');
 			exit();
@@ -43,7 +44,7 @@ defined('IN_IA') or exit('Access Denied');
 		include $this->template('fledindex');
 	}elseif ($op == 'post') {
 		if (!empty($_GPC['id'])) {
-			$good = pdo_fetch("SELECT * FROM".tablename('xcommunity_fled')."WHERE id=:id'",array(':id' => $_GPC['id']));
+			$good = pdo_fetch("SELECT * FROM".tablename('xcommunity_fled')."WHERE id=:id",array(':id' => $_GPC['id']));
 		}
 		$data = array(
 				'weid'        => $_W['weid'],
@@ -97,6 +98,20 @@ defined('IN_IA') or exit('Access Denied');
 			$condition = " AND title LIKE '{$keyword}'";
 		}
 		$list = pdo_fetchAll('SELECT * FROM'.tablename('xcommunity_fled')."WHERE weid='{$_W['weid']}' AND status = 0 AND regionid='{$member['regionid']}' AND openid='{$_W['fans']['from_user']}' LIMIT ".($pindex - 1) * $psize.','.$psize);
+		foreach ($list as $key => $value) {
+			if ($value['images']) {
+				$images = unserialize($value['images']);
+				if ($images) {
+					$picid  = implode(',', $images);
+					$imgs   = pdo_fetchall("SELECT * FROM".tablename('xfcommunity_images')."WHERE id in({$picid})");
+				}
+				$list[$key]['img'] = $imgs;
+			}
+			if ($value['regionid']) {
+				$region = pdo_fetch("SELECT * FROM".tablename('xcommunity_region')."WHERE id='{$value['regionid']}'");
+				$list[$key]['regionname'] = $region['title'];
+			}
+		}
 		include $this->template('fledindex');
 	}elseif ($op == 'delete') {
 		$id = $_GPC['id'];

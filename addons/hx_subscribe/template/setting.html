@@ -7,6 +7,13 @@
 			</div>
 			<div class="panel-body">
 				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">是否开启奖励模式</label>
+					<div class="col-sm-9 col-xs-12">
+            			<label style="margin-top:5px;"><input type="radio" value="0" name="status" {if $settings['status'] == 0 }checked{/if}>关闭</label>
+            			<label style="margin-top:5px;"><input type="radio" value="1" name="status" {if $settings['status'] == 1 }checked{/if}>开启</label>
+					</div>
+				</div>
+				<div class="form-group">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">奖励类型</label>
 					<div class="col-sm-9 col-xs-12">
 						{loop $creditnames['creditnames'] $scredit $creditname}

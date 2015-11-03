@@ -1,10 +1,11 @@
 {template 'common/header'}
-{php load()->func('tpl')}
+
 <ul class="nav nav-tabs">
     <li><a href="{php echo $this->createWebUrl('yuyue', array('op'=>'post', 'weid'=>$weid));}">添加预约</a></li>	
     <li><a href="{php echo $this->createWebUrl('yuyue', array('op'=>'list', 'weid'=>$weid));}">预约管理</a></li>
     <li  class="active"><a href="{php echo $this->createWebUrl('yuyue', array('op'=>'show','weid'=>$weid));}">预约订单</a></li>
 </ul>
+
 <div class="main">
     <div class="panel panel-info">
 	<div class="panel-heading">筛选</div>
@@ -25,11 +26,12 @@
 			</div>
             <div class="form-group">
 				<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">提交时间</label>
-				<div class="col-xs-12 col-sm-8 col-lg-9">
+				<div class="col-xs-12 col-sm-4">
 					{php echo tpl_form_field_daterange('date1',array('starttime'=>date('Y-m-d',$starttime),'endtime'=>date('Y-m-d',$endtime)))}
 				</div>
                 <div class=" col-xs-12 col-sm-2 col-lg-2">
                     <button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+                    <button name="export" class="btn btn-default" value="export"><i class="fa fa-download"></i> 导出数据</button>
                 </div>
 			</div>
 		</form>

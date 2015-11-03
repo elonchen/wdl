@@ -10,7 +10,7 @@ body{
 }
 
 a{text-decoration:none;}
- 
+/*ÂÖÅÌ*/
 .mingdaninfo    {
     max-width:100%;
     position:relative;
@@ -42,7 +42,7 @@ a{text-decoration:none;}
 }
 .biaoti{
     color:#F5F5F5;
-    font-family:"Î¢ï¿½ï¿½ï¿½Åºï¿½";
+    font-family:"Î¢ÈíÑÅºÚ";
     font-size:14px;
     text-align:center;
     height:35px;
@@ -98,7 +98,7 @@ a{text-decoration:none;}
 }
 /*
 .kouling{
-    font-family:"Î¢ï¿½ï¿½ï¿½Åºï¿½";
+    font-family:"Î¢ÈíÑÅºÚ";
     color:#FFF;
     font-size:12px;
     font-weight:bold;
@@ -125,7 +125,7 @@ a{text-decoration:none;}
     width:133px;
     height:36px;
     color:#FFF;
-    font-family:"Î¢ï¿½ï¿½ï¿½Åºï¿½";
+    font-family:"Î¢ÈíÑÅºÚ";
     font-size:18px;
     float:left;
     position:absolute;
@@ -227,7 +227,7 @@ a{text-decoration:none;}
     line-height:20px;
     height:60px;
     background-color:#fff;
-    font-family:"Î¢ï¿½ï¿½ï¿½Åºï¿½";
+    font-family:"Î¢ÈíÑÅºÚ";
     font-size:15px;
     color:#845d3a;
     padding-top:10px;
@@ -240,7 +240,7 @@ a{text-decoration:none;}
     line-height:25px;
     height:55px;
     background-color:#fff;
-    font-family:"Î¢ï¿½ï¿½ï¿½Åºï¿½";
+    font-family:"Î¢ÈíÑÅºÚ";
     font-size:15px;
     color:#845d3a;
     padding-top:10px;
@@ -253,7 +253,7 @@ a{text-decoration:none;}
     line-height:25px;
     height:80px;
     background-color:#fff;
-    font-family:"Î¢ï¿½ï¿½ï¿½Åºï¿½";
+    font-family:"Î¢ÈíÑÅºÚ";
     font-size:15px;
     color:#845d3a;
     padding-top:10px;
@@ -266,7 +266,7 @@ a{text-decoration:none;}
     line-height:25px;
     height:78px;
     background-color:#fff;
-    font-family:"Î¢ï¿½ï¿½ï¿½Åºï¿½";
+    font-family:"Î¢ÈíÑÅºÚ";
     font-size:15px;
     color:#845d3a;
     padding-top:10px;
@@ -376,7 +376,7 @@ a{text-decoration:none;}
     line-height:25px;
     height:80px;
     background-color:#fff;
-    font-family:"Î¢ï¿½ï¿½ï¿½Åºï¿½";
+    font-family:"Î¢ÈíÑÅºÚ";
     font-size:15px;
     color:#845d3a;
     padding-top:10px;
@@ -389,7 +389,7 @@ a{text-decoration:none;}
     max-width:180px;
     line-height:28px;
             
-    font-family:"Î¢ï¿½ï¿½ï¿½Åºï¿½";
+    font-family:"Î¢ÈíÑÅºÚ";
     font-size:18px;
     color:#845d3a;
     padding-top:20px;
@@ -481,7 +481,7 @@ a{text-decoration:none;}
 #ico1{    width:280px;    height:280px;    background-position:0px    0px;}
 #ico2{    width:280px;    height:280px;    background-position:0px    -280px;}
 #ico3{    width:280px;    height:280px;    background-position:0px    -560px;}*/
-/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê½*/
+/*µ¯³ö¿òÑùÊ½*/
 .tc_kuang{
     width:280px;
     height:256px;

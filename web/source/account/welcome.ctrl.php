@@ -1,6 +1,6 @@
 <?php
 /**
- * [Weizan System] Copyright (c) 2013 wdlcms.com
+ * [WeiZan System] Copyright (c) 2013 wdlcms.com
  * $sn: pro/web/source/account/welcome.ctrl.php : v f2069dc830e0 : 2014/09/23 07:26:50 : yanghf $
  */
 defined('IN_IA') or exit('Access Denied');

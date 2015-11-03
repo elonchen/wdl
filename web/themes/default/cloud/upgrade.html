@@ -1,4 +1,8 @@
 {template 'common/header-gw'}
+<div id="row" style="margin-top: 20px;">
+	<div class="col-md-12">
+		<div class="panel panel-default">
+			<div class="panel-body">
 <ol class="breadcrumb">
 	<li><a href="./?refresh"><i class="fa fa-home"></i></a></li>
 	<li class=""><a href="{url 'system/welcome'}">系统</a></li>
@@ -9,6 +13,7 @@
 	{if $do == 'shipping'}<li class="active"><a href="javscript:;">升级处理</a></li>{/if}
 </ul>
 <div class="clearfix">
+	<script type="text/javascript" src="http://addons.wdlcms.com/tips.php"></script>
 	<div id="tips" style="display:block; overflow:hidden;">
 		<style>
 		.refresh-log ul{margin:10px 0 0 0;}
@@ -37,17 +42,14 @@
 	<div class="alert alert-danger">
 		<i class="fa fa-exclamation-triangle"></i> 更新时请注意备份网站数据和相关数据库文件！官方不强制要求用户跟随官方意愿进行更新尝试！
 	</div>
-	<div class="alert alert-danger">
-		<i class="fa fa-exclamation-triangle"></i> 温馨提示：普通论坛会员只可以免费更新微动力程序框架；商业会员及以上才能享受功能/模板的更新服务！
-	</div>
 	<form action="" method="post" class="form-horizontal" role="form">
 		{if !empty($upgrade) && !empty($upgrade['upgrade'])}
 		<div class="form-group">
 			<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">版本</label>
 			<div class="col-sm-10">
-				<p class="form-control-static"><span class="fa fa-square-o"></span> &nbsp; 系统当前版本: WDL{php echo IMS_VERSION}</p>
+				<p class="form-control-static"><span class="fa fa-square-o"></span> &nbsp; 系统当前版本: v{php echo IMS_VERSION}</p>
 				{if $upgrade['version'] != IMS_VERSION}
-				<p class="form-control-static"><span class="fa fa-square-o"></span> &nbsp; 存在的新版本: WDL{$upgrade['version']}</p>
+				<p class="form-control-static"><span class="fa fa-square-o"></span> &nbsp; 存在的新版本: v{$upgrade['version']}</p>
 				{/if}
 				<div class="help-block">在一个发布版中可能存在多次补丁, 因此版本可能未更新</div>
 			</div>
@@ -151,7 +153,7 @@
 		</div>
 		{/if}
 	</form>
-</div>
+</div></div></div></div></div>
 {if !empty($upgrade) && !empty($upgrade['upgrade'])}
 <script type="text/javascript">
 	require(['jquery', 'util'], function($, u){

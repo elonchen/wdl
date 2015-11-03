@@ -1,7 +1,7 @@
 <?php
 /**
- * [Fmoons System] Copyright (c) 2014 wdlcms.com
- * Fmoons is NOT a free software, it under the license terms, visited http://www.wdlcms.com/ for more details.
+ * [Fmoons System] Copyright (c) 2014 012wz.com
+ * Fmoons is NOT a free software, it under the license terms, visited http://www.012wz.com/ for more details.
  */
 define('IN_API', true);
 require_once '../../framework/bootstrap.inc.php';

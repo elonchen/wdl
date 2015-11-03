@@ -5,10 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
 <meta name="format-detection" content="telephone=no"/>
 <title>门店列表</title>
-<link rel="stylesheet" type="text/css" href="../addons/weisrc_dish/template/css/1/wei_canyin_v1.8.4.css?v=1.0"
-      media="all">
-<link rel="stylesheet" type="text/css" href="../addons/weisrc_dish/template/css/1/wei_dialog_v1.2.1.css?v=1.0"
-      media="all">
+<link rel="stylesheet" type="text/css" href="../addons/weisrc_dish/template/css/1/wei_canyin_v1.8.4.css?v=1.0" media="all">
+<link rel="stylesheet" type="text/css" href="../addons/weisrc_dish/template/css/1/wei_dialog_v1.2.1.css?v=1.0" media="all">
 <script type="text/javascript" src="../addons/weisrc_dish/template/js/1/wei_webapp_v2_common_v1.9.4.js"></script>
 <script type="text/javascript" src="../addons/weisrc_dish/template/js/1/wei_industry_common_v1.3.0.js?v=1"></script>
 <script type="text/javascript" src="../addons/weisrc_dish/template/js/1/wei_dialog_v1.9.9.js"></script>
@@ -240,6 +238,12 @@
             {/loop}
         </select>
         {/if}
+        <p><input type="text" placeholder="搜索店名、地址..." name="keyword" value=""/></p>
+        <span>
+            <input type="button" value="搜索" onClick="if(_trim(document.getElementsByName('keyword')[0].value)){return this.form.submit();}else{return false}"/>
+            <input type="reset" value="取消" onClick="document.getElementsByName('keyword')[0].value='';return false;"/>
+            <input type="hidden" name="latitude" value=""/>
+        </span>
     </div>
 </div>
 <div id="page_order" style="padding-top: 0px;margin-top: 10px;" >
@@ -254,7 +258,9 @@
                     <tbody>
                     <tr>
                         <td rowspan="3">
-                            <span><img src="{if strstr($row['logo'], 'http') || strstr($row['logo'], './source/modules/')}{$row['logo']}{else}{$_W['attachurl']}{$row['logo']}{/if}" ></span>
+                            <span>
+                                <img src="{if strstr($row['logo'], 'http') || strstr($row['logo'], './source/modules/')}{$row['logo']}{else}{$_W['attachurl']}{$row['logo']}{/if}" >
+                            </span>
                         </td>
                         <td>
                             <h1 style="float:left;">{$row['title']}</h1>
@@ -298,7 +304,7 @@
         </article>
         <ul>
             {if !empty($row['tel'])}
-            <li><a href="tel:{$row['tel']}" class="order">预订</a></li>
+            <li><a href="javascript:void(0);" class="order" onclick="select_phone({$row['tel']});">预订</a></li>
             {/if}
             <li>
                 <a href="http://api.map.baidu.com/marker?location={$row['lat']},{$row['lng']}&title={$row['title']}&name={{$row['title']}}&content={$row['address']}&output=html&src=weiba|weisrc" class="gps">导航</a></li>
@@ -313,6 +319,10 @@
         if (obj.value != -1) {
             window.location.href = "{php echo $this->createMobileurl('waprestlist', array('storeid' => $storeid), true)}" + '&areaid=' + obj.value;
         }
+    }
+
+    function select_phone(obj) {
+        window.location.href = "tel:" + obj;
     }
 </script>
 </body>

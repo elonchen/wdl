@@ -7,17 +7,6 @@
 {if $do == 'display'}
 <script type="text/javascript">
 	require(['jquery', 'util'], function($, u){
-		$("#form1").submit(function(){
-			var bool=true;
-			$(":text.form-control").each(function(index){
-				var value = parseInt($(this).val());
-				if(isNaN(value)) {
-					u.message('排序值必须为数字.', '', 'error');
-					bool = false;
-				}
-			});
-			if(!bool) return false;
-		});
 		$('.btn').hover(function(){
 			$(this).tooltip('show');
 		},function(){
@@ -40,9 +29,9 @@
 			<tbody>
 				{loop $list $item}
 				<tr>
-					<td><input type="text" class="form-control" name="orderlist[{$item['groupid']}]" value="{$item['orderlist']}"></td>
+					<td><input type="text" class="form-control orderlist" name="orderlist[{$item['groupid']}]" value="{$item['orderlist']}"></td>
 					<td style="vertical-align:middle;">
-						<input type="input" name="title[{$item['groupid']}]" class="form-control" value="{$item['title']}" />
+						<input type="text" name="title[{$item['groupid']}]" class="form-control" value="{$item['title']}" />
 					</td>
 					<td style="vertical-align:middle;">
 						{if $item['isdefault'] == '1'}

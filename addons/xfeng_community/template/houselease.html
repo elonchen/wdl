@@ -2,50 +2,62 @@
 {template 'common/header'}
 {template 'nav'}
 {php load()->func('tpl')}
-<div class="main">
+<script src="{MODULE_URL}template/js/galleria.js"></script>
+<style type="text/css">
+    #galleria img{
+   display: block; position: relative; left: 50px; top: 30px;
+   height: 0px;
+   width: 0px;
+}
+</style>
+<div class="main" id='list'>
 {if $op == 'post'}
 	<ul class="nav nav-tabs">
 		<li><a href="{php echo $this->createWebUrl('houselease', array('regionid'=>$_GPC['regionid']));}">管理</a></li>
 		<li class="active"><a href="{php echo $this->createWebUrl('houselease', array('op' => 'post','regionid'=>$_GPC['regionid'], 'id'=>$item['id']));}">编辑</a></li>
 	</ul>
 	<form action="" class="form-horizontal form" method="post">
-		<h4>房屋租赁信息</h4>
-		<table class="tb">
-			<tr>
-				<th>状态</th>
-				<td>
-					<select name="status" class="span5">
-						<option value="0" {if $item['status'] == 0}selected{/if}>未解决</option>
-						<option value="1" {if $item['status'] == 1}selected{/if}>已解决</option>
-						<option value="2" {if $item['status'] == 2}selected{/if}>已撤销</option>
-					</select>
-				</td>
-			</tr>
-			<tr>
-				<th>分类</th>
-				<td>
-					<select class="span3" id="cate_2" name="servicesmallcategory" autocomplete="off">
-						<option value="0">请选择房屋租赁分类</option>
-						{loop $categories $key $category}
-						<option value="{$key}" {if $key == $item['servicesmallcategory']} selected="selected"{/if}>{$category['name']}</option>
-						{/loop}
-					</select>
-				</td>
-			</tr>
-			<tr>
-				<th>发布人</th>
-				<td><input type="text" value="{$member['realname']}" class="span5" readonly="readonly"/></td>
-			</tr>
-			<tr>
-				<th>发布时间</th>
-				<td>
-					<input type="text" value="{php echo date('Y-m-d h:i:s', $item['createtime'])}" class="span5"/>
-				</td>
-			</tr>
-			<tr>
-				<th>联系方式</th>
-				<td>
-					<label for="contacttype1" class="radio radio-inline">
+	<div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">房屋租赁信息</h3>
+          </div>
+          <div class="panel-body">
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">状态</label>
+                <div class="col-sm-10">
+                  <select name="status" class="form-control">
+                        <option value="0" {if intval($item[ 'status'])==0} selected{/if}>未解决</option>
+                        <option value="1" {if intval($item[ 'status'])==1} selected{/if}>已解决</option>
+                        <option value="2" {if intval($item[ 'status'])==2} selected{/if}>已撤销</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">请选择房屋租赁分类</label>
+                <div class="col-sm-10">
+                  <select name="category" class="form-control">
+                        {loop $categories $category}
+                        <option value="{$category['name']}" {if $category[ 'name']==$item[ 'category']} selected{/if}>{$category['name']}</option>
+                        {/loop}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">发布人</label>
+                <div class="col-sm-10">
+                	<input type="text" value="{$member['realname']}" class="form-control" readonly="readonly"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">发布时间</label>
+                <div class="col-sm-10">
+                	<input type="text" value="{php echo date('Y-m-d h:i:s', $item['createtime'])}" class="form-control" readonly="readonly"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">联系方式</label>
+                <div class="col-sm-10">
+                   <label for="contacttype1" class="radio radio-inline">
 						<input type="radio" name="contacttype" id="contacttype1" value="1" {if $item['contacttype']==1}checked='checked'{/if}/>随时联系
 						<input type="hidden" name="contactdesc[1]" value="随时联系"/>
 					</label>
@@ -57,43 +69,63 @@
 						<input type="radio" name="contacttype" id="contacttype3" value="3" {if $item['contacttype']==3}checked='checked'{/if}/>晚上联系
 						<input type="hidden" name="contactdesc[3]" value="晚上联系"/>
 					</label>
-					<label for="contacttype4" class="radio radio-inline" onclick="document.getElementById('contactdesc').focus();">
-						<input type="radio" name="contacttype" id="contacttype4" value="4" {if $item['contacttype']==4}checked='checked'{/if} />自定义时间:
-						<input type="text" id="contactdesc" name="contactdesc[4]" value="{if $_GPC['contacttype']==4}{$item['contactdesc']}{/if}"/>
-					</label>
-				</td>
-			</tr>
-			<tr>
-				<th>要求</th>
-				<td>
-					<textarea style="height:150px;" class="span7" name="requirement" cols="70">{$item['requirement']}</textarea>
-				</td>
-			</tr>
-			<tr>
-				<th>备注</th>
-				<td>
-					<textarea style="height:100px;" class="span7" name="remark" cols="70" id="remark" >{$item['remark']}</textarea>
-				</td>
-			</tr>
-		</table>
-		<table class="tb">
-			 <tr>
-                <th>房屋图片</th>
-                <td>
-                     {loop $imgs $value}
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">要求</label>
+                <div class="col-sm-10">
+                   <textarea style="height:150px;" class="form-control" name="requirement" cols="70">{$item['requirement']}</textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">备注</label>
+                <div class="col-sm-10">
+                   <textarea style="height:100px;" class="form-control" name="remark" cols="70" id="remark" >{$item['remark']}</textarea>
+                </div>
+            </div>
+            {if $imgs}
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">房屋图片</label>
+                <div class="col-sm-10">
+                   {loop $imgs $value}
                         <img src="{$value['src']}" style="width: 60px; height: 60px;border:1px solid white;" />
                     {/loop}
-                </td>
-            </tr>
-			<tr>
-				<th></th>
-				<td>
-					<button type="submit" class="btn btn-primary span3" name="submit" value="提交">提交</button>
+                </div>
+            </div>
+            {/if}
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label"></label>
+                <div class="col-sm-10">
+                   <button type="submit" class="btn btn-primary span3" name="submit" value="提交">提交</button>
 					<input type="hidden" name="token" value="{$_W['token']}" />
-				</td>
-			</tr>
-		</table>
+                </div>
+            </div>
+          </div>
+        </div>
 	</form>
+	<div id="galleria"></div>
+    <script>
+    // Load theme
+    Galleria.loadTheme('{MODULE_URL}template/lightbox/galleria.lightbox.js');
+
+    $('#galleria').galleria({
+        data_source: '#list',
+        extend: function() {
+            this.bind(Galleria.LOADFINISH, function(e) {
+                $(e.imageTarget).click(this.proxy(function(e) {
+                    e.preventDefault();
+                    this.next();
+                }))
+            })
+        },
+        keep_source: true,
+        data_config: function(img) {
+            return {
+                description: $(img).next('.caption').html()
+            }
+        }
+    });
+</script>
 {elseif $op == 'display'}
 	<ul class="nav nav-tabs">
 		<li class="active"><a href="{php echo $this->createWebUrl('houselease', array('regionid'=>$_GPC['regionid']));}">管理</a></li>

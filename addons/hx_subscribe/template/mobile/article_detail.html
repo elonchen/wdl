@@ -188,12 +188,40 @@ body > .tips{display:none;left:50%;padding:20px;position:fixed;text-align:center
 </div>
 
 <div id="mcover" onclick="$(this).hide()"><img src="./resource/images/guide.png"></div>
-<script type="text/javascript">
-sharedata = {
+
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script>
+	// jssdk config 对象
+	jssdkconfig = {php echo json_encode($_W['account']['jssdkconfig']);} || { jsApiList:[] };
+	
+	// 是否启用调试
+	// jssdkconfig.debug = true;
+	
+	// 已经注册了 jssdk 文档中所有的接口
+	jssdkconfig.jsApiList = [
+		'checkJsApi',
+		'onMenuShareTimeline',
+		'onMenuShareAppMessage',
+		'onMenuShareQQ',
+		'onMenuShareWeibo',
+		'showOptionMenu',		
+	];
+	
+	wx.config(jssdkconfig);
+
+	sharedata = {
     'title' : "{$detail['title']}", // 
     'desc' : "{$detail['description']}",  //
     'link' : "{$_W['siteroot']}app/{php echo $this->createMobileUrl('articledetail',array('id'=>$id,'from_uid' => $f_uid))}",  //
     'imgUrl' : "{$_W['attachurl']}{$detail['thumb']}" //
 }
+	
+	wx.ready(function () {
+		wx.showOptionMenu();
+		wx.onMenuShareAppMessage(sharedata);
+		wx.onMenuShareTimeline(sharedata);
+		wx.onMenuShareQQ(sharedata);
+		wx.onMenuShareWeibo(sharedata);
+	});
 </script>
 {template 'common/footer'}

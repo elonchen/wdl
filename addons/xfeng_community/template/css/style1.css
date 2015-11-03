@@ -5,7 +5,7 @@ body {
     text-align: center;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     overflow-x: hidden;
-    background: url('../image/bg004.jpg');
+    background: #e2dccf;
     width: 100%;
     height: 100%;
 }
@@ -196,7 +196,7 @@ ul.round li span.right.xqspan {
     font-size: 20px;
     text-align: left;
     border-bottom: 1px solid #aabdd2;
-    background: #ddd;
+    background: white;
 }
 
 .jifen_record h1 a {

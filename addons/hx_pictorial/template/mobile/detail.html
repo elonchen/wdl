@@ -11,15 +11,97 @@ window.onload=function(){
 	load.parentNode.removeChild(load);
 }
 </script>
-<style type="text/css">
-{php $loadsys = $_W['siteroot'].'addons/hx_pictorial/template/mobile/img/loading.png';}
-{php $loading = !empty($huabao['loading']) ? $huabao['load']:$loadsys;}
-#loading{background: url("{$loading}");}
-</style>
-<link rel="stylesheet" type="text/css" href="/addons/hx_pictorial/template/mobile/css/swiper.css">
-<link rel="stylesheet" type="text/css" href="/addons/hx_pictorial/template/mobile/css/index.css?v=2">
-<link type="text/css" rel="stylesheet" href="/addons/hx_pictorial/template/mobile/css/manimation.css" />
-<link type="text/css" rel="stylesheet" href="/addons/hx_pictorial/template/mobile/js/fancybox/fancybox.css" />
+<link rel="stylesheet" type="text/css" href="../addons/hx_pictorial/template/mobile/css/swiper.css">
+<link rel="stylesheet" type="text/css" href="../addons/hx_pictorial/template/mobile/css/index.css">
+<link type="text/css" rel="stylesheet" href="../addons/hx_pictorial/template/mobile/css/manimation.css" />
+<link type="text/css" rel="stylesheet" href="../addons/hx_pictorial/template/mobile/js/fancybox/fancybox.css" />
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <script type="text/javascript">
+    if(navigator.appName == 'Microsoft Internet Explorer'){
+        if(navigator.userAgent.indexOf("MSIE 5.0")>0 || navigator.userAgent.indexOf("MSIE 6.0")>0 || navigator.userAgent.indexOf("MSIE 7.0")>0) {
+            alert('您使用的 IE 浏览器版本过低, 推荐使用 Chrome 浏览器或 IE8 及以上版本浏览器.');
+        }
+    }
+    {php define('HEADER', true);}
+    window.sysinfo = {
+{if !empty($_W['uniacid'])}
+        'uniacid': '{$_W['uniacid']}',
+{/if}
+{if !empty($_W['acid'])}
+        'acid': '{$_W['acid']}',
+{/if}
+{if !empty($_W['openid'])}
+        'openid': '{$_W['openid']}',
+{/if}
+{if !empty($_W['uid'])}
+        'uid': '{$_W['uid']}',
+{/if}
+        'siteroot': '{$_W['siteroot']}',
+        'siteurl': '{$_W['siteurl']}',
+        'attachurl': '{$_W['attachurl']}',
+{if defined('MODULE_URL')}
+        'MODULE_URL': '{MODULE_URL}',
+{/if}
+        'cookie' : {'pre': '{$_W['config']['cookie']['pre']}'}
+    };
+    
+    // jssdk config 对象
+    jssdkconfig = {php echo json_encode($_W['account']['jssdkconfig']);} || {};
+    
+    // 是否启用调试
+    jssdkconfig.debug = false;
+    
+    jssdkconfig.jsApiList = [
+        'checkJsApi',
+        'onMenuShareTimeline',
+        'onMenuShareAppMessage',
+        'onMenuShareQQ',
+        'onMenuShareWeibo',
+        'hideMenuItems',
+        'showMenuItems',
+        'hideAllNonBaseMenuItem',
+        'showAllNonBaseMenuItem',
+        'translateVoice',
+        'startRecord',
+        'stopRecord',
+        'onRecordEnd',
+        'playVoice',
+        'pauseVoice',
+        'stopVoice',
+        'uploadVoice',
+        'downloadVoice',
+        'chooseImage',
+        'previewImage',
+        'uploadImage',
+        'downloadImage',
+        'getNetworkType',
+        'openLocation',
+        'getLocation',
+        'hideOptionMenu',
+        'showOptionMenu',
+        'closeWindow',
+        'scanQRCode',
+        'chooseWXPay',
+        'openProductSpecificView',
+        'addCard',
+        'chooseCard',
+        'openCard'
+    ];
+    
+    </script>
+    
+    <script>
+    function _removeHTMLTag(str) {
+        if(typeof str == 'string'){
+            str = str.replace(/<script[^>]*?>[\s\S]*?<\/script>/g,'');
+            str = str.replace(/<style[^>]*?>[\s\S]*?<\/style>/g,'');
+            str = str.replace(/<\/?[^>]*>/g,'');
+            str = str.replace(/\s+/g,'');
+            str = str.replace(/&nbsp;/ig,'');
+        }
+        return str;
+    }
+    </script>
 </head>
 <body>
 {if (($huabao['open'])&&($huabao['ostyle']==1))}
@@ -54,13 +136,13 @@ window.onload=function(){
 	<source src="{$huabao['music']}" type="audio/mpeg" />
 </audio>
 {/if}
-<script src="/addons/hx_pictorial/template/mobile/js/jquery.min.js"></script>
-<script src="/addons/hx_pictorial/template/mobile/js/swiper.min.js"></script>
-<script src="/addons/hx_pictorial/template/mobile/js/wechat.min.js"></script>
-<script src="/addons/hx_pictorial/template/mobile/js/fancybox/fancybox.js"></script>
+<script src="../addons/hx_pictorial/template/mobile/js/jquery.min.js"></script>
+<script src="../addons/hx_pictorial/template/mobile/js/swiper.min.js"></script>
+<script src="../addons/hx_pictorial/template/mobile/js/wechat.min.js"></script>
+<script src="../addons/hx_pictorial/template/mobile/js/fancybox/fancybox.js"></script>
 {if (($huabao['open'])&&($huabao['ostyle']==1))}
 <!-- 手指擦除效果 -->
-<script src="/addons/hx_pictorial/template/mobile/js/tapclip.min.js"></script>
+<script src="../addons/hx_pictorial/template/mobile/js/tapclip.min.js"></script>
 <script type="text/javascript">
 var canvas = document.getElementById("cas"),ctx = canvas.getContext("2d");
 var x1,y1,a=20,timeout,totimes = 100,jiange = 20;
@@ -117,35 +199,36 @@ $(document).ready(function() {
 });
 </script>
 <!-- 微信分享设置 -->
-<script type="text/javascript">
-WeixinApi.ready(function(Api) {
-	Api.showOptionMenu();
-	var wxData = {
-		"imgUrl" : '{$_W['attachurl']}{$huabao['icon']}',
-		"desc" : '{$huabao['content']}',
-		"title" : '{$huabao['title']}',
-		"link" : 'http://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}&wxref=mp.weixin.qq.com'
-		};
-	// 分享的回调
-	var wxCallbacks = {
-		// 分享被用户自动取消
-		cancel : function(resp) {
-			alert("亲，这么好的东西怎么能不分享给好朋友呢！");
-		},
-		// 分享失败了
-		fail : function(resp) {
-			alert("分享失败，可能是网络问题，一会儿再试试？");
-		},
-		// 分享成功
-		confirm : function(resp) {
-			window.location.href='{$huabao['share']}';
-		},
-	};
-	Api.shareToFriend(wxData,wxCallbacks);
-	Api.shareToTimeline(wxData,wxCallbacks);
-	Api.shareToWeibo(wxData,wxCallbacks);
-});
+<script>
+// 自定义分享数据的调用
+sharedata = {
+	title: "{$huabao['title']}",
+	desc: "{$huabao['content']}",
+	link: "http://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}&wxref=mp.weixin.qq.com",
+	imgUrl: "{php echo tomedia($huabao['icon'])}",
+	success: function(){
+		window.location.href='{$huabao['share']}';
+	},
+	fail : function() {
+		alert("分享失败，可能是网络问题，一会儿再试试？");
+	},
+	cancel : function() {
+		alert("亲，这么好的东西怎么能不分享给好朋友呢！");
+	},
+};
 </script>
+<script type="text/javascript">
+	
+	wx.config(jssdkconfig);
+
+	wx.ready(function () {
+		wx.onMenuShareAppMessage(sharedata);
+		wx.onMenuShareTimeline(sharedata);
+		wx.onMenuShareQQ(sharedata);
+		wx.onMenuShareWeibo(sharedata);
+	});
+	
+	</script>
 <div id="mcover" onclick="$(this).hide()"><img src="./resource/images/guide.png"></div>
 </body>
 </html>

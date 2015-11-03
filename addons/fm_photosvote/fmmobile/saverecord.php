@@ -3,10 +3,11 @@
  * 女神来了模块定义
  *
  * @author 微赞科技
- * @url http://bbs.wdlcms.com/
+ * @url http://bbs.012wz.com/
  */
 defined('IN_IA') or exit('Access Denied');
 header('Content-type: application/json');
+		$qiniu = iunserializer($reply['qiniu']);
 		$fmmid = random(16);
 		$now = time();
 		$udata = array(
@@ -22,9 +23,9 @@ header('Content-type: application/json');
 		if ($udata['mediaid']) {
 			$voice = $this->downloadVoice($udata['mediaid'], $fmmid);	
 			
-			if ($qiniu['isqiniu']) {				
+			if ($qiniu['isqiniu']) {
 				$nfilename = 'FMVOICE'.date('YmdHis').random(16).'.amr';
-				$upurl = toimage($voice);
+				$upurl = tomedia($voice);
 				$username = pdo_fetch("SELECT * FROM ".tablename($this->table_users_name)." WHERE uniacid = :uniacid and from_user = :from_user and rid = :rid", array(':uniacid' => $uniacid,':from_user' => $from_user,':rid' => $rid));
 				$audiotype = 'voice';
 					$qiniuaudios = $this->fmqnaudios($nfilename, $qiniu, $upurl, $audiotype, $username);
@@ -73,12 +74,15 @@ header('Content-type: application/json');
 							}
 						}						
 					}
+			}else {
+				$udata['voice'] = $voice;
+				pdo_insert($this->table_users_voice, $udata);
+				pdo_update($this->table_users, array('fmmid' => $fmmid, 'mediaid'=>$_POST['serverId'], 'lastip' => getip(), 'lasttime' => $now, 'voice' => $voice, 'timelength' => $_GPC['timelength']), array('uniacid' => $uniacid, 'rid' => $rid, 'from_user' => $from_user));
 			}
-			$udata['voice'] = $voice;
+			
 		}
 		
-		pdo_insert($this->table_users_voice, $udata);
-		pdo_update($this->table_users, array('fmmid' => $fmmid, 'mediaid'=>$_POST['serverId'], 'lastip' => getip(), 'lasttime' => $now, 'voice' => $voice, 'timelength' => $_GPC['timelength']), array('uniacid' => $uniacid, 'rid' => $rid, 'from_user' => $from_user));
+		
 		
 		$data=json_encode(array('ret'=>0,'serverId'=>$_POST['serverId']));
 		die($data);

@@ -99,12 +99,12 @@
                         message += '必须输入活动引导素材 <br>';
                     }
     
-                    //if($scope.gifts.length == 0) {
-                     //   message += '必须设置活动礼品 <br>';
-                   //}
-                   // if($scope.sumItem('rate') > 100) {
-                   //     message += '总中奖概率不能超过100% <br>';
-                   // }
+                    if($scope.gifts.length == 0) {
+                        message += '必须设置活动礼品 <br>';
+                    }
+                    if($scope.sumItem('rate') > 100) {
+                        message += '总中奖概率不能超过100% <br>';
+                    }
                     if(message) {
                         u.message(message);
                     } else {

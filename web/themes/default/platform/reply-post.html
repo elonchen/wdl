@@ -144,7 +144,7 @@ require(['angular.sanitize', 'bootstrap', 'underscore', 'util'], function(angula
 				return false;
 			}
 			$scope.$digest();
-			val = angular.toJson(val);
+			val =angular.toJson(val);
 			$(':hidden[name=keywords]').val(val);
 			if($.isFunction(window.validateReplyForm)) {
 				return window.validateReplyForm(this, $, _, util, $scope, $http);
@@ -156,8 +156,8 @@ require(['angular.sanitize', 'bootstrap', 'underscore', 'util'], function(angula
 			$scope.$digest();
 		})
 		util.emotion($("#keyword"), $("#keywordinput")[0], function(txt, elm, target){
-			$scope.trigger.items.default = $(target).val();
-			$scope.$digest();
+				$scope.trigger.items.default = $(target).val();
+				$scope.$digest();
 		});
 	}).filter('nl2br', function($sce){
 		return function(text) {
@@ -225,6 +225,7 @@ require(['angular.sanitize', 'bootstrap', 'underscore', 'util'], function(angula
 			<div class="col-sm-12">
 				<div class="panel panel-default">
 					<div class="panel-heading">{if empty($rid)}添加{else}修改{/if}回复规则 <span class="text-muted">删除，修改规则、关键字以及回复后，请提交以保存操作。</span></div>
+
 					<ul class="list-group">
 						<li class="list-group-item">
 							<div class="form-group">
@@ -370,6 +371,7 @@ require(['angular.sanitize', 'bootstrap', 'underscore', 'util'], function(angula
 				<input type="hidden" name="token" value="{$_W['token']}" />
 			</div>
 		</div>
+
 	</form>
 </div></div></div></div></div>
 {template 'common/footer'}

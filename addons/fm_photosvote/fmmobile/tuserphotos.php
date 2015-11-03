@@ -3,12 +3,12 @@
  * 女神来了模块定义
  *
  * @author 微赞科技
- * @url http://bbs.wdlcms.com/
+ * @url http://bbs.012wz.com/
  */
 defined('IN_IA') or exit('Access Denied');
 		$vfrom = $_GPC['do'];
 
-		if ($reply['ipannounce'] == 1) {
+		if ($istop['ipannounce'] == 1) {
 			$announce = pdo_fetchall("SELECT * FROM " . tablename($this->table_announce) . " WHERE uniacid= '{$uniacid}' AND rid= '{$rid}' ORDER BY id DESC");
 			
 		}
@@ -20,6 +20,13 @@ defined('IN_IA') or exit('Access Denied');
 		//查询是否参与活动
 		if(!empty($tfrom_user)) {
 		    $user = pdo_fetch("SELECT * FROM ".tablename($this->table_users)." WHERE uniacid = :uniacid and from_user = :from_user and rid = :rid", array(':uniacid' => $uniacid,':from_user' => $tfrom_user,':rid' => $rid));
+			if ($user['status'] != 1 && $tfrom_user != $from_user) {
+				$urlstatus =  $_W['siteroot'] .'app/'.$this->createMobileUrl('photosvoteview',array('rid'=> $rid));
+				echo "<script>alert('ID:".$user['id']." 号选手正在审核中，请查看其他选手，谢谢！');location.href='".$urlstatus."';</script>";     
+				die();
+		  		//message('该选手正在审核中，请查看其他选手，谢谢！',$this->createMobileUrl('photosvoteview',array('rid'=> $rid)),'error');
+		  	}
+
 			$str = array('&'=>'%26');
 			$url = $_W['siteroot'] .'app/'.$this->createMobileUrl('shareuserview', array('rid' => $rid,'duli'=> '1', 'fromuser' => $from_user, 'tfrom_user' => $tfrom_user));
 			$url = $this->dwz($url);			

@@ -21,9 +21,7 @@ class Zombie_fightingModule extends WeModule {
 			$reply['status_fighting'] = '0';
             $reply['most_num_times'] = '1';
  		}
- 			/*$a= 2;
-		$b = &$a;
-		echo (++$a)+($a++);*/
+
 		include $this->template('form');
 	}
 
@@ -40,11 +38,14 @@ class Zombie_fightingModule extends WeModule {
 			'description' => htmlspecialchars_decode($_GPC['description']),
 			'qnum' => $_GPC['qnum'],
 			'picture' => $_GPC['picture'],
-			'weid' => $_W ['uniacid'],
+			'weid' => $_W['uniacid'],
+			'thumb' => $_GPC['thumb'],
+			'thumb_url' => $_GPC['thumb_url'],
             'most_num_times'=> $_GPC['most_num_times'],
 			'status_fighting' =>$_GPC['status_fighting'],
 			'answertime' =>$_GPC['answertime'],
 			'start' =>strtotime($_GPC['datelimit']['start']),
+			'followurl' => $_GPC['followurl'],
 			'end' =>strtotime($_GPC['datelimit']['end']),
 		);
 		if (empty($id)) {
@@ -69,26 +70,7 @@ class Zombie_fightingModule extends WeModule {
 	}
 	
 	public function settingsDisplay($settings) {
-        global $_GPC, $_W;
-        load()->func('tpl');
-        if(checksubmit()) {
-            $cfg = array();
-           // $cfg['guanzhuUrl'] = htmlspecialchars_decode($_GPC['guanzhuUrl']);
-            $cfg['isoauth'] = $_GPC['isoauth'];
-            if($_GPC['isoauth']==0){
-                $cfg['appid'] = $_GPC['appid'];
-                $cfg['secret'] = $_GPC['secret'];
-            }else{
-                $cfg['appid']='' ;
-                $cfg['secret']='';
-            }
-            $cfg['guanzhuUrl'] = $_GPC['guanzhuUrl'];
-            $cfg['indexPic'] = $_GPC['indexPic'];
-            if($this->saveSettings($cfg)) {
-                message('保存成功', 'refresh');
-            }
-        }
-        include $this->template('setting');
+        
 	}
 	
 }

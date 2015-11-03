@@ -4,7 +4,7 @@
  * 预约与调查模块微站定义
  *
  * @author WeEngine Team
- * @url http://bbs.wdlcms.com
+ * @url http://bbs.012wz.com
  */
 defined('IN_IA') or exit('Access Denied');
 
@@ -96,6 +96,7 @@ class We7_researchModuleSite extends WeModuleSite {
             }
         }
 
+
         include $this->template('detail');
     }
 
@@ -113,7 +114,7 @@ class We7_researchModuleSite extends WeModuleSite {
         $sql = 'SELECT * FROM ' . tablename('research_fields') . ' WHERE `reid`=:reid ORDER BY `refid`';
         $params = array();
         $params[':reid'] = $reid;
-        $fields = pdo_fetchall($sql, $params);
+        $fields = pdo_fetchall($sql, $params, 'refid');
         if (empty($fields)) {
             message('非法访问.');
         }
@@ -130,93 +131,94 @@ class We7_researchModuleSite extends WeModuleSite {
                     $select[] = $field;
                 }
             }
+        } elseif (!empty($_GPC['export'])) {
+            $select = array_keys($fields);
         }
 
         $pindex = max(1, intval($_GPC['page']));
-        $psize = 50;
-        $sql = 'SELECT * FROM ' . tablename('research_rows') . " WHERE `reid`=:reid AND `createtime` > {$starttime} AND `createtime` < {$endtime} ORDER BY `createtime` DESC LIMIT " . ($pindex - 1) * $psize . ',' . $psize;
-        $params = array();
-        $params[':reid'] = $reid;
-        $total = pdo_fetchcolumn("SELECT COUNT(*) FROM " . tablename('research_rows') . " WHERE `reid`=:reid AND `createtime` > {$starttime} AND `createtime` < {$endtime}", $params);
-        $pager = pagination($total, $pindex, $psize);
-        $list = pdo_fetchall($sql, $params);
+        $psize = 15;
+
+        $where = ' WHERE `reid` = :reid AND `createtime` > :createtime AND `createtime` < :endtime';
+        $params = array(':reid' => $reid, ':createtime' => $starttime, ':endtime' => $endtime);
+
+        $sql = 'SELECT COUNT(*) FROM ' . tablename('research_rows') . $where;
+        $total = pdo_fetchcolumn($sql, $params);
+
+        if (!empty($total)) {
+            // 参与总人数
+            $sql = 'SELECT `reid` FROM ' . tablename('research_rows') . ' WHERE `reid` = :reid GROUP BY `openid`';
+            $allTotal = pdo_fetchall($sql, array(':reid' => $reid));
+            $sql = 'SELECT * FROM ' . tablename('research_rows');
+            $where .= ' ORDER BY `createtime` DESC';
+            if (empty($_GPC['export'])) {
+                $where .= ' LIMIT ' . ($pindex - 1) * $psize . ',' . $psize;
+            }
+            $list = pdo_fetchall($sql . $where, $params);
+            load()->model('mc');
+            foreach ($list as &$r) {
+                $sql = 'SELECT `nickname` FROM ' . tablename('mc_mapping_fans') . ' WHERE `uniacid` = :uniacid AND
+                        `openid` = :openid';
+                $params = array(':uniacid' => $_W['uniacid'], ':openid' => $r['openid']);
+                $r['nickname'] = pdo_fetchcolumn($sql, $params);
+            }
+            $pager = pagination($total, $pindex, $psize);
+        }
+
         if ($select) {
             $fids = implode(',', $select);
-            foreach ($list as &$r) {
-                $r['fields'] = array();
-                $sql = 'SELECT data, refid FROM ' . tablename('research_data') . " WHERE `reid`=:reid AND `rerid`='{$r['rerid']}' AND `refid` IN ({$fids})";
-                $fdatas = pdo_fetchall($sql, $params);
-                foreach ($fdatas as $fd) {
-                    if (false == array_key_exists($fd['refid'], $r['fields'])) {
-                        $r['fields'][$fd['refid']] = $fd['data'];
-                    } else {
-                        $r['fields'][$fd['refid']] .= '--' . $fd['data'];
+            $params = array(':reid' => $reid);
+            if(!empty($list)) {
+                foreach ($list as &$r) {
+                    $r['fields'] = array();
+                    $sql = 'SELECT data, refid FROM ' . tablename('research_data') . " WHERE `reid` = :reid AND `rerid`='{$r['rerid']}' AND `refid` IN ({$fids}) ORDER BY `refid` ASC";
+                    $fdatas = pdo_fetchall($sql, $params);
+                    foreach ($fdatas as $fd) {
+                        if (false == array_key_exists($fd['refid'], $r['fields'])) {
+                            $r['fields'][$fd['refid']] = $fd['data'];
+                        } else {
+                            $r['fields'][$fd['refid']] .= '--' . $fd['data'];
+                        }
                     }
                 }
             }
         }
 
-        /* 如果调查项目类型为图片，处理fields字段信息 */
-        foreach ($list as $key => &$value) {
-            if(is_array($value['fields'])){
-                foreach ($value['fields'] as &$v) {
-                    $img = '<div align="center"><img src="';
-                    if (substr($v, 0, 6) == 'images') {
-                        $v = $img . $_W['attachurl'] . $v . '" style="width:50px;height:50px;"/></div>';
-                    }
-                }
-                unset($v);
-            }
-        }
+        if (!empty($_GPC['export'])) {
+            $filter = array();
 
-        if (checksubmit('export', 1)) {
-            $sql = 'SELECT title FROM ' . tablename('research_fields') . " AS f JOIN " . tablename('research_rows') . " AS r ON f.reid='{$params[':reid']}' GROUP BY title ORDER BY refid";
-            $tableheader = pdo_fetchall($sql, $params);
-            $tablelength = count($tableheader);
-            $tableheader[] = array('title' => '创建时间');
-            /* 获取预约数据 */
-            $sql = 'SELECT * FROM ' . tablename('research_rows') . " WHERE `reid`=:reid AND `createtime` > {$starttime} AND `createtime` < {$endtime} ORDER BY `createtime` DESC";
-            $params = array();
-            $params[':reid'] = $reid;
-            $list = pdo_fetchall($sql, $params);
-            if (empty($list)) {
-                message('暂时没有预约数据');
-            }
-            foreach ($list as &$r) {
-                $r['fields'] = array();
-                $sql = 'SELECT data, refid FROM ' . tablename('research_data') . " WHERE `reid`=:reid AND `rerid`='{$r['rerid']}'";
-                $fdatas = pdo_fetchall($sql, $params);
-                foreach ($fdatas as $fd) {
-                    $r['fields'][$fd['refid']] = $fd['data'];
+            foreach ($fields as $key => $field) {
+                if ($field['type'] == 'image') {
+                    $filter[] = $key;
+                    unset($fields[$key]);
                 }
             }
 
-            /* 处理预约数据 */
-            $data = array();
-            foreach ($list as $key => $value) {
-                if (!empty($value['fields'])) {
-                    foreach ($value['fields'] as $field) {
-                        $data[$key][] = str_replace(array("\n", "\r", "\t"), '', $field);
-                    }
-                }
-                $data[$key]['createtime'] = date('Y-m-d H:i:s', $value['createtime']);
-            }
-
+            $tablelength = count($fields) + 1;
 
             /* 输入到CSV文件 */
             $html = "\xEF\xBB\xBF";
+
             /* 输出表头 */
-            foreach ($tableheader as $value) {
-                $html .= $value['title'] . "\t ,";
-            }
-            $html .= "\n";
-            /* 输出内容 */
-            foreach ($data as $value) {
-                for ($i = 0; $i < $tablelength; $i++) {
-                    $html .= $value[$i] . "\t ,";
+            foreach ($select as $s) {
+                foreach ($fields as $field=>$key) {
+                    if ($field == $s) {
+                        $html .= $key['title'] . "\t ,";
+                    }
                 }
-                $html .= $value['createtime'] . "\t ,";
-                $html .= "\n";
+            }
+            $html .= "创建时间\t ,\n";
+
+            /* 输出内容 */
+            if(!empty($list)) {
+                foreach ($list as $value) {
+                    foreach ($value['fields'] as $key => $field) {
+                        if (!in_array($key, $filter)) {
+                            $html .= $field . "\t ,";
+                        }
+                    }
+                    $html .= date('Y-m-d H:i:s', $value['createtime']) . "\t ,";
+                    $html .= "\n";
+                }
             }
 
             /* 输出CSV文件 */
@@ -225,6 +227,23 @@ class We7_researchModuleSite extends WeModuleSite {
             echo $html;
             exit();
         }
+
+        /* 如果调查项目类型为图片，处理fields字段信息 */
+        if(!empty($list)){
+            foreach ($list as $key => &$value) {
+                if(is_array($value['fields'])){
+                    foreach ($value['fields'] as &$v) {
+                        $img = '<img src="';
+                        if (substr($v, 0, 6) == 'images') {
+                            $v = $img . tomedia($v) . '" style="width:50px;height:50px;"/>';
+                        }
+                    }
+                    unset($v);
+                }
+            }
+        }
+
+
         include $this->template('manage');
     }
 
@@ -307,9 +326,13 @@ class We7_researchModuleSite extends WeModuleSite {
             $record['status'] = intval($_GPC['status']);
             $record['inhome'] = intval($_GPC['inhome']);
             $record['pretotal'] = intval($_GPC['pretotal']);
+            $record['alltotal'] = intval($_GPC['alltotal']);
             $record['starttime'] = strtotime($_GPC['starttime']);
             $record['endtime'] = strtotime($_GPC['endtime']);
             $record['noticeemail'] = trim($_GPC['noticeemail']);
+            if (is_numeric($_GPC['mobile'])) {
+                $record['mobile'] = trim($_GPC['mobile']);
+            }
             if (empty($reid)) {
                 $record['status'] = 1;
                 $record['createtime'] = TIMESTAMP;
@@ -337,9 +360,8 @@ class We7_researchModuleSite extends WeModuleSite {
                     $field['type'] = $_GPC['type'][$k];
                     $field['essential'] = $_GPC['essentialvalue'][$k] == 'true' ? 1 : 0;
                     $field['bind'] = $_GPC['bind'][$k];
-                    $field['value'] = $_GPC['value'][$k];
-                    $field['value'] = urldecode($field['value']);
-                    $field['description'] = $_GPC['desc'][$k];
+                    $field['value'] = urldecode($_GPC['value'][$k]);
+                    $field['description'] = urldecode($_GPC['desc'][$k]);
                     pdo_insert('research_fields', $field);
                 }
             }
@@ -365,8 +387,8 @@ class We7_researchModuleSite extends WeModuleSite {
             $params[':weid'] = $_W['uniacid'];
             $params[':reid'] = $reid;
             $activity = pdo_fetch($sql, $params);
-            $activity['starttime'] && $activity['starttime'] = date('Y-m-d H:i:s', $activity['starttime']);
-            $activity['endtime'] && $activity['endtime'] = date('Y-m-d H:i:s', $activity['endtime']);
+            $activity['starttime'] && $activity['starttime'] = date($activity['starttime']);
+            $activity['endtime'] && $activity['endtime'] = date($activity['endtime']);
             if ($activity) {
                 $sql = 'SELECT * FROM ' . tablename('research_fields') . ' WHERE `reid`=:reid ORDER BY `refid`';
                 $params = array();
@@ -375,7 +397,7 @@ class We7_researchModuleSite extends WeModuleSite {
             }
         }
         if (empty($activity['endtime'])) {
-            $activity['endtime'] = date('Y-m-d', strtotime('+1 day'));
+            $activity['endtime'] =date(time()+86400);
         }
         include $this->template('post');
     }
@@ -388,7 +410,9 @@ class We7_researchModuleSite extends WeModuleSite {
         $params[':weid'] = $_W['uniacid'];
         $params[':reid'] = $reid;
         $activity = pdo_fetch($sql, $params);
-        $title = $activity['title'];
+        if (empty($_W['fans']['openid'])) {
+            message('请先关注公众号再来参加活动吧！');
+        }
         if ($activity['status'] != '1') {
             message('当前预约活动已经停止.');
         }
@@ -401,7 +425,8 @@ class We7_researchModuleSite extends WeModuleSite {
         if ($activity['endtime'] < TIMESTAMP) {
             message('当前预约活动已经结束！');
         }
-        $sql = 'SELECT * FROM ' . tablename('research_fields') . ' WHERE `reid` = :reid ORDER BY `displayorder` DESC';
+        $title = $activity['title'];
+        $sql = 'SELECT * FROM ' . tablename('research_fields') . ' WHERE `reid` = :reid ORDER BY `displayorder` DESC, `refid`';
         $params = array();
         $params[':reid'] = $reid;
         $ds = pdo_fetchall($sql, $params);
@@ -430,10 +455,22 @@ class We7_researchModuleSite extends WeModuleSite {
         }
 
         if (checksubmit('submit')) {
-            $pretotal = pdo_fetchcolumn("SELECT COUNT(*) FROM " . tablename('research_rows') . " WHERE reid = :reid AND openid = :openid", array(':reid' => $reid, ':openid' => $_W['fans']['from_user']));
+            $sql = 'SELECT COUNT(*) FROM ' . tablename('research_rows') . ' WHERE `reid` = :reid AND `openid` = :openid';
+            $params = array(':reid' => $reid, ':openid' => $_W['fans']['from_user']);
+            $pretotal = pdo_fetchcolumn($sql, $params);
+
             if ($pretotal >= $activity['pretotal']) {
-                message('抱歉,每人只能预约' . $activity['pretotal'] . "次！", referer(), 'error');
+                message('抱歉，每人只能预约' . $activity['pretotal'] . "次！", referer(), 'error');
             }
+
+            $sql = 'SELECT `rerid` FROM ' . tablename('research_rows') . ' WHERE `reid` = :reid GROUP BY `openid`';
+            unset($params[':openid']);
+            $allTotal = pdo_fetchall($sql, $params);
+            if (count($allTotal) >= $activity['alltotal']) {
+                pdo_update('research', array('endtime' => TIMESTAMP), array('reid' => $reid));
+                message('当前预约活动已经结束！');
+            }
+
             $row = array();
             $row['reid'] = $reid;
             $row['openid'] = $_W['fans']['from_user'];
@@ -468,6 +505,8 @@ class We7_researchModuleSite extends WeModuleSite {
                     }
                 }
             }
+
+
             if ($_FILES) {
                 load()->func('file');
                 foreach ($_FILES as $key => $file) {
@@ -532,21 +571,34 @@ class We7_researchModuleSite extends WeModuleSite {
                 $record['starttime'] = TIMESTAMP;
                 pdo_update('research', $record, array('reid' => $reid));
             }
-            //发送预约
-            if (!empty($datas) && !empty($activity['noticeemail'])) {
+
+            if (!empty($datas)) {
+                $image = $body = '';
+
                 foreach ($datas as $row) {
-                   $img = "<img src='{$_W['attachurl']}";
-		     //$img = "<img src='";
-                    /* 如果预约项目类型是上传图片 */
-                    if (substr($row['data'], 0, 6) == 'images') {
-                      $body = $fields[$row['refid']]['title'] . ':' . $img . $row['data'] . " ' width='90';height='120'/>";
-                                           // $body = $fields[$row['refid']]['title'] . ':' . $img . tomedia($row['data']) . ' />';
-		    }
-                    $body .= '<h4>' . $fields[$row['refid']]['title'] . ':' . $row['data'] . '</h4>';
+                    if (substr($row['data'], 0, 6) != 'images') {
+                        $body .= '<h4>' . $fields[$row['refid']]['title'] . ':' . $row['data'] . '</h4>';
+                    } else {
+                        $image .= '<p>' . $fields[$row['refid']]['title'] . ': <img src="' . tomedia($row['data']) . '" /></p>';
+                    }
                 }
-                load()->func('communication');
-                ihttp_email($activity['noticeemail'], $activity['title'] . '的预约提醒', $body);
+
+                // 发送邮件提醒
+                if (!empty($activity['noticeemail'])) {
+                    load()->func('communication');
+                    ihttp_email($activity['noticeemail'], $activity['title'] . '的预约提醒', $image . $body);
+                }
+
+                // 发送短信提醒
+                if (!empty($activity['mobile'])) {
+                    load()->model('cloud');
+                    cloud_prepare();
+                    $body = '项目' . $activity['title'] . '于' . date('Y-m-d H:i') . '有了新的预约信息,请到后台查看具体内容.' . random(3);
+                    cloud_sms_send($activity['mobile'], $body);
+                }
+
             }
+
             message($activity['information'], 'refresh');
         }
 
@@ -586,7 +638,9 @@ class We7_researchModuleSite extends WeModuleSite {
         global $_W, $_GPC;
         $operation = !empty($_GPC['op']) ? $_GPC['op'] : 'display';
         if ($operation == 'display') {
-            $rows = pdo_fetchall("SELECT * FROM " . tablename('research_rows') . " WHERE openid = :openid", array(':openid' => $_W['fans']['from_user']));
+            if (!empty($_W['fans'])) {
+                $rows = pdo_fetchall("SELECT * FROM " . tablename('research_rows') . " WHERE openid = :openid", array(':openid' => $_W['fans']['from_user']));
+            }
             if (!empty($rows)) {
                 foreach ($rows as $row) {
                     $reids[$row['reid']] = $row['reid'];
@@ -595,7 +649,9 @@ class We7_researchModuleSite extends WeModuleSite {
             }
         } elseif ($operation == 'detail') {
             $id = intval($_GPC['id']);
-            $row = pdo_fetch("SELECT * FROM " . tablename('research_rows') . " WHERE openid = :openid AND rerid = :rerid", array(':openid' => $_W['fans']['from_user'], ':rerid' => $id));
+            if (!empty($_W['fans'])) {
+                $row = pdo_fetch("SELECT * FROM " . tablename('research_rows') . " WHERE openid = :openid AND rerid = :rerid", array(':openid' => $_W['fans']['from_user'], ':rerid' => $id));
+            }
             if (empty($row)) {
                 message('我的预约不存在或是已经被删除！');
             }

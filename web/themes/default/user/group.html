@@ -75,6 +75,16 @@
 					</td>
 				</tr>
 				{/loop}
+				<tr>
+					<td class="row-first"><input class="modules" type="checkbox" value="-1" name="package[]" {if !empty($group['package']) && in_array(-1, $group['package'])}checked{/if} /></td>
+					<td>所有服务</td>
+					<td style="line-height:25px; white-space:normal;">
+						<span class="label label-danger">系统所有模块</span>
+					</td>
+					<td style="line-height:25px; white-space:normal;">
+						<span class="label label-danger">系统所有模板</span>
+					</td>
+				</tr>
 			</tbody>
 		</table>
 		</div>

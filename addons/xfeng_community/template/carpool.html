@@ -26,7 +26,7 @@
 					<td>{$cars['start_position']}->{$cars['end_position']}</td>
 					<td>{php echo date('Y',TIMESTAMP)}-{$cars['month']}-{$cars['yday']} {$cars['startMinute']}:{$cars['startSeconds']}</td>
 					<td>{$cars['seat']}</td>
-					<td>{if $cars['sprice']}$cars['sprice']{else}按实分摊{/if}</td>
+					<td>{if $cars['sprice']}{$cars['sprice']}{else}按实分摊{/if}</td>
 					<td>
 						<a onclick="toblack('{$cars['id']}')" href="#" ><i class="fa fa-eye-slash"></i>信息加入黑名单</a>
 						&nbsp;

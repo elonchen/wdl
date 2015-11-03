@@ -55,7 +55,7 @@
       cursoropacitymin:0,
       cursoropacitymax:1,
       cursorcolor:"#424242",
-      cursorwidth:"2px",
+      cursorwidth:"9px",
       cursorborderradius:"5px",
       scrollspeed:60,
       mousescrollstep:8*3,
