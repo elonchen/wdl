@@ -36,12 +36,14 @@ class Wdl_shoppingModule extends WeModule {
 
     public function settingsDisplay($settings) {
         global $_GPC, $_W;
-        
+
         if (checksubmit()) {
             $cfg = array(
                 'noticeemail' => $_GPC['noticeemail'],
                 'mobile' => $_GPC['mobile'],
                 'shopname' => $_GPC['shopname'],
+	            'template' => $_GPC['template'],
+	            'templateid' => $_GPC['templateid'],
                 'address' => $_GPC['address'],
                 'phone' => $_GPC['phone'],
                 'officialweb' => $_GPC['officialweb'],
@@ -55,7 +57,7 @@ class Wdl_shoppingModule extends WeModule {
                 message('保存成功', 'refresh');
             }
         }
-		load()->func('tpl');
+        load()->func('tpl');
 		include $this->template('setting');
     }
 

@@ -512,32 +512,73 @@ $("#save-btn").bind("click", function() {
 });
 
 
-<?php 
-            $jssdk = new JSSDK();
-            $signPackage = $jssdk->GetSignPackage();
-        ?>
-             wx.config({
-                debug:false,
-                appId: "{$_W['account']['appid_share']}",
-                timestamp: {$signPackage["timestamp"]},
-                nonceStr: '{$signPackage["nonceStr"]}',
-                signature: '{$signPackage["signature"]}',
-                jsApiList: [
-                  'onMenuShareTimeline','onMenuShareAppMessage','onMenuShareWeibo'
-                ]
-              });
-               var shareMeta = {
+       
+
+</script>
+
+
+
+<script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>	
+
+<script language='javascript'>
+
+	jssdkconfig = {php echo json_encode($_W['account']['jssdkconfig']);} || {};
+
+	// 是否启用调试
+
+	jssdkconfig.debug = false;
+
+	
+
+	jssdkconfig.jsApiList = [
+
+		'checkJsApi',
+
+		'onMenuShareTimeline',
+
+		'onMenuShareAppMessage',
+
+		'onMenuShareQQ',
+
+		'onMenuShareWeibo',
+
+		'showOptionMenu',
+
+		'closeWindow'
+
+	];
+
+
+
+	wx.config(jssdkconfig);
+
+	 
+
+	      var shareMeta = {
+
 	 imgUrl:"{$shareimg}",
 	 link :  "{$sharelink}",
 	 desc : "{$sharedesc}",
 	 title : "{$sharetitle}"
                };
-               wx.ready(function(){
-                  wx.onMenuShareTimeline(shareMeta);
-                  wx.onMenuShareAppMessage(shareMeta);
-                  wx.onMenuShareWeibo(shareMeta);
-             });
-       
-</script>
+
+	   wx.ready(function () {
+
+		wx.showOptionMenu();
+
+		wx.onMenuShareAppMessage(shareMeta);
+
+		wx.onMenuShareTimeline(shareMeta);
+
+		wx.onMenuShareQQ(shareMeta);
+
+		wx.onMenuShareWeibo(shareMeta);
+
+	});		
+
+     </script>  
+
+     
+
 <footer style="text-align:center; color:#ffd800;margin:20px"><a>&copy;{if empty($reply['copyright'])}{$_W['account']['name']}{else}{$reply['copyright']}{/if}</a></footer>
 </html>	 		

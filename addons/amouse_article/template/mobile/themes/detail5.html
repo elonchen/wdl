@@ -55,6 +55,9 @@
             </div>
 
             <div class="rich_media_tool" id="js_toobar">
+                {if $detail['outLink']}
+                <a class="media_tool_meta meta_primary"  href="{$detail['outLink']}">阅读原文</a>{/if}
+
                 <div class="media_tool_meta tips_global meta_primary">阅读
                     <span id="readNum">{$detail['clickNum']}</span>
                 </div>
@@ -63,8 +66,8 @@
                   <i class="icon_praise_gray"></i>
                   <span class="praise_num" id="likeNum">{$detail['zanNum']}</span>
                 </span>
-
-                <a href="tel:{$detail['tel']}" >一键拨号</a>
+                {if $detail['tel']}
+                <a href="tel:{$detail['tel']}" >一键拨号</a>{/if}
 
                 <a id="" class="media_tool_meta tips_global meta_extra" href="{php echo $this->createMobileUrl('jubao')}">举报</a></div>
             </div>

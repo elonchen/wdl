@@ -86,6 +86,7 @@
 			if (empty($row)) {
 				message('抱歉，菜品不存在或是已经被删除！');
 			}
+			load()->func('file');
 			if (!empty($row['thumb'])) {
 				file_delete($row['thumb']);
 			}

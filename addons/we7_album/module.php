@@ -3,7 +3,7 @@
 /**
  * 微相册模块定义
  *
- * @author WeEngine Team
+ * @author WeiZan System
  * @url http://www.012wz.com
  */
 defined('IN_IA') or exit('Access Denied');
@@ -14,7 +14,7 @@ class We7_albumModule extends WeModule {
         //要嵌入规则编辑页的自定义内容，这里 $rid 为对应的规则编号，新增时为 0
         global $_W, $_GPC;
         if (!empty($rid)) {
-            $reply = pdo_fetchall("SELECT * FROM " . tablename('album_reply') . " WHERE rid = :rid", array(':rid' => $rid));
+            $reply = pdo_fetchall("SELECT * FROM " . tablename('album_reply') . " WHERE rid = :rid ORDER BY ID ASC", array(':rid' => $rid));
             if (!empty($reply)) {
                 foreach ($reply as $row) {
                     $albumids[$row['albumid']] = $row['albumid'];
@@ -36,7 +36,7 @@ class We7_albumModule extends WeModule {
         
         //删除旧的
         pdo_query("delete from ".tablename('album_reply')." where rid=:rid",array(':rid'=>$rid));
-        
+
         if (!empty($_GPC['albumid'])) {
             foreach ($_GPC['albumid'] as $aid) {
                 pdo_insert('album_reply', array(

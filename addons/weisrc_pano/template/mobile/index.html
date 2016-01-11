@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="white"/>
     <script type="text/javascript" src="../addons/weisrc_pano/template/js/zepto.min.js"></script>
     <link rel="stylesheet" href="../addons/weisrc_pano/template/css/view.css"/>
-    <title>3D全景展示</title>
+    <title>{$title}</title>
 </head>
 <body>
 <div class="view_full" id="full3dDiv">
@@ -25,7 +25,7 @@
         </ul>
     </div>
 </div>
-<div class="view_house"><a id="currPlace" href="javascript:void(0);">360全景展示</a></div>
+<div class="view_house"><a id="currPlace" href="javascript:void(0);">{$title}</a></div>
 <a href="javascript:void(0);" id="closeBtn" class="btn_show_close"><span>关闭</span></a>
 <div id="popFail" style="">
     <div class="bk"></div>
@@ -38,7 +38,6 @@
     <div class="oval"></div>
     <div class="pop_show">
         <h4 id="tipsTitle">温馨提示</h4>
-
         <div class="pop_info" id="tipsMsg">
             <p></p>
         </div>
@@ -64,7 +63,7 @@
         $(window).on("resize", function () {
             resizeLayout();
         });
-        $("#bgImg").attr("src", "http://wxj.weixinjia.net/image/mobile/pano/bg.jpg");
+        $("#bgImg").attr("src", "../addons/weisrc_pano/template/images/bg.jpg");
         $("#bgImg").on("load", function () {
             $(this).css({"opacity": "1"});
             resizeLayout();
@@ -73,9 +72,26 @@
         });
     });
 </script>
+{php echo register_jssdk(false);}
+<script>
+    wx.ready(function () {
+        sharedata = {
+            title: '{$share_title}',
+            desc: '{$share_desc}',
+            link: '{$share_url}',
+            imgUrl: '{$share_image}',
+            success: function(){
+            },
+            cancel: function(){
+            }
+        };
+        wx.onMenuShareAppMessage(sharedata);
+        wx.onMenuShareTimeline(sharedata);
+    });
+</script>
 </body>
 </html>
 <!--360全景-->
 <!--www.weisrc.com-->
-<!--作者:微赞-->
+<!--作者:迷失卍国度-->
 <!--qq : 15595755-->

@@ -3,7 +3,7 @@
 /**
  * 调研模块微站定义
  *
- * @author WeEngine Team
+ * @author WeiZan System
  * @url http://bbs.012wz.com
  */
 defined('IN_IA') or exit('Access Denied');
@@ -217,20 +217,25 @@ class We7_surveyModuleSite extends WeModuleSite {
             $list = pdo_fetchall($sql, $params);
             $pager = pagination($total, $pindex, $psize);
         }
-
+        // 添加lists数组, 取回全部数据, 并非一页数据.
+        $sql = 'SELECT * FROM' . tablename('survey_rows') . 'WHERE `sid` = :sid';
+        $params = array(':sid' => $sid);
+        $lists = pdo_fetchall($sql, $params);
+        
         load()->model('mc');
-        foreach ($list as &$value) {
-            $member = mc_fetch($value['openid'], array('realname', 'mobile'));
+        foreach ($lists as &$value) {
+            $member = mc_fetch($value['openid'], array('nickname', 'realname', 'mobile'));
             $value['realname'] = $member['realname'];
             $value['mobile'] = $member['mobile'];
-            $sql = 'SELECT `nickname` FROM ' . tablename('mc_mapping_fans') . ' WHERE `openid`  = :openid';
-            $value['nickname'] = pdo_fetchcolumn($sql, array(':openid' => $value['openid']));
+            $value['nickname'] = $member['nickname'];
+            //$sql = 'SELECT `nickname` FROM ' . tablename('mc_mapping_fans') . ' WHERE `openid`  = :openid';
+            //$value['nickname'] = pdo_fetchcolumn($sql, array(':openid' => $value['openid']));
         }
 
         if (!empty($select)) {
             $fids = implode(',', $select);
             $params = array(':sid' => $sid);
-            foreach ($list as &$value) {
+            foreach ($lists as &$value) {
                 $value['fields'] = array();
                 $sql = 'SELECT * FROM ' . tablename('survey_data') . ' WHERE `sid` = :sid AND `srid` = :srid AND `sfid`
                         IN (' . $fids . ')';
@@ -260,7 +265,7 @@ class We7_surveyModuleSite extends WeModuleSite {
             $html .= "创建时间\t ,\n";
 
             /* 输出内容 */
-            foreach ($list as $data) {
+            foreach ($lists as $data) {
                 foreach ($tableHeader as $key => $header) {
                     if (is_numeric($key)) {
                         $html .= $data['fields'][$key] . "\t ,";
@@ -278,6 +283,7 @@ class We7_surveyModuleSite extends WeModuleSite {
             echo $html;
             exit();
         }
+
         include $this->template('managelist');
     }
 
@@ -564,4 +570,45 @@ class We7_surveyModuleSite extends WeModuleSite {
         include $this->template('research');
     }
 
+    public function doMobileMyResearch() {
+    	global $_W, $_GPC;
+    
+    	$pindex = max(1, intval($_GPC['page']));
+    	$psize = 3;
+    
+    	$weid = $_GPC['i'];
+    	$sql = 'SELECT * FROM ' . tablename('survey') . ' WHERE `weid` = :weid';
+    	$params = array(':weid' => $weid);
+    	$research = pdo_fetchall($sql, $params);
+    
+    	// 还没发起过调研
+    	if (empty($research)) {
+    		message('您还没有没有任何调研记录', referer(), 'error');
+    	}
+    
+    	// 否则, 构建调研记录数组.
+    	$i = 0;
+    	$result = array();
+    	foreach ($research as $re) {
+    		$result[$i] = array(
+    				'index' => $i,
+    				'title' => $re['title'],
+    				'description' => $re['description'],
+    				'starttime' => date('Y-m-d', $re['starttime']),
+    				'endtime' => date('Y-m-d', $re['endtime']),
+    		);
+    		$i++;
+    	}
+    
+    	// 构建分页数组
+    	$page_arr = array();
+    	for ($j = ($pindex - 1) * $psize; $j < $pindex * $psize; $j++) {
+    		$page_arr[$j] = $result[$j];
+    	}
+    	$page_arr = array_filter($page_arr);
+    
+    	// i 表示记录总数.
+    	$pager = pagination($i, $pindex, $psize);
+    	include $this->template('myresearch');
+    }
 }

@@ -6,51 +6,48 @@
 		if (!empty($_GPC['ccate'])) {
 			$cid = intval($_GPC['ccate']);
 			$condition .= " AND ccate = '{$cid}'";
+			$ccate = pdo_fetch("SELECT * FROM ".tablename('jufeng_wcy_category')." WHERE weid = '{$_W['uniacid']}' AND id = '{$_GPC['ccate']}' ");
+			$category = pdo_fetch("SELECT * FROM ".tablename('jufeng_wcy_category')." WHERE weid = '{$_W['uniacid']}' AND id = '{$ccate['parentid']}' ");
+			$sort = pdo_fetchall("SELECT * FROM ".tablename('jufeng_wcy_category')." WHERE weid = '{$_W['uniacid']}' AND parentid = '{$ccate['parentid']}' ");
 		} elseif (!empty($_GPC['pcate'])) {
 			$cid = intval($_GPC['pcate']);
 			$condition .= " AND pcate = '{$cid}'";
+			$category = pdo_fetch("SELECT * FROM ".tablename('jufeng_wcy_category')." WHERE weid = '{$_W['uniacid']}' AND id = '{$_GPC['pcate']}' ");
+			$sort = pdo_fetchall("SELECT * FROM ".tablename('jufeng_wcy_category')." WHERE weid = '{$_W['uniacid']}' AND parentid = '{$_GPC['pcate']}' ");
 		}
-		$children = array();
-		$category = pdo_fetchall("SELECT * FROM ".tablename('jufeng_wcy_category')." WHERE weid = '{$_W['uniacid']}' ORDER BY parentid ASC, displayorder DESC");
-		foreach ($category as $index => $row) {
-			if (!empty($row['parentid'])){
-				$children[$row['parentid']][] = $row;
-				unset($category[$index]);
-			}
-		}
-		$ccate1 = pdo_fetchall("SELECT * FROM ".tablename('jufeng_wcy_foods')." WHERE weid = '{$_W['uniacid']}' AND ccate = '{$_GPC['ccate']}' ");
-		$category1 = pdo_fetchall("SELECT * FROM ".tablename('jufeng_wcy_category')." WHERE weid = '{$_W['uniacid']}' AND (id = '{$_GPC['pcate']}' OR id = '{$ccate1[0]['pcate']}') ORDER BY parentid ASC, displayorder DESC");
-		$ptime1 = $category1[0]['time1'];
-		$ptime2 = $category1[0]['time2'];
-		$ptime3 = $category1[0]['time3'];
-		$ptime4 = $category1[0]['time4'];
-		$pcatefoods = pdo_fetchall("SELECT * FROM ".tablename('jufeng_wcy_foods')." WHERE weid = '{$_W['uniacid']}' AND pcate = '{$category1[0]['id']}' ");
-		
+		$ptime1 = $category['time1'];
+		$ptime2 = $category['time2'];
+		$ptime3 = $category['time3'];
+		$ptime4 = $category['time4'];
+		$pcatefoods = pdo_fetchall("SELECT * FROM ".tablename('jufeng_wcy_foods')." WHERE weid = '{$_W['uniacid']}' AND pcate = '{$category['id']}' ");
 		$pricetotal =0;
-			foreach ($pcatefoods as &$row1) {
-		$pcatecart = pdo_fetch("SELECT * FROM ".tablename('jufeng_wcy_cart')." WHERE from_user = :from_user AND weid = '{$_W['uniacid']}' AND foodsid = '{$row1['id']}'", array(':from_user' => $_W['fans']['from_user']));
+			foreach ($pcatefoods as &$row) {
+		$pcatecart = pdo_fetch("SELECT * FROM ".tablename('jufeng_wcy_cart')." WHERE from_user = :from_user AND weid = '{$_W['uniacid']}' AND foodsid = '{$row['id']}'", array(':from_user' => $_W['fans']['from_user']));
 		$pcatetotal += $pcatecart['total'];
 			$price = pdo_fetch("SELECT * FROM ".tablename('jufeng_wcy_foods')." WHERE weid = '{$_W['uniacid']}' AND id = '{$pcatecart['foodsid']}'");
 			if($price['preprice']){$pricetotal += $price['preprice']*$pcatecart['total'];}
 			else{$pricetotal += $price['oriprice']*$pcatecart['total'];}
+			$ccatenum[$price['ccate']]['num'] += $pcatecart['total'];
+			$ccatenum[$price['ccate']]['id'] = $price['ccate'];
 			}
-			$between = $category1[0]['sendprice']-$pricetotal;
+			$between = $category['sendprice']-$pricetotal;
+			
+switch($_GPC['order']){
+				default: $orderStr = 'ishot DESC';break;
+				case '1': $orderStr = 'hits DESC';break;
+				case '2': $orderStr = 'preprice ASC';break;
+				case '3': $orderStr = 'title ASC';break;
+				      }
 			if($_GPC['order'] == 0){
-$list = pdo_fetchall("SELECT * FROM ".tablename('jufeng_wcy_foods')." WHERE weid = '{$_W['uniacid']}' $condition ORDER BY ishot DESC LIMIT ".($pindex - 1) * $psize.','.$psize);
+$list = pdo_fetchall("SELECT * FROM ".tablename('jufeng_wcy_foods')." WHERE weid = '{$_W['uniacid']}' $condition ORDER BY $orderStr LIMIT ".($pindex - 1) * $psize.','.$psize);
 			}
-			else if($_GPC['order'] == 1){
-$list = pdo_fetchall("SELECT * FROM ".tablename('jufeng_wcy_foods')." WHERE weid = '{$_W['uniacid']}' $condition ORDER BY hits DESC LIMIT ".($pindex - 1) * $psize.','.$psize);			}
-			else if($_GPC['order'] == 2){
-$list = pdo_fetchall("SELECT * FROM ".tablename('jufeng_wcy_foods')." WHERE weid = '{$_W['uniacid']}' $condition ORDER BY preprice ASC LIMIT ".($pindex - 1) * $psize.','.$psize);			}
-			else if($_GPC['order'] == 3){
-$list = pdo_fetchall("SELECT * FROM ".tablename('jufeng_wcy_foods')." WHERE weid = '{$_W['uniacid']}' $condition ORDER BY title ASC LIMIT ".($pindex - 1) * $psize.','.$psize);			}
 		
 		$total = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename('jufeng_wcy_foods') . " WHERE weid = '{$_W['uniacid']}' $condition");
 		$pager = pagination($total, $pindex, $psize, $url = '', $context = array('before' => 0, 'after' => 0, 'ajaxcallback' => ''));
 		if (!empty($list)) {
 			foreach ($list as &$row) {
-											$foodsid = pdo_fetchall("SELECT foodsid,total FROM ".tablename('jufeng_wcy_cart')." WHERE foodsid = '{$row['id']}' AND from_user = '{$_W['fans']['from_user']}'", array(), 'foodsid');
-								$row['foodsid'] = $foodsid;
+			$foodsid = pdo_fetchall("SELECT foodsid,total FROM ".tablename('jufeng_wcy_cart')." WHERE foodsid = '{$row['id']}' AND from_user = '{$_W['fans']['from_user']}'", array(), 'foodsid');
+			$row['foodsid'] = $foodsid;
 			}
 		}
 		include $this->template('list');

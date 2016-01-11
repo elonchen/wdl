@@ -46,8 +46,10 @@ if ($op == 'display') {
     } elseif (!empty($_GPC['category']['parentid'])) {
         $cid = intval($_GPC['category']['parentid']);
         $condition .= " AND pcate = '{$cid}'";
-    } 
-    $list = pdo_fetchall("SELECT * FROM ".tablename('fineness_article')." WHERE weid = '{$weid}' $condition ORDER BY createtime DESC LIMIT ".($pindex - 1) * $psize.','.$psize, $params);
+    }
+    $sql ="SELECT * FROM ".tablename('fineness_article')." WHERE weid = '{$weid}' $condition ORDER BY createtime DESC LIMIT ".($pindex - 1) * $psize.','.$psize;
+
+    $list = pdo_fetchall($sql, $params);
     $total = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename('fineness_article') . " WHERE weid = '{$weid}'");
 
     $pager = pagination($total, $pindex, $psize);

@@ -105,11 +105,12 @@
 					<td>{$item['username']}</td>
 					<td>{$item['mobile']}</td>
 					<td><span class="label label-{$item['css']}">{$item['paytype']}</span></td>
-					<td>{if empty($item['dispatch'])}自提{else}{$item['dispatch']}{/if}</td>
+					<td>{if $item['sendtype'] == '3'}无需配送{elseif $item['sendtype'] == '2'}自提{else}{$item['dispatch']}{/if}</td>
 					<td>{$item['dispatchprice']}</td>
 					<td>{$item['price']} 元</td>
 					<td>
-						<span class="label label-{$item['statuscss']}">{$item['status']}</span>
+						<span class="label {if $item['goodstype'] == '2' && $item['status'] == '待发货' }label-success{else}label-{$item['statuscss']}{/if}">{if $item['goodstype'] == '2' && $item['status'] == '待发货' }完成{else}{$item['status']}{/if}</span>
+                    </td>
 					<td>{php echo date('Y-m-d H:i:s', $item['createtime'])}</td>
 					<td style="text-align:right;">
 						<a href="{php echo $this->createWebUrl('order', array('op' => 'detail', 'id' => $item['id']))}" class="btn btn-success btn-sm">查看订单</a>

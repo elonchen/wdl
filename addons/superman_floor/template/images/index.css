@@ -93,3 +93,83 @@ hr:after{
         transform: scaleY(.5);
     }
 }
+
+.btn-group-top .btn.active {
+    color: #FFF;
+    background: #5ac5d4;
+}
+.btn-default.active {
+    background: #5ac5d4 !important;
+}
+.btn-default {
+    color: #5ac5d4;
+    background-color: #fff;
+    border-color: #5ac5d4;
+}
+.btn-default:hover, .btn-default:focus, .btn-default:active, .btn-default.active, .open>.dropdown-toggle.btn-default {
+    color: #fff;
+    background-color: #e6e6e6;
+    border-color: #5ac5d4;
+}
+
+
+.list-cash-coupon {
+    padding: 10px 0 0 0;
+    list-style: none;
+    margin: 10px auto;
+}
+.list-cash-coupon li {
+    margin: 10px 0;
+}
+.list-cash-coupon a {
+    display: block;
+    width: 281px;
+    height: 109px;
+    margin: auto;
+    background: url('voucher.png') no-repeat 0 -9px;
+    -webkit-background-size: 575px auto;
+    position: relative;
+}
+.list-cash-coupon a>p:nth-of-type(1)>span {
+    font-size: 30px;
+}
+.list-cash-coupon a>p:nth-of-type(1) {
+    left: 25px;
+    top: 20px;
+    font-size: 14px;
+}
+.list-cash-coupon a>p {
+    position: absolute;
+    max-width: 200px;
+    height: 20px;
+    color: #FFF;
+    -webkit-box-sizing: border-box;
+}
+.list-cash-coupon a>p:nth-of-type(2) {
+    left: 26px;
+    top: 62px;
+    font-size: 14px;
+}
+.list-cash-coupon a>p:nth-of-type(3) {
+    left: 26px;
+    top: 83px;
+    font-size: 14px;
+}
+
+.list-cash-coupon a>p {
+     position: absolute;
+     max-width: 200px;
+     height: 20px;
+     color: #FFF;
+     -webkit-box-sizing: border-box;
+ }
+.list-cash-coupon a>p:nth-of-type(5) {
+    right: 12px;
+    top: 18px;
+    font-size: 14px;
+    width: 25px;
+    line-height: 18px;
+}
+.list-cash-coupon li[disabled] a {
+    background-position: 0 -502px;
+}

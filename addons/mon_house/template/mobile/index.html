@@ -323,12 +323,23 @@ var book_index_conver_url ="{php echo $this->createMobileUrl('BookIndexConver',a
                       "module_id": "book_intro",
                       "module_name": "介绍"
                     },
+                      {
+                        "url": "{php echo $this->createMobileUrl('dt',array('hid'=>$hid))}",
+                        "module_id": "dt_intro",
+                        "module_name": "动态篇"
+                      }
+                    ,
     	             
     	             {
     	                 "url": "{php echo $this->createMobileUrl('unitType',array('hid'=>$hid))}",
     	                 "module_id": "unit_type",
     	                 "module_name": "户型篇"
     	             },
+                      {
+                        "url": "{php echo $this->createMobileUrl('xc',array('hid'=>$hid))}",
+                        "module_id": "xc",
+                        "module_name": "相册篇"
+                      },
     	             {
     	                 "url": "{php echo $this->createMobileUrl('order',array('hid'=>$hid))}",
     	                 "module_id": "order",

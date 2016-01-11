@@ -13,7 +13,7 @@ class Superman_floorModule extends WeModule {
 		//要嵌入规则编辑页的自定义内容，这里 $rid 为对应的规则编号，新增时为 0
 		global $_W;
 		if (!empty($rid)) {
-			$awards = pdo_fetchall("SELECT * FROM ".tablename($this->tablename)." WHERE rid = :rid ORDER BY `id` ASC", array(':rid' => $rid));
+            $awards = pdo_fetchall("SELECT * FROM ".tablename($this->tablename)." WHERE rid = :rid ORDER BY `id` ASC", array(':rid' => $rid));
             if ($awards) {
                 foreach ($awards as &$val) {
                     $val['delete_url'] = $this->createWebUrl('delete', array(
@@ -22,7 +22,10 @@ class Superman_floorModule extends WeModule {
                     ));
                 }
             }
-			$prompt = pdo_fetch("SELECT * FROM ".tablename('superman_floor')." WHERE rid = :rid", array(':rid' => $rid));
+			$item = pdo_fetch("SELECT * FROM ".tablename('superman_floor')." WHERE rid = :rid", array(':rid' => $rid));
+            if ($item) {
+                $setting = $item['setting']?unserialize($item['setting']):array();
+            }
 		}
         load()->func('tpl');
         include $this->template('rule');
@@ -74,6 +77,7 @@ EOF;
         $floorprompt = trim($_GPC['floorprompt'])?trim($_GPC['floorprompt']):'当前活动：{RULENAME}，您已参与过本活动，楼层为 {FLOOR} 楼，盖楼时间为 {TIME}，谢谢您的参与！';
         $setting = array(
             'repeat_floor' => $_GPC['repeat_floor']?1:0,
+            'exchangekey' => trim($_GPC['exchangekey']),
         );
         $data = array(
             'rid' => $rid,

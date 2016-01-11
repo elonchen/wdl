@@ -29,7 +29,7 @@ function cloud_prepare() {
 function cloud_m_prepare($name) {
 	$pars['method'] = 'module.check';
 	$pars['module'] = $name;
-	$dat = cloud_request('http://addons.wdlcms.com/gateway.php', $pars);
+	$dat = cloud_request(ADDONS_URL.'/gateway.php', $pars);
 	if (is_error($dat)) {
 		return $dat;
 	}
@@ -66,7 +66,7 @@ function cloud_m_build($modulename) {
 	if(!empty($module)) {
 		$pars['module_version'] = $module['version'];
 	}
-	$dat = cloud_request('http://addons.wdlcms.com/gateway.php', $pars);
+	$dat = cloud_request(ADDONS_URL.'/gateway.php', $pars);
 	$file = IA_ROOT . '/data/module.build';
 	$ret = _cloud_shipping_parse($dat, $file);
 	if(!is_error($ret)) {
@@ -112,7 +112,7 @@ function cloud_m_build($modulename) {
 function cloud_m_query() {
 	$pars = _cloud_build_params();
 	$pars['method'] = 'module.query';
-	$dat = cloud_request('http://addons.wdlcms.com/gateway.php', $pars);
+	$dat = cloud_request(ADDONS_URL.'/gateway.php', $pars);
 	$file = IA_ROOT . '/data/module.query';
 	$ret = _cloud_shipping_parse($dat, $file);
 	return $ret;
@@ -122,7 +122,7 @@ function cloud_m_info($name) {
 	$pars = _cloud_build_params();
 	$pars['method'] = 'module.info';
 	$pars['module'] = $name;
-	$dat = cloud_request('http://addons.wdlcms.com/gateway.php', $pars);
+	$dat = cloud_request(ADDONS_URL.'/gateway.php', $pars);
 	$file = IA_ROOT . '/data/module.info';
 	$ret = _cloud_shipping_parse($dat, $file);
 	return $ret;
@@ -135,7 +135,7 @@ function cloud_m_upgradeinfo($name) {
 	$pars['module'] = $name;
 	$pars['curversion'] = $module['version'];
 	$pars['isupgrade'] = 1;
-	$dat = cloud_request('http://addons.wdlcms.com/gateway.php', $pars);
+	$dat = cloud_request(ADDONS_URL.'/gateway.php', $pars);
 	$file = IA_ROOT . '/data/module.info';
 	$ret = _cloud_shipping_parse($dat, $file);
 	return $ret;
@@ -144,7 +144,7 @@ function cloud_m_upgradeinfo($name) {
 function cloud_t_prepare($name) {
 	$pars['method'] = 'theme.check';
 	$pars['theme'] = $name;
-	$dat = cloud_request('http://addons.wdlcms.com/gateway.php', $pars);
+	$dat = cloud_request(ADDONS_URL.'/gateway.php', $pars);
 	if (is_error($dat)) {
 		return $dat;
 	}
@@ -157,7 +157,7 @@ function cloud_t_prepare($name) {
 function cloud_t_query() {
 	$pars = _cloud_build_params();
 	$pars['method'] = 'theme.query';
-	$dat = cloud_request('http://addons.wdlcms.com/gateway.php', $pars);
+	$dat = cloud_request(ADDONS_URL.'/gateway.php', $pars);
 	$file = IA_ROOT . '/data/theme.query';
 	$ret = _cloud_shipping_parse($dat, $file);
 	return $ret;
@@ -167,7 +167,7 @@ function cloud_t_info($name) {
 	$pars = _cloud_build_params();
 	$pars['method'] = 'theme.info';
 	$pars['theme'] = $name;
-	$dat = cloud_request('http://addons.wdlcms.com/gateway.php', $pars);
+	$dat = cloud_request(ADDONS_URL.'/gateway.php', $pars);
 	$file = IA_ROOT . '/data/theme.info';
 	$ret = _cloud_shipping_parse($dat, $file);
 	return $ret;
@@ -183,7 +183,7 @@ function cloud_t_build($name) {
 	if(!empty($theme)) {
 		$pars['themeversion'] = $theme['version'];
 	}
-	$dat = cloud_request('http://addons.wdlcms.com/gateway.php', $pars);
+	$dat = cloud_request(ADDONS_URL.'/gateway.php', $pars);
 	$file = IA_ROOT . '/data/theme.build';
 	$ret = _cloud_shipping_parse($dat, $file);
 	if(!is_error($ret)) {
@@ -228,7 +228,7 @@ function cloud_sms_send($mobile, $content) {
 		$pars['method'] = 'sms.send';
 		$pars['mobile'] = $mobile;
 		$pars['content'] = $content . " 【{$sign}】";
-		$dat = cloud_request('http://addons.wdlcms.com/gateway.php', $pars);
+		$dat = cloud_request(ADDONS_URL.'/gateway.php', $pars);
 		$file = IA_ROOT . '/data/sms.send';
 		$ret = _cloud_shipping_parse($dat, $file);
 		if (is_error($ret)) {
@@ -247,7 +247,7 @@ function cloud_build() {
 	$pars = _cloud_build_params();
 	$pars['method'] = 'application.build';
 	$pars['extra'] = cloud_extra_data();
-	$dat = cloud_request('http://addons.wdlcms.com/gateway.php', $pars);
+	$dat = cloud_request(ADDONS_URL.'/gateway.php', $pars);
 	$file = IA_ROOT . '/data/application.build';
 	$ret = _cloud_shipping_parse($dat, $file);
 	if(!is_error($ret)) {
@@ -308,7 +308,7 @@ function cloud_build() {
 function cloud_schema() {
 	$pars = _cloud_build_params();
 	$pars['method'] = 'application.schema';
-	$dat = cloud_request('http://addons.wdlcms.com/gateway.php', $pars);
+	$dat = cloud_request(ADDONS_URL.'/gateway.php', $pars);
 	$file = IA_ROOT . '/data/application.schema';
 	$ret = _cloud_shipping_parse($dat, $file);
 	if(!is_error($ret)) {
@@ -342,7 +342,7 @@ function cloud_download($path, $type = '') {
 	$pars['type'] = $type;
 	$pars['gz'] = function_exists('gzcompress') && function_exists('gzuncompress') ? 'true' : 'false';
 	$headers = array('content-type' => 'application/x-www-form-urlencoded');
-	$dat = cloud_request('http://addons.wdlcms.com/gateway.php', $pars, $headers, 300);
+	$dat = cloud_request(ADDONS_URL.'/gateway.php', $pars, $headers, 300);
 	if(is_error($dat)) {
 		return error(-1, '网络存在错误， 请稍后重试。' . $dat['message']);
 	}

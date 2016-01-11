@@ -8,7 +8,7 @@
 global $_W, $_GPC;
 $weid=$_W['uniacid'];
 $cid = intval($_GPC['cid']);
-$set=  pdo_fetch("SELECT * FROM ".tablename('fineness_sysset')." WHERE weid=:weid limit 1", array(':weid' =>$weid));
+
 if(empty($cid)){
     $cid = pdo_fetchcolumn("SELECT id FROM " . tablename('fineness_article_category') . " where parentid=0 and uniacid=$weid limit 1");
 }

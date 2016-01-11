@@ -1,10 +1,10 @@
 <?php
 defined('IN_IA') or exit('Access Denied');
 if ($do == 'online') {
-	header('Location: http://addons.wdlcms.com/gateway.php?referrer='.$_W['setting']['site']['key']);
+	header('Location: '.ADDONS_URL.'/gateway.php?referrer='.$_W['setting']['site']['key']);
 	exit;
 } elseif ($do == 'offline') {
-	header('Location: http://addons.wdlcms.com/gateway.php?referrer='.$_W['setting']['site']['key'].'&standalone=1');
+	header('Location: '.ADDONS_URL.'/gateway.php?referrer='.$_W['setting']['site']['key'].'&standalone=1');
 	exit;
 } else {
 }

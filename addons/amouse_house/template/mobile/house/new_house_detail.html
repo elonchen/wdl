@@ -6,9 +6,9 @@
 <title>【新盘介绍】{$item['name']}</title>
 <meta name="keywords" content="【新盘介绍】{$item['name']}"/>
 <meta name="description" content="【新盘介绍】{$item['name']}"/>
-<script language="javascript" src="../addons/amouse_house/ui/js/jquery.js"></script>
-<link href="../addons/amouse_house/ui/css/bootstrap.css" rel="stylesheet">
-<link href="../addons/amouse_house/ui/css/main.css" rel="stylesheet">
+<script language="javascript" src="{AMOUSE_HOUSE_RES}js/jquery.js"></script>
+<link href="{AMOUSE_HOUSE_RES}css/bootstrap.css" rel="stylesheet">
+<link href="{AMOUSE_HOUSE_RES}css/main.css" rel="stylesheet">
 </head>
 <body style="width:100%;margin: 0 auto;">
 <div class="container" style="width:100%;margin: 0 auto;">
@@ -40,7 +40,7 @@
     }
 
     .list-btn .btn-like span {
-        background: url('../addons/amouse_house/ui/images/ico-like.png') no-repeat scroll 9px 9px / 22px auto transparent;
+        background: url('{AMOUSE_HOUSE_RES}images/ico-like.png') no-repeat scroll 9px 9px / 22px auto transparent;
         display: block;
         font-size: 14px;
         height: 100%;
@@ -49,7 +49,7 @@
     }
 
     .btn-like .ico-like {
-        background: url('../addons/amouse_house/ui/images/ico-like.png') no-repeat scroll 10px 9px / 22px auto transparent;
+        background: url('{AMOUSE_HOUSE_RES}images/ico-like.png') no-repeat scroll 10px 9px / 22px auto transparent;
         display: block;
         height: 37px;
         left: 4px;
@@ -253,11 +253,11 @@
         <a data-statsid="{$item[id]}" data-statsp="1" data-statsu="like" href="javascript:updatecount('{$item[id]}');" data-id="{$item[id]}"
            id="likebtn" data-sharebox="true" class="btn-like">
             <span>喜欢就点一下</span><em class="ico-like">
-            <img src="../addons/amouse_house/ui/images/ico-like.png" style="width:25px;margin:6px"/></em>
+            <img src="{AMOUSE_HOUSE_RES}images/ico-like.png" style="width:25px;margin:6px"/></em>
         </a>
 
         <div class="i-img">
-            <img width="27" src="../addons/amouse_house/ui/images/btn-info2.png">
+            <img width="27" src="{AMOUSE_HOUSE_RES}images/btn-info2.png">
         </div>
         <div class="i-count">
             <em id="likenum{$item[id]}">{$item['like']}</em> 人喜欢
@@ -346,12 +346,12 @@
     <div class="panel-box" style="width: 100%;">
         <div class="page " data-index="0"  style="display:block;width: 100%;height: 30px;background: rgb(56, 173, 75);color: white; left: 0px; transition: 0ms; -webkit-transition: 0ms; -webkit-transform: translate(0px, 0px) translateZ(0px);">
             <a class="easycall-item" href="{php echo $this->createMobileUrl('index',array('type'=>'0','wxid'=>$wxid),true)}">
-                <div class="title" style="color: white;border-right: 1px solid white;font-size: 14px;line-height: 30px;{if $_GPC['type']=='0'}background: rgb(60,120,0);{/if}">出租
+                <div class="title" style="color: white;border-right: 1px solid white;font-size: 14px;line-height: 30px;{if $_GPC['type']=='0'}background: rgb(60,120,0);{/if}">出售
                 </div>
             </a>
             <a class="easycall-item" href="{php echo $this->createMobileUrl('index',array('type'=>'1','wxid'=>$wxid),true)}">
                 <div class="title" style="color: white;border-right: 1px solid white;font-size: 14px;line-height: 30px;{if $_GPC['type']=='1'}background: rgb(60,120,0);{/if}">
-                    求租
+                    求购
                 </div>
             </a>
             <a class="easycall-item" href="{php echo $this->createMobileUrl('index',array('type'=>'2','wxid'=>$wxid),true)}">
@@ -369,17 +369,17 @@
             <a
                     style="width: 33%;margin-top: -0px;border-bottom: 3px solid rgb(61, 120, 0);height: 46px;"
                     class="easycall-item" href="{php echo $this->createMobileUrl('new',array('a'=>'rent','openid'=>$openid),true)}">
-                <img style="width: 30px;height: 30px;" class="icon" src="../addons/amouse_house/ui/images/zhaopin.png">
+                <img style="width: 30px;height: 30px;" class="icon" src="{AMOUSE_HOUSE_RES}images/zhaopin.png">
                 <div class="title" style=" margin-top: -0px; ">发布租房</div>
             </a>
             <a style="width: 34%;margin-top: -0px;border-bottom: 3px solid rgb(91, 177, 0);height: 46px;"
                class="easycall-item" href="{php echo $this->createMobileUrl('list',array('openid'=>$openid),true)}">
-                <img style="width: 30px;height: 30px;" class="icon" src="../addons/amouse_house/ui/images/xinpan.png">
-                <div class="title" style=" margin-top: -0px; ">新盘推荐</div>
+                <img style="width: 30px;height: 30px;" class="icon" src="{AMOUSE_HOUSE_RES}images/xinpan.png">
+                <div class="title" style=" margin-top: -0px; ">新盘认证</div>
             </a>
             <a style="width: 33%;margin-top: -0px;border-bottom: 3px solid rgb(61, 120, 0);height: 46px;"
                class="easycall-item" href="{php echo $this->createMobileUrl('new',array('a'=>'house','openid'=>$openid),true)}">
-                <img style="width: 30px;height: 30px;" class="icon" src="../addons/amouse_house/ui/images/zhaopin.png">
+                <img style="width: 30px;height: 30px;" class="icon" src="{AMOUSE_HOUSE_RES}images/zhaopin.png">
                 <div class="title" style=" margin-top: -0px; ">发布二手房</div>
             </a>
         </div>

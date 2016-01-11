@@ -1,8 +1,6 @@
 <?php
 /**
  * 精美图文模块处理程序
- * @author 史中营
- * @url http://www.mamani.cn
  */
 defined('IN_IA') or exit('Access Denied');
 

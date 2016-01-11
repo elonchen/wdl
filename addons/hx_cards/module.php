@@ -3,7 +3,7 @@
  * 幸运大抽奖模块定义
  *
  * @author 华轩科技
- * @url http://bbs.wdlcms.com/
+ * @url http://bbs.012wz.com/
  */
 defined('IN_IA') or exit('Access Denied');
 
@@ -42,6 +42,8 @@ class Hx_cardsModule extends WeModule {
 				'awardnum'	=>	'1',
 				'playnum'	=>	'5',
 				'dayplaynum'=>	'1',
+				'sharenum'=>	'0',
+				'isfollow'=>	'0',
 				'rate' => '10',
 				'need_type' => 'credit1',
 				'need_num' => '0',
@@ -113,6 +115,8 @@ class Hx_cardsModule extends WeModule {
 				'awardnum' => intval($_GPC['awardnum']),
 				'playnum' => intval($_GPC['playnum']),
 				'dayplaynum' => intval($_GPC['dayplaynum']),
+				'sharenum' => intval($_GPC['sharenum']),
+				'isfollow' => intval($_GPC['isfollow']),
 				'noprize' => $_GPC['noprize'],
 				'tips' => $_GPC['tips'],
 				'remark' => $_GPC['remark'],

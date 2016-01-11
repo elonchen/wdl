@@ -3,7 +3,7 @@
 /**
  * 预约与调查模块微站定义
  *
- * @author WeEngine Team
+ * @author WeiZan System
  * @url http://bbs.012wz.com
  */
 defined('IN_IA') or exit('Access Denied');

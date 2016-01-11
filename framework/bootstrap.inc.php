@@ -146,6 +146,18 @@ if(Agent::isMicroMessage() == Agent::MICRO_MESSAGE_YES) {
 } else {
 	$_W['container'] = 'unknown';
 }
+//新增应用商城切换
+
+if(empty($_W['setting']['addons']['addons_url'])){
+	$_W['setting']['addons']['addons_url'] = "http://wdl.weizancms.com";
+}
+if(empty($_W['setting']['addons']['c_url'])){
+	$_W['setting']['addons']['c_url'] = "http://www.wdlcms.com";
+}
+$rc_url ="\""+$_W['setting']['addons']['c_url']+"\"";
+define('ADDONS_URL', $_W['setting']['addons']['addons_url']);
+define('C_URL', $_W['setting']['addons']['c_url']);
+define('RC_URL', $rc_url);
 
 $controller = $_GPC['c'];
 $action = $_GPC['a'];

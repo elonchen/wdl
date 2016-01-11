@@ -25,6 +25,7 @@
 <body >
 <div class="app-view">
     <div class="app-page">
+    	{if count($location_ps)>0}
 		{loop $location_ps $p}
 		<div id="sousuozong">
 			<h3 class="shengji">{$p['location_p']}</h3>
@@ -37,6 +38,9 @@
        		 </ul>
 		</div>
 		{/loop}
+		{else}
+对不起，还没有城市
+		{/if}
 	</div>
 </div>
 </body>

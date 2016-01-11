@@ -11,6 +11,18 @@ if(checksubmit()) {
 cache_load('setting');
 template('user/login');
 
+function diffBetweenTwoDays ($day1, $day2)
+{
+  $second1 = strtotime($day1);
+  $second2 = strtotime($day2);
+    
+  if ($second1 < $second2) {
+    $tmp = $second2;
+    $second2 = $second1;
+    $second1 = $tmp;
+  }
+  return ($second1 - $second2) / 86400;
+}
 function _login($forward = '') {
 	global $_GPC, $_W;
 	load()->model('user');
@@ -25,9 +37,28 @@ function _login($forward = '') {
 		message('请输入密码');
 	}
 	$record = user_single($member);
+	$now = time();
+	$now = date("Y-m-d", $now);
+		//计算天数
+	$day1 = $now;
+	$day2 = $record['viptime'];
+	$diff = diffBetweenTwoDays($day1, $day2);
+    $oldday = 16-$diff;
+	if(0 >= $oldday){
+		$oldday = 0;
+	}
 	if(!empty($record)) {
 		if($record['status'] == 1) {
 			message('您的账号正在审核或是已经被系统禁止，请联系网站管理员解决！');
+		}
+		if($record['status'] != 0) {
+			if ($now >= $record['viptime']) {
+				if ($oldday == 0) {
+					message('您的账号已经过期15天了！');
+				}else{
+					message('您的账号已经到期！');
+				}
+			}
 		}
 		$founders = explode(',', $_W['config']['setting']['founder']);
 		$_W['isfounder'] = in_array($record['uid'], $founders);

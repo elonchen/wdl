@@ -6,6 +6,7 @@ function amouse_article_site_article($params = array()){
     $condition = " WHERE weid = '{$_W['uniacid']}'";
     if (!empty($cid)) {
         $category = pdo_fetch("SELECT parentid FROM " . tablename('fineness_article_category') . " WHERE id = '{$cid}'");
+
         if (!empty($category['parentid'])) {
             $condition .= " AND ccate = '{$cid}'";
         } else {
@@ -14,6 +15,7 @@ function amouse_article_site_article($params = array()){
     }
     $sql = "SELECT * FROM " . tablename('fineness_article') . $condition . ' ORDER BY displayorder ASC';
     $result['list'] = pdo_fetchall($sql);
+
     return $result;
 }
 
@@ -42,6 +44,7 @@ function amouse_article_site_category($params = array()){
     } else {
         $category = $result;
     }
+
     return $category;
 }
 
@@ -86,7 +89,7 @@ function amouse_article_site_list($cid=0){
     global $_GPC, $_W;
     $weid=$_W['uniacid'];
     if($cid>0){
-        $list = pdo_fetchall("SELECT * FROM ".tablename('fineness_article')." WHERE weid={$weid} AND ccate={$cid}  ORDER BY displayorder ASC ") ;
+        $list = pdo_fetchall("SELECT * FROM ".tablename('fineness_article')." WHERE weid={$weid} AND ccate={$cid}  ORDER BY createtime DESC ") ;
     }
     return $list;
 }

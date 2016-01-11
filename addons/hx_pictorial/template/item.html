@@ -1,4 +1,4 @@
-<link type="text/css" rel="stylesheet" href="/addons/hx_pictorial/template/mobile/css/wanimation.css" />
+<link type="text/css" rel="stylesheet" href="../addons/hx_pictorial/template/mobile/css/wanimation.css" />
 <script type="text/javascript">
   function testAnim(x) {
     $('#drag').removeClass().addClass(x + ' animated').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
@@ -138,7 +138,7 @@
 			</div>
 			<div style="width:50%;height:504px;background:url({$_W['attachurl']}{$photo['attachment']}) no-repeat;background-size:100% 504px;float:right;">
 				{if $item['item']}
-				{php $size = GetImageSize($_W['attachurl'].$item['item']);}
+				{php $size = GetImageSize(tomedia($item['item']));}
 				<img  id="drag" style="width:{php echo $size[0]/2}px;height:{php echo $size[1]/2}px;cursor: move;position: relative;left:0;top: 0;" src="{$_W['attachurl']}{$item['item']}" onerror="this.src='./resource/images/nopic.jpg'; this.title='图片未找到.'" class="img-responsive"/>
 				{else}
 				<img id="drag" style="cursor: move;position: relative;left:0;top: 0;" src="/addons/hx_pictorial/template/mobile/img/module-nopic-small.jpg" onerror="this.src='./resource/images/nopic.jpg'; this.title='图片未找到.'" class="img-responsive"/>
@@ -160,10 +160,10 @@ function showImageDialog(elm, opts) {
 	var val = ipt.val();
 	var img = ipt.parent().parent().next().children();
 	util.image(val, function(url){
-		img.get(0).src = url.url;
-		ipt.val(url.filename);
-		ipt.attr("filename",url.filename);
-		ipt.attr("url",url.url);
+		img.get(0).src = url.attachment;
+		ipt.val(url.attachment);
+		ipt.attr("filename",url.attachment);
+		ipt.attr("url",url.attachment);
 		$("#drag").attr("src",url.url);
 	}, opts);
 });

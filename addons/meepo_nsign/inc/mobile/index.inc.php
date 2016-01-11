@@ -1,6 +1,11 @@
 <?php
 global $_GPC,$_W;
+$sql = "SELECT * FROM ".tablename('modules')." WHERE name = :name ";
+$params = array(':name'=>'meepo_bbs');
+$meepo_bbs = pdo_fetch($sql,$params);
 
+$sql = 'SELECT `status` FROM ' . tablename('mc_card') . " WHERE `uniacid` = :uniacid";
+$cardstatus = pdo_fetch($sql, array(':uniacid' => $_W['uniacid']));
 		$rid = $_GPC['rid'];
 		
 		$weid = $_W['weid'];
@@ -92,5 +97,8 @@ global $_GPC,$_W;
 		}
 		
 		$Picurl = $_W['attachurl'].$reply['picture'];
-		
+		$coupon_url = './index.php?i='.$_W['uniacid'].'&c=activity&a=coupon&do=display&';
+		$token_url = './index.php?i='.$_W['uniacid'].'&c=activity&a=token&do=display&';
+		$goods_url = './index.php?i='.$_W['uniacid'].'&c=activity&a=goods&do=display&';
+		$partimes_url = './index.php?i='.$_W['uniacid'].'&c=activity&a=partimes&do=display&';
 		include $this->template('index');

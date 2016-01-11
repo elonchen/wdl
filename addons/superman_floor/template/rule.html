@@ -8,13 +8,20 @@
 			<label class="col-xs-12 col-sm-3 col-md-2 control-label">是否可以重复抢楼</label>
 			<div class="col-sm-9">
 				<label class="radio-inline">
-					<input type="radio" name="repeat_floor" {if !isset($repeat_floor)||$repeat_floor==1}checked{/if} value="1"/>是
+					<input type="radio" name="repeat_floor" {if !isset($setting['repeat_floor'])||$setting['repeat_floor']==1}checked{/if} value="1"/>是
 				</label>
 				<label class="radio-inline">
-					<input type="radio" name="repeat_floor" {if isset($repeat_floor) && $repeat_floor==0}checked{/if} value="0"/>否
+					<input type="radio" name="repeat_floor" {if isset($setting['repeat_floor']) && $setting['repeat_floor']==0}checked{/if} value="0"/>否
 				</label>
 				<span class="help-block">
 				</span>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-xs-12 col-sm-3 col-md-2 control-label">商家兑换密码</label>
+			<div class="col-sm-9">
+				<input type="text" class="form-control" name="exchangekey" value="{$setting['exchangekey']}">
+				<span class="help-block">用户中奖后，凭领奖界面到商家兑换，商家可输入密码验证是否合法</span>
 			</div>
 		</div>
 	</div>
@@ -27,11 +34,12 @@
 		<div class="form-group">
 			<label class="col-xs-12 col-sm-3 col-md-2 control-label">楼层提示语</label>
 			<div class="col-sm-9">
-				<textarea class="form-control" name="currentprompt" placeholder="当前活动：{##RULENAME##}，当前楼层是第 {##FLOOR##} 楼！">{$prompt['currentprompt']}</textarea>
+				<textarea class="form-control" name="currentprompt" placeholder="当前活动：{##RULENAME##}，当前楼层是第 {##FLOOR##} 楼！">{$item['currentprompt']}</textarea>
 				<span class="help-block">
 					{##RULENAME##} 表示当前活动<br/>
 					{##FLOOR##} 表示当前楼层<br/>
 					请根据您的需要填写，如：第{##FLOOR##}楼<br/>
+					(此状态下用户点击微信返回图文消息将连接至活动中奖名单页面)<br/>
 					<strong class="text-danger">如果不填，则为默认为：当前活动：{##RULENAME##}，当前楼层是第 {##FLOOR##} 楼！</strong>
 				</span>
 			</div>
@@ -39,13 +47,14 @@
 		<div class="form-group">
 			<label class="col-xs-12 col-sm-3 col-md-2 control-label">中奖提示语</label>
 			<div class="col-sm-9">
-				<textarea class="form-control" name="awardprompt" placeholder="当前活动：{##RULENAME##}，恭喜您，当前楼层是第 {##FLOOR##} 楼，获得 {##AWARD##} 奖品！">{$prompt['awardprompt']}</textarea>
+				<textarea class="form-control" name="awardprompt" placeholder="当前活动：{##RULENAME##}，恭喜您，当前楼层是第 {##FLOOR##} 楼，获得 {##AWARD##} 奖品！">{$item['awardprompt']}</textarea>
 				<span class="help-block">
 					{##RULENAME##} 表示当前活动<br/>
 					{##FLOOR##} 表示当前楼层<br/>
 					{##AWARD##} 表示奖品名称<br/>
 					{##DESCRIPTION##} 表示奖品描述<br/>
 					请根据您的需要填写，如：第{##FLOOR##}楼，中奖啦，奖品是{##AWARD##}{##DESCRIPTION##}<br/>
+					(此状态下用户点击微信返回图文消息判断如果用户已存在中奖信息，则链接至已中奖品列表页面，否则链接至提交中奖信息页面)<br/>
 					<strong class="text-danger">如果不填，则为默认为：当前活动：{##RULENAME##}，恭喜您，当前楼层是第 {##FLOOR##} 楼，获得 {##AWARD##} 奖品！</strong>
 				</span>
 			</div>
@@ -53,13 +62,14 @@
 		<div class="form-group">
 			<label class="col-xs-12 col-sm-3 col-md-2 control-label">已参加提示语</label>
 			<div class="col-sm-9">
-				<textarea class="form-control" name="floorprompt" placeholder="当前活动：{##RULENAME##}，您已参与过本活动，楼层为 {##FLOOR##} 楼，盖楼时间为 {##TIME##}，谢谢您的参与！">{$prompt['floorprompt']}</textarea>
+				<textarea class="form-control" name="floorprompt" placeholder="当前活动：{##RULENAME##}，您已参与过本活动，楼层为 {##FLOOR##} 楼，盖楼时间为 {##TIME##}，谢谢您的参与！">{$item['floorprompt']}</textarea>
 				<span class="help-block">
 					注意：关闭重复抢楼时，需设置已参与抢楼活动的提示语。<br/>
 					{##RULENAME##} 表示当前活动<br/>
 					{##FLOOR##} 表示当前楼层<br/>
 					{##TIME##} 表示参与时间<br/>
 					请根据您的需要填写，如：您已参与过本活动，楼层为 {##FLOOR##} 楼，盖楼时间为 {##TIME##}<br/>
+					(此状态下用户点击微信返回图文消息将连接至活动中奖名单页面)<br/>
 					<strong class="text-danger">如果不填，则为默认为：当前活动：{##RULENAME##}，您已参与过本活动，楼层为 {##FLOOR##} 楼，盖楼时间为 {##TIME##}，谢谢您的参与！</strong>
 				</span>
 			</div>

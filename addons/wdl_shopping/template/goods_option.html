@@ -127,14 +127,7 @@
 		spec.items = items;
 		specs.push(spec);
 	});
-	specs.sort(function(x,y){
-		if (x.items.length > y.items.length){
-			return 1;
-		}
-		if (x.items.length < y.items.length) {
-			return -1;
-		}
-	});
+
 
 	var len = specs.length;
 	var newlen = 1; //多少种组合

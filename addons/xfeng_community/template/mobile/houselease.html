@@ -152,9 +152,8 @@ $(function() {
 				<label for="servicesmallcategory" class="col-sm-2 control-label" style="padding-right:0px;">房屋租赁</label>
 				<div class="col-sm-10">
 					<select class="form-control" id="cate_2" name="servicesmallcategory" autocomplete="off" style='margin-top:10px;'>
-						{loop $categories $key $category}
-						<option value="{$category['name']}" {if $category['name'] == $item['servicesmallcategory']} selected="selected"{/if}>{$category['name']}</option>
-						{/loop}
+					<option value="长期租赁">长期租赁</option>
+                    <option value="短期租赁">短期租赁</option>
 					</select>
 				</div>
 			</div>

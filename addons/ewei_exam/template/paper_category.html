@@ -80,7 +80,7 @@
                 <thead>
                     <tr>
                        	<th style="width:10px;"></th>
-                        <th style="width:50px;">显示顺序</th>
+                        <th style="width:100px;">显示顺序</th>
                         <th style="width:120px;">分类名称</th>
                         <th style="width:100px;">操作</th>
                     </tr>
@@ -105,11 +105,7 @@
                     <tr>
                         <td></td>
                         <td><input type="text" class="form-control" name="displayorder[{$row['id']}]" value="{$row['displayorder']}"></td>
-                        <td>
-                            <div style="padding-left:50px;height:30px;line-height:30px;background:url('./resource/images/bg_repno.gif') no-repeat -245px -545px;">{$row['name']}
-                                {$row['cname']}&nbsp;&nbsp;
-                            </div>
-                        </td>
+                        <td><div class="type-child">{$row['cname']}&nbsp;&nbsp;</div></td>
                         <td>
 							<a href="{php echo $this->createWebUrl('paper_category', array('op' => 'post', 'id' => $row['id']))}" title="编辑" data-toggle="tooltip" data-placement="bottom" class="btn btn-default btn-sm"><i class="fa fa-edit"></i></a>
 							<a href="{php echo $this->createWebUrl('paper_category', array('op' => 'delete', 'id' => $row['id']))}" onclick="return confirm('确认删除此分类吗？');return false;"title="删除" data-toggle="tooltip" data-placement="bottom" class="btn btn-default btn-sm"><i class="fa fa-times"></i></a>

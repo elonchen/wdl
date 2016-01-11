@@ -1,5 +1,4 @@
 body{padding:0; background:#F9F9F9;}
-a:visited{color:#333;}
 .menu-button1,.menu-button2{display:none;width:25%;height:100%; background:#EEE; position:fixed;z-index:99; left:0; top:0;overflow-y:scroll;}
 .menu-button3{display:none;width:60%;height:100%; background:#EEE; position:fixed;z-index:99; right:0; top:45px;overflow-y:scroll;border-left: 1px solid #999;}
 .menu-button ul{padding-bottom:82px;}
@@ -7,8 +6,15 @@ a:visited{color:#333;}
 .menu-button li .active{background:#BBB; color:#FFF; border-bottom:1px #BBB solid;}
 .menu-button li .img-circle{display:none; position:absolute; right:0; top:0; height:15px; line-height:15px; width:15px; text-align:center; font-size:10px; background:#E03939; color:#FFF;}
 .menu-list{padding-right:10px;margin-left:10px;}
+.menu-list .panel-heading{text-align:center;}
 .menu-list2{margin-top:55px;}
-.menu-list ul{margin:0;}
+.menu-list ul{margin:0 0 10px 0;}
+body .btn-default {
+    color: #333;
+}
+body .btn-success, body .btn-info, body .btn-primary, body .btn-warning, body .btn-danger{
+    color: #FFF;
+}
 .menu-list li{margin:10px 0;border-bottom:1px #DDD solid; height:80px;}
 .menu-list .shopli{margin:10px 0;border:0;height:80px;}
 .menu-list .shopfoot{padding:0; margin-bottom:10px;border-bottom:1px #DDD solid;width:100%;}
@@ -25,7 +31,7 @@ a:visited{color:#333;}
 .menu-list li .oriprice{color:#aaa; font-size:14px;text-decoration:line-through;}
 .menu-list li .click{color:#999; font-size:14px; margin-top:2px;}
 .menu-list-button{color:#999; height:25px; line-height:25px; width:25px; font-size:25px; text-align:center; cursor:pointer;}
-.menu-list-num{font-size:18px; padding:5px 0; color:#666; text-align:center; }
+.menu-list-num{font-size:18px; padding:5px; color:#666; text-align:center; }
 .order-hd{margin:0 10px; font-size:16px; color:#666; height:35px; line-height:35px; overflow:hidden;border-bottom:1px #CCC solid;text-align:center;}
 .order-hd .pull-right{font-size:20px; color:red; font-weight:bold;}
 .order-hd .pull-right em{font-style:normal; font-weight:normal; font-size:14px; color:#999;}
@@ -48,7 +54,7 @@ a:visited{color:#333;}
 .nav{padding:0;margin:0;width:100%;border-top: 1px solid #d4d4d4;}
 .nav2{ line-height:40px; border-top: 1px solid #d4d4d4;}
 .nav2 .btn2{margin:5px 0 5px 5px;}
-.nav2 .btn-success{float:right;margin:5px 10px 5px 5px;}
+.check{float:right;margin:5px 10px 5px 5px;}
 .nav2 span{font-size:16px;font-weight:bold;float:right;}
 .nav2 i{padding-right:5px;}
 .nav3{ line-height:40px; border-top: 1px solid #A78E8E;}
@@ -61,7 +67,7 @@ a:visited{color:#333;}
 .li1{width:49%;border-left:1px solid #999}
 .li3{width:24%;}
 .li4{width:25%;border-left:1px solid #999}
-.navbar1 .btn{font-size:16px;}
+.navbar1 .btn{font-size:16px;border-radius:0;}
 .navbar2 {
   min-height: 40px;
   background-color: #fafafa;

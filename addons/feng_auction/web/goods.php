@@ -16,6 +16,7 @@
 	//商品编辑
 	if ($op == 'edit') {
 		$id = intval($_GPC['id']);
+		$category = pdo_fetchall("SELECT * FROM " . tablename('auction_category') . " WHERE weid = '{$_W['uniacid']}' and enabled=1 ORDER BY displayorder DESC");
 		if(!empty($id)){
 			$sql = 'SELECT * FROM '.tablename('auction_goodslist').' WHERE id=:id AND uniacid=:uniacid LIMIT 1';
 			$params = array(':id'=>$id, ':uniacid'=>$weid);

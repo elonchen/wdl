@@ -31,15 +31,16 @@
 		<table class="table table-hover">
 			<tr>
 				<th style="width:250px;">微动力程序版本</th>
-				<td>WeiZan {php echo IMS_VERSION;} Release  {php echo IMS_RELEASE_DATE;} &nbsp; &nbsp; <a href="http://www.wdlcms.com" target="_blank">查看最新版本</a></td>
+				<td>WDL V4 Release  {php echo IMS_RELEASE_DATE;} &nbsp; &nbsp; <a href="http://www.wdlcms.com" target="_blank">查看最新版本</a></td>
 			</tr>
 			<tr>
 				<th>产品系列</th>
-				<td>{if IMS_FAMILY == 'v'}
-						您的产品是开源版, 没有购买商业授权, 不能用于商业用途
-					{else}
-						您的产品是商业版
-					{/if}
+				<td>
+				{if (IMS_FAMILY == 'x') || (IMS_FAMILY == 's')}
+				您的产品是商业版WDL V4 &nbsp; &nbsp; <a href="{php echo url('cloud/upgrade');}">更新升级</a>
+                  {else}
+				您的产品是开源版, 没有购买商业授权, 不能用于商业用途
+				{/if}
 				</td>
 			</tr>
 			<tr>
@@ -90,29 +91,25 @@
 				<tr>
 					<th>Team 成员</th>
 					<td>
-						<a href="http://bbs.wdlcms.com/?10906" class="lightlink2 smallfont" target="_blank">袁文涛</a>; &nbsp;
-						<a href="http://bbs.wdlcms.com/?83" class="lightlink2 smallfont" target="_blank">任超 (米粥)</a>; &nbsp;
-						<a href="http://bbs.wdlcms.com/?19511" class="lightlink2 smallfont" target="_blank">宋建君 (Gorden)</a>; &nbsp;
+						<a href="http://bbs.wdlcms.com/?10906" class="lightlink2 smallfont" target="_blank">曾进</a>; &nbsp;
+						<a href="http://bbs.wdlcms.com/?83" class="lightlink2 smallfont" target="_blank">李明 (李工)</a>; &nbsp;
+						<a href="http://bbs.wdlcms.com/?19511" class="lightlink2 smallfont" target="_blank">吴龙 (Jlone)</a>; &nbsp;
 						<a href="http://bbs.wdlcms.com/?38439" class="lightlink2 smallfont" target="_blank">杨慧锋 (灯火阑珊)</a>; &nbsp;
 						<a href="http://bbs.wdlcms.com/?64864" class="lightlink2 smallfont" target="_blank">段彪武 </a>; &nbsp;
 						<a href="http://bbs.wdlcms.com/?64869" class="lightlink2 smallfont" target="_blank">姚晶晶 </a>; &nbsp;
-						<a href="http://bbs.wdlcms.com/?56310" class="lightlink2 smallfont" target="_blank">侯琪琪 (琪琪)</a>; &nbsp;
+						<a href="http://bbs.wdlcms.com/?56310" class="lightlink2 smallfont" target="_blank">李珊 (微微)</a>; &nbsp;
 						<a href="http://bbs.wdlcms.com/?52995" class="lightlink2 smallfont" target="_blank">杨欣雨 (小雨)</a>; &nbsp;
 						<a href="http://bbs.wdlcms.com/?56416" class="lightlink2 smallfont" target="_blank">陈龙 (龙龙)</a>; &nbsp;
-						<a href="http://bbs.wdlcms.com/?11877" class="lightlink2 smallfont" target="_blank">赵小雷 (擎擎)</a>; &nbsp;
+						<a href="http://bbs.wdlcms.com/?11877" class="lightlink2 smallfont" target="_blank">赵小雷 (微微)</a>; &nbsp;
 					</td>
-				</tr>
-					<tr>
-					<th>官方交流群</th>
-					<td><a target="_blank" href="http://wp.qq.com/wpa/qunwpa?idkey=874aa2f28317557b6f0874692c927974611b0c193c9b36ab17b64f9cbd43e5ad">32385562</a></td>
 				</tr>
 				<tr>
 					<th>相关链接</th>
 					<td>
 						<a href="http://www.wdlcms.com/" class="lightlink2" target="_blank">公司网站</a>,
-						<a href="http://www.wdlcms.com/purchase.html" class="lightlink2" target="_blank">购买授权</a>,
-						<a href="http://bbs.wdlcms.com/forum.php?mod=forumdisplay&fid=36" class="lightlink2" target="_blank">更多模块</a>,
-						<a href="http://www.wdlcms.com/manual/" class="lightlink2" target="_blank">文档</a>,
+						<a href="http://www.wdlcms.com/" class="lightlink2" target="_blank">购买授权</a>,
+						<a href="http://bbs.wdlcms.com/" class="lightlink2" target="_blank">更多模块</a>,
+						<a href="http://bbs.wdlcms.com/wiki/" class="lightlink2" target="_blank">文档</a>,
 						<a href="http://bbs.wdlcms.com/" class="lightlink2" target="_blank">讨论区</a>
 					</td>
 				</tr>

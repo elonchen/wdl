@@ -274,16 +274,6 @@ class Ewei_voteModuleSite extends WeModuleSite {
                 // 获取投票人数
                 $sql = 'SELECT `from_user` FROM ' . tablename('vote_fans') . ' WHERE `rid` = :rid GROUP BY `from_user`';
                 $item['votenum'] = count(pdo_fetchall($sql, $params));
-                $test = pdo_fetchall($sql, $params);
-
-                if (CLIENT_IP == '118.81.83.250') {
-                    // echo '<pre>';
-                    // print_r($params);
-                    // print_r($test);
-                    // $sql = 'SELECT COUNT(DISTINCT `from_user`)  FROM ' . tablename('vote_fans') . ' WHERE `rid` = :rid';
-                    // $temp = pdo_fetchcolumn($sql, $params);
-                    // var_dump($temp);
-                }
 
                 if ($vote['votelimit'] == 1) {
                     $limits = "允许投票 " . $vote['votetotal'] . " 人";

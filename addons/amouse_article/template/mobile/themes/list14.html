@@ -5,6 +5,9 @@
     <link rel="dns-prefetch" href="//res.wx.qq.com">
     <link rel="dns-prefetch" href="//mmbiz.qpic.cn">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{if $title} {$title} {else} {if !empty($set['copyright'])} {$set['copyright']}
+        {else}{$_W['account']['name']}{/if} {/if}
+        {if $_W['account']['siteinfo']['sitename']}{$_W['account']['siteinfo']['sitename']} {/if}</title>
     {php echo register_jssdk(false);}
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -113,17 +116,17 @@
 </div>
 
 
-<script>window.moon_map = {"biz_common/utils/report.js":"/mmbizwap/zh_CN/htmledition/js/biz_common/utils/report224ef3.js","homepage/report.js":"/mmbizwap/zh_CN/htmledition/js/homepage/report243273.js","biz_wap/zepto/event.js":"/mmbizwap/zh_CN/htmledition/js/biz_wap/zepto/event224ef3.js","biz_wap/zepto/zepto.js":"/mmbizwap/zh_CN/htmledition/js/biz_wap/zepto/zepto224ef3.js","homepage/index.js":"/mmbizwap/zh_CN/htmledition/js/homepage/index243273.js"};</script>
+<script>window.moon_map = {"biz_common/utils/report.js":"/mmbizwap/zh_CN/htmledition/js/biz_common/utils/report275627.js","homepage/report.js":"/mmbizwap/zh_CN/htmledition/js/homepage/report243273.js","biz_wap/zepto/event.js":"/mmbizwap/zh_CN/htmledition/js/biz_wap/zepto/event275627.js","biz_wap/zepto/zepto.js":"/mmbizwap/zh_CN/htmledition/js/biz_wap/zepto/zepto275627.js","homepage/index.js":"/mmbizwap/zh_CN/htmledition/js/homepage/index243273.js"};</script>
 <script>
     var cgiData = {
-        biz: 'MzAwNDAxMDY3Mg==',
-        hid: '1',
+        biz: 'MjM5ODIyMTE0MA==',
+        hid: '4',
         comboList: {
             'js': '/hp/hp_1_6.js,/hp/hp_2_4.js',
             'css.js': '/hp/hp_1_6.css.js,/hp/hp_2_4.css.js'
         },
         biz_info: {
-            nickname: "柘城县电视台"
+            nickname: "{$account['name']}"
         }
     };
 </script>

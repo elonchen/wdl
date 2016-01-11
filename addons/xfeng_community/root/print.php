@@ -1,7 +1,7 @@
 <?php
 /**
  * 微站管理
- * [WeEngine System] Copyright (c) 2013 012wz.com
+ * [WeiZan System] Copyright (c) 2013 012wz.com
  */
 define('IN_SYS', true);
 require 'source/bootstrap.inc.php';

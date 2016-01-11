@@ -55,13 +55,11 @@ class Amouse_articleModuleSite extends WeModuleSite {
 
     public $_appid='';
     public $_appsecret='';
-
-
     function __construct(){
         global $_W;
-        $_weid=$_W['uniacid'];
+        $weid=$_W['uniacid'];
 
-        $set=  pdo_fetch("SELECT * FROM ".tablename('fineness_sysset')." WHERE weid=:weid limit 1", array(':weid' =>$_weid));
+        $set=  pdo_fetch("SELECT * FROM ".tablename('fineness_sysset')." WHERE weid=:weid limit 1", array(':weid' => $weid));
         if($set && $set['isget']==1){
             load()->model('account');
             $_W['account'] = account_fetch($_W['uniacid']);

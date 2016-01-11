@@ -1689,6 +1689,8 @@ footer .nav li>a.home{
 .nav_integral a>span.icons_luck{background-position: center -60px;}
 .nav_integral a>span.icons_record{background-position: center -110px;}
 .nav_integral a>span.icons_teach{background-position: center -160px;}
+.nav_integral a>span.icons_teach1{background-position: center -210px;}
+.nav_integral a>span.icons_teach2{background-position: center -260px;}
 
 .integral .recommend{
 	background: #ffffff;

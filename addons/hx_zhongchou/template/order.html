@@ -32,7 +32,13 @@
 				<div class="col-sm-8 col-lg-9 col-xs-12">
 					<input class="form-control" name="member" id="" type="text" value="{$_GPC['member']}" placeholder="可查询手机号 / 姓名">
 				</div>
-			</div> 
+			</div>
+			<div class="form-group">
+				<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">项目选择</label>
+				<div class="col-sm-8 col-lg-9 col-xs-12">
+					{php echo tpl_form_field_category_2level('project', $projects, $pitems, $pid, $iid);}
+				</div>
+			</div>
 			<div class="form-group">
 				<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label">支付方式</label>
 				<div class="col-sm-8 col-lg-9 col-xs-12">
@@ -66,11 +72,13 @@
 				<thead class="navbar-inner">
 					<tr>
 						<th style="width:80px;">订单号</th>
-						<th style="width:100px;">姓名</th>
+						<th style="width:100px;">项目名称</th>
+						<th style="width:80px;">支持金额</th>
+						<th style="width:80px;">姓名</th>
 						<th style="width:120px;">电话</th>
 						<th style="width:80px;">支付方式</th>
 						<th style="width:80px;">配送方式</th>
-						<th style="width:50px;">运费</th>
+						<!--th style="width:50px;">运费</th-->
 						<th style="width:100px;">总价</th>
 	<!--				<th style="width:50px;">类型</th>-->
 						<th style="width:80px;">状态</th>
@@ -80,17 +88,21 @@
 				</thead>
 				<tbody>
 					{loop $list $item}
+					{php $project = $this->getproject($item['pid']);$pitem = $this->getitem($item['item_id']);}
 					<tr>
 						<td>{$item['ordersn']}</td>
-						<td>{$item['realname']}</td>
+						<td>{$project['title']}</td>
+						<td>{$pitem['price']}</td>
+						<td>{$item['username']}</td>
 						<td>{$item['mobile']}</td>
 						<td><span class="label label-{$item['css']}">{$item['paytype']}</span></td>
-						<td>{if empty($item['dispatch'])}自提{else}{$item['dispatch']['dispatchname']}{/if}</td>
+						<!--td>{if empty($item['dispatch'])}自提{else}{$item['dispatch']['dispatchname']}{/if}</td-->
 						<td>{$item['dispatchprice']}</td>
 						<td>{$item['price']} 元</td>
 	<!--					<td>{if $item['goodstype']}实物{else}虚拟{/if}</td>-->
 						<td>
 							<span class="label label-{$item['statuscss']}">{$item['status']}</span>
+						</td>
 						<td>{php echo date('Y-m-d H:i:s', $item['createtime'])}</td>
 						<td style="text-align:right;">
 							<a href="{php echo $this->createWebUrl('order', array('op' => 'detail', 'id' => $item['id']))}" class="btn btn-success btn-sm">查看订单</a>
@@ -99,6 +111,7 @@
 							</a>
 						</td>
 					</tr>
+					{php unset($project);unset($pitem);}
 					{/loop}
 				</tbody>
 				<!--tr>
@@ -198,7 +211,7 @@
 				<div class="form-group">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">姓名 :</label>
 					<div class="col-sm-9 col-xs-12">
-						<p class="form-control-static">{$item['user']['realname']}</p>
+						<p class="form-control-static">{$item['user']['username']}</p>
 					</div>
 				</div>
 				<div class="form-group">
@@ -233,10 +246,11 @@
 						<th style="width:100px;">项目名称</th>
 						<th style="width:150px;">支持金额</th>
 						<th style="width:150px;">回报属性</th>
+						<th style="width:250px;">回报详情</th>
 						<th style="width:100px;">操作</th>
 					</tr>
 					</thead>
-					{php $project = $this->getproject($item['pid']);}
+					{php $project = $this->getproject($item['pid']);$item_info = $this->getitem($item['item_id']);}
 					<tr>
 						<td>{$project['id']}</td>
 						<td>
@@ -248,6 +262,7 @@
 						</td>
 						<td>{$item['item_price']}元</td>
 						<td><span class="label label-info">{if $project['type'] == 1}实体商品{else}虚拟商品{/if}</span></td>
+						<td>{$item_info['description']}</td>
 						<td style="text-align:right;">
 							<a href="{php echo $this->createWebUrl('project', array('id' => $project['id'], 'op' => 'post'))}" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="bottom" title="编辑"><i class="fa fa-edit"></i></a>&nbsp;&nbsp;
 							<a href="{php echo $this->createWebUrl('order', array('id' => $id, 'op' => 'delete'))}" onclick="return confirm('此操作不可恢复，确认删除？');return false;" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="bottom" title="删除"><i class="fa fa-times"></i></a>
@@ -271,7 +286,7 @@
 							{if $item['status'] != 3}
 							<button type="submit" class="btn btn-success" onclick="return confirm('确认完成此订单吗？'); return false;" name="finish" value="yes">完成订单</button>
 							{if $item['status'] >= 0}
-							<button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-close">关闭订单</button>
+							<button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-close">关闭订单（退款）</button>
 							{else}
 							<button type="submit" class="btn btn-default" onclick="return confirm('确认开启此订单吗？'); return false;" name="open" value="yes">开启订单</button>
 							{/if}
@@ -289,12 +304,15 @@
 				<div class="modal-content">
 					<div class="modal-header">
 						<button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
-						<h3>关闭订单</h3>
+						<h3>关闭订单(退款)</h3>
 					</div>
 					<div class="modal-body">
 						<label>关闭订单原因</label>
 						<textarea style="height:150px;" class="form-control" name="reson" autocomplete="off"></textarea>
 						<div id="module-menus"></div>
+						<label>是否退款：</label>
+						<label><input type="radio" name="tuikuan" value="0">否 </label>&nbsp;&nbsp;
+						<label><input type="radio" name="tuikuan" value="1" checked>是 </label>
 					</div>
 					<div class="modal-footer">
 						<button type="submit" class="btn btn-primary" name="close" value="yes">关闭订单</button>

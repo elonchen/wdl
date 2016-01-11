@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html>
-    <head>
+{template 'common/header'}
         <meta charset="utf-8" />
         <link rel="stylesheet" type="text/css" href="{TEMPLATE_PATH}css/main.css" media="all" />
 		<link rel="stylesheet" type="text/css" href="{TEMPLATE_PATH}css/dialog.css" media="all" />
@@ -149,7 +147,11 @@
 						<li><a href="{php echo $this->createMobileUrl('prize', array('rid' => $rid ));}"><span class="icons icons_prize">&nbsp;</span><label>获奖记录</label></a></li>
 						<li><a href="{php echo $this->createMobileUrl('record', array('rid' => $rid ));}"><span class="icons icons_luck">&nbsp;</span><label>签到记录</label></a></li>
 						<li><a href="{php echo $this->createMobileUrl('top', array('rid' => $rid ));}"><span class="icons icons_record">&nbsp;</span><label>今日排名</label></a></li>
-						<li><a href="{php echo url('activity/goods/display')}"><span class="icons icons_teach">&nbsp;</span><label>积分兑换</label></a></li>
+						{if $meepo_bbs}
+						<li><a href="{php echo murl('entry',array('do'=>'activity_coupon','m'=>'meepo_bbs'))}"><span class="icons icons_teach">&nbsp;</span><label>积分兑换</label></a></li>
+						{else}
+						<li><a href="{php echo $token_url}"><span class="icons icons_teach">&nbsp;</span><label>积分兑换</label></a></li>
+						{/if}
 					</ul>
 				</nav>
 			</header>
@@ -198,16 +200,6 @@
 					</script>
 				</div>
 			</div>
-			<footer>
-				<nav class="nav">
-					<ul class="box" style="height:40px;">
-						<li><a href="" ><span style="font-size:20px" >&copy{$_W['account']['name']}</span></a></li>
-					</ul>
-				</nav>
-			</footer>
-			
-
-</div>
 		
 
 </body>

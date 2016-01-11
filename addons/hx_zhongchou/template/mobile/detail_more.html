@@ -1,4 +1,4 @@
-{template 'common/header'}
+{template 'header'}
 <div id="activity-detail">
 <style type="text/css">
 @charset "utf-8";
@@ -59,11 +59,6 @@ body > .tips{display:none;left:50%;padding:20px;position:fixed;text-align:center
 .head .order li > a{display:block; padding:0 10px; min-width:100px; height:35px; line-height:35px; font-size:16px; color:#333; text-decoration:none; border-top:1px #EEE solid;}
 .head .order li.fa-caret-up{font-size:20px;color:#F9F9F9;position:absolute;top:-11px;right:16px;}
 </style>
-<div class="head">
-	<a href="javascript:history.go(-1);" class="bn pull-left"><i class="fa fa-reply"></i></a>
-	<span class="title">项目详情</span>
-	
-</div>
 <div class="page-bizinfo">
 	<div class="header">
 		<h1 id="activity-name">{$detail['title']}</h1>
@@ -83,5 +78,6 @@ body > .tips{display:none;left:50%;padding:20px;position:fixed;text-align:center
 	<span class="" onclick="$('#mcover').show()"><i class="fa fa-group"></i> 分享</span>
 </div>
 <div id="mcover" onclick="$(this).hide()"><img src="./resource/images/guide.png"></div>
-{php $_share = array('content' => $detail['content'], 'title' => $detail['title'], 'imgUrl' => $detail['thumb']);}
-{template 'common/footer'}
+{php $_share = array('content' => $detail['content'], 'title' => $detail['title']);}
+{template 'footerbar'}
+{template 'footer'}

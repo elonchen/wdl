@@ -1,5 +1,5 @@
 <!--360全景-->
-<!--作者:微赞-->
+<!--作者:迷失卍国度-->
 <!--qq : 15595755-->
 <html>
 <head>
@@ -132,6 +132,23 @@
         WeixinJSBridge.call('hideToolbar');
     });
 </script>
+{php echo register_jssdk(false);}
+<script>
+    wx.ready(function () {
+        sharedata = {
+            title: '{$share_title}',
+            desc: '{$share_desc}',
+            link: '{$share_url}',
+            imgUrl: '{$share_image}',
+            success: function(){
+            },
+            cancel: function(){
+            }
+        };
+        wx.onMenuShareAppMessage(sharedata);
+        wx.onMenuShareTimeline(sharedata);
+    });
+</script>
 <noscript>
     Please enable Javascript!
 </noscript>
@@ -139,5 +156,5 @@
 </html>
 <!--360全景-->
 <!--www.weisrc.com-->
-<!--作者:微赞-->
+<!--作者:迷失卍国度-->
 <!--qq : 15595755-->

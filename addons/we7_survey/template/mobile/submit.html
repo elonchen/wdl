@@ -47,17 +47,17 @@
 					<div class="options"{if $row['type']=="radio"}title="1"{elseif $row['type']=="checkbox"}title="2"{/if} >
 						{loop $row['options'] $v}
 							<div class="option">
-								<img class="oimg" src="../addons/we7_survey/template/mobile/option_bg.png">
-								<img class="oimg-sel" src="../addons/we7_survey/template/mobile/option_sel_bg.png">
 								<div class="text">
 									<div class="otext">{$v}</div>
 								</div>
+								<img class="oimg" src="../addons/we7_survey/template/mobile/option_bg.png">
+								<img class="oimg-sel" src="../addons/we7_survey/template/mobile/option_sel_bg.png">
 							</div>				 
 						{/loop}
 						<input type="hidden" name="field_{$row['sfid']}" class="hidden" id="hidden_{$key}">
 					</div>
 					<div class="tip" style="padding-right:20px">说明：{$row['description']}</div>
-					<div class="submit" {if $row['type']=="radio"}title="1"{elseif $row['type']=="checkbox"}title="100"{/if}>
+					<div class="submit {if $row['essential'] == 0}disable{/if}" {if $row['type']=="radio"}title="1"{elseif $row['type']=="checkbox"}title="100"{/if}>
 						<img src="../addons/we7_survey/template/mobile/next_btn.png">
 						<span>下一步</span>
 					</div>
@@ -71,7 +71,7 @@
 							<div class="desc-cont">
 								<textarea  class="form-control" name="field_{$row['sfid']}" rows="5" style="color:#ccc;border:1px solid #ccc;width:100%"></textarea>
 							</div>
-							<input type="button" class="next-btn next-step" value="下一步">		
+							<input type="button" class="next-btn next-step" value="下一步">
 						</div>
 					</div>			
 				</div>							
@@ -148,7 +148,11 @@ $(function(){
 		var parent=$(this).parent();
 		var maxsel = $(this).attr("title");
 		var $btn = $(this);
-		if($btn.hasClass("disabled")) return;
+		if($btn.hasClass("disable")) {
+			$(".xuan").hide();
+			parent.next().show();
+			return;
+		}
 		var $answer = parent.find(".options .option-sel");
 		if($answer.size() == 0){
 			alert("请选择一个答案!");

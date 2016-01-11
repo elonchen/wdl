@@ -93,7 +93,7 @@
 			</a>
 			{if $item['type'] == '2'}(虚拟){/if}
 			<strong class="text-danger" style="font-size: 14px;">￥{$item['marketprice']}</strong>
-			<strong style="color: #b0b8bd; text-decoration: line-through;">￥{$item['originalprice']}</strong>
+			{if $item['originalprice'] != '0.00'}<strong style="color: #b0b8bd; text-decoration: line-through;">￥{$item['originalprice']}</strong>{/if}
 		</span>
 		{if $item['istime']==1}
 			<span style='text-align: center;margin-left:10px;margin-right:10px;color:white;font-size:11px;' class='label label-danger' id="time_{$item['id']}">
@@ -120,18 +120,20 @@
 {/loop}
 {if empty($_W['isajax'])}
 	</div>
-	<div class="show-more"><a href="javascript:;" onclick="loadPage('{$pindex}', 'list')" class="img-rounded" id="pager">浏览更多商品</a></div>
+	<div class="show-more"><a href="javascript:;" data-pindex="2" onclick="loadPage('{$pindex}', 'list')" class="img-rounded" id="pager">浏览更多商品</a></div>
 </div>
 <script type="text/javascript">
 function loadPage(pindex, container) {
-	pindex = parseInt(pindex) + 1;
+//	pindex = parseInt(pindex) + 1;
+	var pindex = $('#pager').data('pindex');
 	$('#pager').html('正在加载数据...');
 	$.get(location.href, {'page' : pindex}, function(html){
 		if (html.indexOf('list-item') > -1) {
 			$('#'+container).append(html);
-			$('#pager').get(0).onclick = function(){
-				loadPage(pindex, container);
-			}
+			$('#pager').data('pindex', pindex+1);
+//			$('#pager').one('click', function(){
+//				loadPage(pindex, container);
+//			});
 			$('#pager').html("浏览更多商品");
 		} else {
 			$('#pager').html('已经显示全部商品');

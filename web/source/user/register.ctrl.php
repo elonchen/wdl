@@ -43,7 +43,6 @@ if(checksubmit()) {
 		}
 	}
 	
-
 	$member['status'] = !empty($setting['register']['verify']) ? 1 : 2;
 	$member['remark'] = '';
 	$member['groupid'] = intval($setting['register']['groupid']);
@@ -61,7 +60,7 @@ if(checksubmit()) {
 			pdo_insert('users_profile', $profile);
 		}
 		pdo_update('users_invitation', array('inviteuid' => $uid), array('id' => $invite['id']));
-		message('注册成功'.(!empty($setting['register']['verify']) ? '，請等待管理员审核！' : '，请重新登录！'), url('user/login', array('uid' => $uid, 'username' => $member['username'])));
+		message('注册成功,恭喜您抽取获得‘7’天体验时间!赶快体验吧!'.(!empty($setting['register']['verify']) ? '，請等待管理员审核！' : '，请重新登录！'), url('user/login', array('uid' => $uid, 'username' => $member['username'])));
 	}
 	message('增加用户失败，请稍候重试或联系网站管理员解决！');
 }

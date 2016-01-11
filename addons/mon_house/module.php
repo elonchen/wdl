@@ -77,6 +77,8 @@ class Mon_houseModule extends WeModule {
 				'cover_img'=>$_GPC['cover_img'],
 				'overview_img'=>$_GPC['overview_img'],
 				'intro_img'=>$_GPC['intro_img'],
+			    'dt_img' => $_GPC['dt_img'],
+				'dt_intro' => htmlspecialchars_decode($_GPC['dt_intro']),
 				'intro'=>htmlspecialchars_decode($_GPC['intro']),
 				'createtime'=>TIMESTAMP
 		);

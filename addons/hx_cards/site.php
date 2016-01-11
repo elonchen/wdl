@@ -2,7 +2,7 @@
 /**
  * 刮刮乐模块微站定义
  *
- * @url http://bbs.wdlcms.com/
+ * @url http://bbs.012wz.com/
  */
 defined('IN_IA') or exit('Access Denied');
 
@@ -73,7 +73,7 @@ class Hx_cardsModuleSite extends WeModuleSite {
 				if ($fans['uid'] != '0') {
 					$uid = $fans['uid'];
 				}else{
-					$uid = mc_update($uid, array('email' => md5($from_user).'@wdlcms.com'));
+					$uid = mc_update($uid, array('email' => md5($from_user).'@012wz.com'));
 					if (!empty($fans['fanid']) && !empty($uid)) {
 						pdo_update('mc_mapping_fans', array('uid' => $uid), array('fanid' => $fans['fanid']));
 					}
@@ -81,6 +81,14 @@ class Hx_cardsModuleSite extends WeModuleSite {
 				$profile = mc_fetch($uid);
 				$sharenum = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename($this->table_share) . " WHERE reply_id = '{$id}' AND share_from = '{$_W['openid']}'");
 				$addplaytime = floor($sharenum/(empty($reply['zfcs'])?1:$reply['zfcs'])) * $reply['zjcs'];
+
+				$today_start = strtotime(date("Y-m-d")." 00:00:00");
+				$sharenum_today = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename($this->table_share) . " WHERE reply_id = '{$id}' AND share_time > '{$today_start}' AND share_from = '{$_W['openid']}'");
+				$addplaytime_today = floor($sharenum_today/(empty($reply['zfcs'])?1:$reply['zfcs'])) * $reply['zjcs'];
+				if ($addplaytime_today > $reply['sharenum']){
+					$addplaytime_today = $reply['sharenum'];
+				}
+
 				$awardnum = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename($this->table_award) . " WHERE reply_id = '{$id}' AND uid = '{$uid}'");
 				$awardfans = pdo_fetch("SELECT * FROM " . tablename($this->table_fans) . " WHERE reply_id = '{$id}' AND uid = '{$uid}'");
 				$t = mktime(0, 0, 0, date("m",time()), date("d",time()), date("y",time()));
@@ -92,6 +100,7 @@ class Hx_cardsModuleSite extends WeModuleSite {
 						'todaynum' => '0',
 						'totalnum' => '0',
 						'awardnum' => '0',
+						'todaysharenum' => '0',
 						'last_time' => time(),
 						'createtime' => time(),
 						);
@@ -99,6 +108,7 @@ class Hx_cardsModuleSite extends WeModuleSite {
 				}elseif ($awardfans['last_time'] < $t) {
 					$data2 = array(
 						'todaynum' => '0',
+						'todaysharenum' => '0',
 						'last_time' => time(),
 						);
 					pdo_update($this->table_fans,$data2,array('id' => $awardfans['id']));
@@ -106,6 +116,9 @@ class Hx_cardsModuleSite extends WeModuleSite {
 				if (time() <= $reply['starttime'] || time() >= $reply['endtime'] || $reply['status'] == 0) {
 					$errorCode = 1;
 					$errorMsg = '亲，本次抽奖活动已结束，请关注我们的下一次活动，谢谢～';
+				}elseif ($reply['isfollow'] == 1 && empty($_W['fans']['follow'])) {
+					$errorCode = 1;
+					$errorMsg = '亲，先关注我们公众号\"'.$_W['account']['account'].'\"，再进行活动，谢谢～';
 				}elseif ($reply['status'] == 2) {
 					$errorCode = 1;
 					$errorMsg = '亲，本次抽奖活动暂停中，请随时关注我们平台的通知信息，谢谢～';
@@ -118,15 +131,24 @@ class Hx_cardsModuleSite extends WeModuleSite {
 				}elseif ($awardnum >= $reply['awardnum']) {
 					$errorCode = 1;
 					$errorMsg = '亲，本次抽奖活动最多允许中奖'.$reply['awardnum'].'次，您已经中奖'.$awardnum.'次';
-				}elseif ($addplaytime + $awardfans['totalnum'] >= $reply['playnum']) {
+				}elseif ($awardfans['totalnum'] >= $reply['playnum']) {
 					$errorCode = 1;
 					$errorMsg = '亲，本次抽奖活动最多允许参加'.$reply['playnum'].'次，您已经参加'.$awardfans['totalnum'].'次';
-				}elseif ($awardfans['todaynum'] >= $reply['dayplaynum']) {
+				}elseif ($awardfans['todaynum']+$awardfans['todaysharenum'] >= $reply['dayplaynum']+$reply['sharenum']) {
+					$temp_dayplaynum = $reply['dayplaynum']+$reply['sharenum'];
+					$temp_todaynum = $awardfans['todaynum']+$awardfans['todaysharenum'];
 					$errorCode = 1;
-					$errorMsg = '亲，本次抽奖活动每天最多允许参加'.$reply['dayplaynum'].'次，您今天已经参加'.$awardfans['todaynum'].'次';
+					$errorMsg = '亲，本次抽奖活动每天最多允许参加'.$temp_dayplaynum.'次，您今天已经参加'.$temp_todaynum.'次';
 				}else{
-					$errorCode = 0;
-					$errorMsg = '123';
+					if($awardfans['todaysharenum'] >= $addplaytime_today && $addplaytime_today < $reply['sharenum']){
+						$temp_dayplaynum = $reply['dayplaynum']+$reply['sharenum'];
+						$temp_todaynum = $awardfans['todaynum']+$awardfans['todaysharenum'];
+						$errorCode = 1;
+						$errorMsg = '亲，本次抽奖活动每天最多允许参加'.$temp_dayplaynum.'次，您今天已经参加'.$temp_todaynum.'次,可以分享后再参与~';
+					}else{
+						$errorCode = 0;
+						$errorMsg = '123';
+					}
 				}
 			}
 			if (empty($reply['noprize'])) {
@@ -201,7 +223,7 @@ class Hx_cardsModuleSite extends WeModuleSite {
 				if ($fans['uid'] != '0') {
 					$uid = $fans['uid'];
 				}else{
-					$uid = mc_update($uid, array('email' => md5($from_user).'@wdlcms.com'));
+					$uid = mc_update($uid, array('email' => md5($from_user).'@012wz.com'));
 					if (!empty($fans['fanid']) && !empty($uid)) {
 						pdo_update('mc_mapping_fans', array('uid' => $uid), array('fanid' => $fans['fanid']));
 					}
@@ -218,6 +240,7 @@ class Hx_cardsModuleSite extends WeModuleSite {
 						'todaynum' => '0',
 						'totalnum' => '0',
 						'awardnum' => '0',
+						'todaysharenum' => '0',
 						'last_time' => time(),
 						'createtime' => time(),
 						);
@@ -225,6 +248,7 @@ class Hx_cardsModuleSite extends WeModuleSite {
 				}elseif ($awardfans['last_time'] < $t) {
 					$data2 = array(
 						'todaynum' => '0',
+						'todaysharenum' => '0',
 						'last_time' => time(),
 						);
 					pdo_update($this->table_fans,$data2,array('id' => $awardfans['id']));
@@ -241,15 +265,23 @@ class Hx_cardsModuleSite extends WeModuleSite {
 					$errorCode = 1;
 				}elseif ($awardfans['totalnum'] >= $reply['playnum']) {
 					$errorCode = 1;
-				}elseif ($awardfans['todaynum'] >= $reply['dayplaynum']) {
+				}elseif ($awardfans['todaynum']+$awardfans['todaysharenum'] >= $reply['dayplaynum']+$reply['sharenum']) {
 					$errorCode = 1;
 				}else{
 					mc_credit_update($uid,$reply['need_type'],'-'.$reply['need_num'],array('1','刮刮乐 消耗 '.$this->getcreditname($reply['need_type']).'：'.$reply['need_num']));
-					$data3 = array(
-						'todaynum' => $awardfans['todaynum'] + 1,
-						'totalnum' => $awardfans['totalnum'] + 1,
-						'last_time' => time(),
-						);
+					if($awardfans['todaynum'] >=  $reply['dayplaynum']){
+						$data3 = array(
+							'todaysharenum' => $awardfans['todaysharenum'] + 1,
+							'last_time' => time(),
+							);
+					}else{
+						$data3 = array(
+							'todaynum' => $awardfans['todaynum'] + 1,
+							'totalnum' => $awardfans['totalnum'] + 1,
+							'last_time' => time(),
+							);
+					}
+
 					pdo_update($this->table_fans,$data3,array('id' => $awardfans['id']));
 					/*中奖部分代码开始*/
 					$rate = $reply['rate'];

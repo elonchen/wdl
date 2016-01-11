@@ -1,11 +1,19 @@
 <?php
-error_reporting(0);
-$conn=@mysql_connect($_GET['host'],$_GET['username'],$_GET['password']) or die (mysql_error());
-mysql_select_db($_GET['database'],$conn);
+ini_set("display_errors", "ON");
+error_reporting(E_ALL);
+define("IN_IA",true);
+require '../../data/config.php';
+$config = $config['db'];
+
+ 
+
+$conn=@mysql_connect($config['host'],$config['username'],$config['password']) or die (mysql_error());
+mysql_select_db($config['database'],$conn);
 mysql_query("SET NAMES 'GBK'");
- $result = mysql_query("SELECT * FROM  `ims_xhw_picvote_reg` WHERE  `weid` =".$_GET['weid']." AND  `pass` =1 ORDER BY  `num` DESC LIMIT 0 , 5000");   
-    $str = "±êÌâ,êÇ³Æ,Æ±Êý,ÈËÆø,ÊÖ»ú\n"; 
-    while($row=mysql_fetch_array($result))   
+$result = mysql_query("SELECT * FROM  `ims_xhw_voice_reg` WHERE  `weid` =".$_GET['weid']." AND  `pass` =1 ORDER BY  `num` DESC LIMIT 0 , 5000");   
+ 
+    $str = "å§“å,æ˜µç§°,ç¥¨æ•°,äººæ°”,æ‰‹æœº\n"; 
+   while($row=mysql_fetch_array($result))   
     {   
        $title = $row['title'];
         $nickname = $row['nickname'];
@@ -14,8 +22,8 @@ mysql_query("SET NAMES 'GBK'");
         $sharenum = $row['sharenum'];
         $str .= $title.",".$nickname.",".$num.",".$sharenum.",".$phone."\n"; 
     }   
-    $filename = date('Ymd').'.csv'; //ÉèÖÃÎÄ¼þÃû   
-    export_csv($filename,$str); //µ¼³ö   
+    $filename = date('Ymd').'.csv'; //è®¾ç½®æ–‡ä»¶å   
+    export_csv($filename,$str); //å¯¼å‡º   
 
 
 function export_csv($filename,$data)   
@@ -27,5 +35,3 @@ function export_csv($filename,$data)
     header('Pragma:public');   
     echo $data;   
 }  
-
-?>

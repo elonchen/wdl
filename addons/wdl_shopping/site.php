@@ -28,7 +28,7 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 		if ($operation == 'display') {
 			if (!empty($_GPC['displayorder'])) {
 				foreach ($_GPC['displayorder'] as $id => $displayorder) {
-					pdo_update('shopping_category', array('displayorder' => $displayorder), array('id' => $id));
+					pdo_update('shopping_category', array('displayorder' => $displayorder), array('id' => $id, 'weid' => $_W['uniacid']));
 				}
 				message('分类排序更新成功！', $this->createWebUrl('category', array('op' => 'display')), 'success');
 			}
@@ -45,7 +45,7 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 			$parentid = intval($_GPC['parentid']);
 			$id = intval($_GPC['id']);
 			if (!empty($id)) {
-				$category = pdo_fetch("SELECT * FROM " . tablename('shopping_category') . " WHERE id = '$id'");
+				$category = pdo_fetch("SELECT * FROM " . tablename('shopping_category') . " WHERE id = :id AND weid = :weid", array(':id' => $id, ':weid' => $_W['uniacid']));
 			} else {
 				$category = array(
 					'displayorder' => 0,
@@ -73,7 +73,7 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 				);
 				if (!empty($id)) {
 					unset($data['parentid']);
-					pdo_update('shopping_category', $data, array('id' => $id));
+					pdo_update('shopping_category', $data, array('id' => $id, 'weid' => $_W['uniacid']));
 					load()->func('file');
 					file_delete($_GPC['thumb_old']);
 				} else {
@@ -615,7 +615,8 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 					'0' => array('css' => 'default', 'name' => '未支付'),
 					'1' => array('css' => 'danger','name' => '余额支付'),
 					'2' => array('css' => 'info', 'name' => '在线支付'),
-					'3' => array('css' => 'warning', 'name' => '货到付款')
+					'3' => array('css' => 'warning', 'name' => '货到付款'),
+					'4' => array('css' => 'info', 'name' => '无需支付')
 				);
 				$orderstatus = array (
 					'-1' => array('css' => 'default', 'name' => '已取消'),
@@ -699,7 +700,7 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 
 		} elseif ($operation == 'detail') {
 			$id = intval($_GPC['id']);
-			$item = pdo_fetch("SELECT * FROM " . tablename('shopping_order') . " WHERE id = :id", array(':id' => $id));
+			$item = pdo_fetch("SELECT * FROM " . tablename('shopping_order') . " WHERE id = :id AND weid = :weid", array(':id' => $id, ':weid' => $_W['uniacid']));
 			if (empty($item)) {
 				message("抱歉，订单不存在!", referer(), "error");
 			}
@@ -725,7 +726,7 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 				message('发货操作成功！', referer(), 'success');
 			}
 			if (checksubmit('cancelsend')) {
-				$item = pdo_fetch("SELECT transid FROM " . tablename('shopping_order') . " WHERE id = :id", array(':id' => $id));
+				$item = pdo_fetch("SELECT transid FROM " . tablename('shopping_order') . " WHERE id = :id AND weid = :weid", array(':id' => $id, ':weid' => $_W['uniacid']));
 				if (!empty($item['transid'])) {
 					$this->changeWechatSend($id, 0, $_GPC['cancelreson']);
 				}
@@ -740,15 +741,15 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 				message('取消发货操作成功！', referer(), 'success');
 			}
 			if (checksubmit('finish')) {
-				pdo_update('shopping_order', array('status' => 3, 'remark' => $_GPC['remark']), array('id' => $id));
+				pdo_update('shopping_order', array('status' => 3, 'remark' => $_GPC['remark']), array('id' => $id, 'weid' => $_W['uniacid']));
 				message('订单操作成功！', referer(), 'success');
 			}
 			if (checksubmit('cancel')) {
-				pdo_update('shopping_order', array('status' => 1, 'remark' => $_GPC['remark']), array('id' => $id));
+				pdo_update('shopping_order', array('status' => 1, 'remark' => $_GPC['remark']), array('id' => $id, 'weid' => $_W['uniacid']));
 				message('取消完成订单操作成功！', referer(), 'success');
 			}
 			if (checksubmit('cancelpay')) {
-				pdo_update('shopping_order', array('status' => 0, 'remark' => $_GPC['remark']), array('id' => $id));
+				pdo_update('shopping_order', array('status' => 0, 'remark' => $_GPC['remark']), array('id' => $id, 'weid' => $_W['uniacid']));
 				//设置库存
 				$this->setOrderStock($id, false);
 				//减少积分
@@ -757,7 +758,7 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 				message('取消订单付款操作成功！', referer(), 'success');
 			}
 			if (checksubmit('confrimpay')) {
-				pdo_update('shopping_order', array('status' => 1, 'paytype' => 2, 'remark' => $_GPC['remark']), array('id' => $id));
+				pdo_update('shopping_order', array('status' => 1, 'paytype' => 2, 'remark' => $_GPC['remark']), array('id' => $id, 'weid' => $_W['uniacid']));
 				//设置库存
 				$this->setOrderStock($id);
 				//增加积分
@@ -765,15 +766,15 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 				message('确认订单付款操作成功！', referer(), 'success');
 			}
 			if (checksubmit('close')) {
-				$item = pdo_fetch("SELECT transid FROM " . tablename('shopping_order') . " WHERE id = :id", array(':id' => $id));
+				$item = pdo_fetch("SELECT transid FROM " . tablename('shopping_order') . " WHERE id = :id AND weid = :weid", array(':id' => $id, ':weid' => $_W['uniacid']));
 				if (!empty($item['transid'])) {
 					$this->changeWechatSend($id, 0, $_GPC['reson']);
 				}
-				pdo_update('shopping_order', array('status' => -1, 'remark' => $_GPC['remark']), array('id' => $id));
+				pdo_update('shopping_order', array('status' => -1, 'remark' => $_GPC['remark']), array('id' => $id, 'weid' => $_W['uniacid']));
 				message('订单关闭操作成功！', referer(), 'success');
 			}
 			if (checksubmit('open')) {
-				pdo_update('shopping_order', array('status' => 0, 'remark' => $_GPC['remark']), array('id' => $id));
+				pdo_update('shopping_order', array('status' => 0, 'remark' => $_GPC['remark']), array('id' => $id, 'weid' => $_W['uniacid']));
 				message('开启订单操作成功！', referer(), 'success');
 			}
 			// 订单取消
@@ -801,7 +802,7 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 		} elseif ($operation == 'delete') {
 			/*订单删除*/
 			$orderid = intval($_GPC['id']);
-			if (pdo_delete('shopping_order', array('id' => $orderid))) {
+			if (pdo_delete('shopping_order', array('id' => $orderid, 'weid' => $_W['uniacid']))) {
 				message('订单删除成功', $this->createWebUrl('order', array('op' => 'display')), 'success');
 			} else {
 				message('订单不存在或已被删除', $this->createWebUrl('order', array('op' => 'display')), 'error');
@@ -1357,24 +1358,28 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 		if (checksubmit('submit')) {
 			// 是否自提
 			$sendtype = 1;
-			$address = pdo_fetch("SELECT * FROM " . tablename('mc_member_address') . " WHERE id = :id", array(':id' => intval($_GPC['address'])));
-			if (empty($address)) {
-				message('抱歉，请您填写收货地址！');
-			}
-			// 商品价格
-			$goodsprice = 0;
-			foreach ($allgoods as $row) {
-				$goodsprice += $row['totalprice'];
-			}
-			// 运费
-			$dispatchid = intval($_GPC['dispatch']);
-			$dispatchprice = 0;
-			foreach ($dispatch as $d) {
-				if ($d['id'] == $dispatchid) {
-					$dispatchprice = $d['price'];
-					$sendtype = $d['dispatchtype'];
-				}
-			}
+                $address = pdo_fetch("SELECT * FROM " . tablename('mc_member_address') . " WHERE id = :id", array(':id' => intval($_GPC['address'])));
+            if ($_GPC['goodstype'] != '2') {
+                if (empty($address)) {
+                    message('抱歉，请您填写收货地址！');
+                }
+                // 运费
+                $dispatchid = intval($_GPC['dispatch']);
+                $dispatchprice = 0;
+                foreach ($dispatch as $d) {
+                    if ($d['id'] == $dispatchid) {
+                        $dispatchprice = $d['price'];
+                        $sendtype = $d['dispatchtype'];
+                    }
+                }
+            } else {
+                $sendtype = '3 ';
+            }
+            // 商品价格
+            $goodsprice = 0;
+            foreach ($allgoods as $row) {
+                $goodsprice += $row['totalprice'];
+            }
 
 			$data = array(
 				'weid' => $_W['uniacid'],
@@ -1393,7 +1398,6 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 							$address['district'] . '|' . $address['address'],
 				'createtime' => TIMESTAMP
 			);
-
 			pdo_insert('shopping_order', $data);
 			$orderid = pdo_insertid();
 			//插入订单商品
@@ -1435,7 +1439,7 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 	//设置订单积分
 	public function setOrderCredit($orderid, $add = true) {
 		global $_W;
-		$order = pdo_fetch("SELECT * FROM " . tablename('shopping_order') . " WHERE id = :id limit 1", array(':id' => $orderid));
+		$order = pdo_fetch("SELECT * FROM " . tablename('shopping_order') . " WHERE id = :id AND weid = :weid  limit 1", array(':id' => $orderid, ':weid' => $_W['uniacid']));
 		if (empty($order)) {
 			return false;
 		}
@@ -1468,7 +1472,7 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 		global $_W, $_GPC;
 		$this->checkAuth();
 		$orderid = intval($_GPC['orderid']);
-		$order = pdo_fetch("SELECT * FROM " . tablename('shopping_order') . " WHERE id = :id", array(':id' => $orderid));
+		$order = pdo_fetch("SELECT * FROM " . tablename('shopping_order') . " WHERE id = :id AND weid = :weid", array(':id' => $orderid, ':weid' => $_W['uniacid']));
 		if ($order['status'] != '0') {
 			message('抱歉，您的订单已经付款或是被关闭，请重新进入付款！', $this->createMobileUrl('myorder'), 'error');
 		}
@@ -1502,7 +1506,7 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 				load()->func('communication');
 				ihttp_email($this->module['config']['noticeemail'], '微商城订单提醒', $body);
 			}
-			pdo_update('shopping_order', array('status' => '1', 'paytype' => '3'), array('id' => $orderid));
+			pdo_update('shopping_order', array('status' => '1', 'paytype' => '3'), array('id' => $orderid, 'uniacid' => $_W['uniacid']));
 			message('订单提交成功，请您收到货时付款！', $this->createMobileUrl('myorder'), 'success');
 		}
 		if (checksubmit()) {
@@ -1542,7 +1546,7 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 		$op = $_GPC['op'];
 		if ($op == 'confirm') {
 			$orderid = intval($_GPC['orderid']);
-			$order = pdo_fetch("SELECT * FROM " . tablename('shopping_order') . " WHERE id = :id AND from_user = :from_user", array(':id' => $orderid, ':from_user' => $_W['fans']['from_user']));
+			$order = pdo_fetch("SELECT * FROM " . tablename('shopping_order') . " WHERE id = :id AND from_user = :from_user AND weid = :weid", array(':id' => $orderid, ':from_user' => $_W['fans']['from_user'], ':weid' => $_W['uniacid']));
 			if (empty($order)) {
 				message('抱歉，您的订单不存或是已经被取消！', $this->createMobileUrl('myorder'), 'error');
 			}
@@ -1606,7 +1610,7 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 	public function doMobileDetail() {
 		global $_W, $_GPC;
 		$goodsid = intval($_GPC['id']);
-		$goods = pdo_fetch("SELECT * FROM " . tablename('shopping_goods') . " WHERE id = :id", array(':id' => $goodsid));
+		$goods = pdo_fetch("SELECT * FROM " . tablename('shopping_goods') . " WHERE id = :id AND weid = :weid", array(':id' => $goodsid, ':weid' => $_W['uniacid']));
 		if (empty($goods)) {
 			message('抱歉，商品不存在或是已经被删除！');
 		}
@@ -1816,8 +1820,10 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 			$data['paydetail'] = '使用' . $cardType[$params['card_type']] . '支付了' . ($params['fee'] - $params['card_fee']);
 			$data['paydetail'] .= '元，实际支付了' . $params['card_fee'] . '元。';
 		}
-
 		$data['paytype'] = $paytype[$params['type']];
+		if ($paytype[$params['type']] == '') {
+			$data['paytype'] = 4;
+		}
 		if ($params['type'] == 'wechat') {
 			$data['transid'] = $params['tag']['transaction_id'];
 		}
@@ -1838,13 +1844,12 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 				pdo_update('shopping_goods', $goodsupdate, array('id' => $row['goodsid']));
 			}
 		}
-		pdo_update('shopping_order', $data, array('id' => $params['tid']));
+		pdo_update('shopping_order', $data, array('id' => $params['tid'], 'weid' => $_W['uniacid']));
 		if ($params['from'] == 'return') {
-
 			//积分变更
 			$this->setOrderCredit($params['tid']);
 
-			if (!empty($this->module['config']['noticeemail']) || !empty($this->module['config']['mobile'])) {
+			if (!empty($this->module['config']['noticeemail']) || !empty($this->module['config']['template'])|| !empty($this->module['config']['mobile'])) {
 				$order = pdo_fetch("SELECT `ordersn`, `price`, `paytype`, `from_user`, `address`, `createtime` FROM " . tablename('shopping_order') . " WHERE id = '{$params['tid']}'");
 				$ordergoods = pdo_fetchall("SELECT goodsid, total FROM " . tablename('shopping_order_goods') . " WHERE orderid = '{$params['tid']}'", array(), 'goodsid');
 				$goods = pdo_fetchall("SELECT id, title, thumb, marketprice, unit, total FROM " . tablename('shopping_goods') . " WHERE id IN ('" . implode("','", array_keys($ordergoods)) . "')");
@@ -1869,6 +1874,27 @@ class Wdl_shoppingModuleSite extends WeModuleSite {
 
 					load()->func('communication');
 					ihttp_email($this->module['config']['noticeemail'], '微商城订单提醒', $body);
+				}
+				//模板消息
+				if (!empty($this->module['config']['template'])) {
+					$good = '';
+					$address = explode('|', $order['address']);
+					if (!empty($goods)) {
+						foreach ($goods as $row) {
+							$good .= "\n"."名称：{$row['title']} ，数量：{$ordergoods[$row['id']]['total']} ";
+						}
+					}
+					$paytype = $order['paytype'] == '3' ? '货到付款' : '已付款';
+					$data = array (
+						'first' => array('value' => '购买商品清单'),
+						'keyword1' => array('value' => date('Y-m-d H:i',strtotime('now'))),
+						'keyword2' => array('value' => "\n".$good),
+						'keyword3' => array('value' => $order['price']),
+						'keyword4' => array('value' => "\n".'真实姓名：' . $address[0]."\n".'地区：' . $address[3] . ' - ' . $address[4] . ' - ' . $address[5]."\n".'详细地址：' . $address[6] ."\n".'手机：' . $address[1]),
+						'keyword5' => array('value' => $paytype)
+					);
+					$acc = WeAccount::create($_W['acid']);
+					$acc->sendTplNotice($_W['fans']['from_user'],$this->module['config']['templateid'],$data);
 				}
 				// 短信提醒
 				if (!empty($this->module['config']['mobile'])) {

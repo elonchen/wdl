@@ -9,9 +9,9 @@
 </head>
 <body  style="background:#f6f6f8;">
 <section  class="wrap">
-  <section  class="prize_detail"  id="info">
+	<dt  class="pri_img2" style="width: 100%;height: 14rem;"> <a  href="javascirpt:;"  title="{$goods['title']}"><img  src="{$_W['attachurl']}{$goods['picarr']}"  alt="{$goods['title']}"></a></dt>
+  <section  class="prize_detail"  id="info" style="padding: 0 1rem 0;">
     <dl  class="prize2">
-      <dt  class="pri_img2"> <a  href="javascirpt:;"  title="{$goods['title']}"><img  src="{$_W['attachurl']}{$goods['picarr']}"  alt="{$goods['title']}"></a></dt>
       <dd  class="pri_info2">
         <h3  class="pri_tit"><a  href="javascirpt:;"  title="{$goods['title']}">{$goods['title']}</a></h3>
         <p  class="total">{if $goods['pos']==0 && time() >$goods['end_time']}已流拍{else}当前价：￥{$goods['st_price']}{/if}</p>

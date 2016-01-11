@@ -1,6 +1,7 @@
 <?php
 global $_GPC, $_W;
-		
+$sql = 'SELECT `status` FROM ' . tablename('mc_card') . " WHERE `uniacid` = :uniacid";
+$cardstatus = pdo_fetch($sql, array(':uniacid' => $_W['uniacid']));
 		$rid = intval($_GPC['rid']);
 		
 		$fromuser = $_W['fans']['from_user'];

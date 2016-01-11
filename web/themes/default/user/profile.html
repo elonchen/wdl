@@ -6,12 +6,16 @@
 <ol class="breadcrumb">
 	<li><a href="./?refresh"><i class="fa fa-home"></i></a></li>
 	<li><a href="{url 'system/welcome'}">系统</a></li>
-	{if $do == 'profile'}<li class="active">账号信息</li>{/if}
+	{if $do == 'userinfo'}<li class="active">会员信息中心</li>{/if}
+	{if $do == 'FinancialCenter'}<li class="active">套餐续费</li>{/if}
 	{if $do == 'base'}<li class="active">基本信息</li>{/if}
+	{if $do == 'profile'}<li class="active">修改密码</li>{/if}
 </ol>
 <ul class="nav nav-tabs">
-	<li {if $do == 'profile'}class="active"{/if}><a href="{php echo url('user/profile/profile');}">账号信息</a></li>
+	<li {if $do == 'userinfo'}class="active"{/if}><a href="{php echo url('user/userinfo');}">会员信息中心</a></li>
+	<li {if $do == 'FinancialCenter'}class="active"{/if}><a href="{php echo wurl('site/entry/FinancialCenter', array('m'=>'kim_financial'));}">套餐续费</a></li>
 	<li {if $do == 'base'}class="active"{/if}><a href="{php echo url('user/profile/base');}">基本信息</a></li>
+	<li {if $do == 'profile'}class="active"{/if}><a href="{php echo url('user/profile/profile');}">修改密码</a></li>
 </ul>
 {if $do == 'profile'}
 	<div class="clearfix">

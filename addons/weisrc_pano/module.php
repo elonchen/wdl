@@ -4,7 +4,7 @@
  *
  * www.weisrc.com
  *
- * 作者:微赞
+ * 作者:迷失卍国度
  *
  * qq:15595755
  */
@@ -23,11 +23,19 @@ class weisrc_panoModule extends WeModule
         global $_GPC, $_W;
         $id = intval($_GPC['reply_id']);
 
+        $type = intval($_GPC['type']);
+        if ($type == -1) {
+            $casetype = -1;
+        } else {
+            $casetype = intval($_GPC['casetype']);
+        }
+
+
         $data = array(
             'rid' => $rid,
             'weid' => $_W['uniacid'],
             'title' => $_GPC['title'],
-            'type' => intval($_GPC['casetype']),
+            'type' => $casetype,
             'description' => $_GPC['description'],
             'picture' => $_GPC['picture'],
             'picture1' => $_GPC['picture1'],
@@ -80,5 +88,34 @@ class weisrc_panoModule extends WeModule
         }
         pdo_delete($this->tablename, "id IN ('" . implode("','", $deleteid) . "')");
         return true;
+    }
+
+    public function settingsDisplay($settings)
+    {
+        global $_GPC, $_W;
+        load()->func('tpl');
+        if (empty($settings['weisrc_pano'])) {
+            $settings['weisrc_pano']['title'] = "360全景展示";
+            $settings['weisrc_pano']['bg'] = "../addons/weisrc_pano/template/images/bg.jpg";
+            $settings['weisrc_pano']['share_title'] = "360全景展示";
+            $settings['weisrc_pano']['share_image'] = "../addons/weisrc_pano/icon.jpg";
+            $settings['weisrc_pano']['share_desc'] = "360全景展示";
+        }
+
+        if(checksubmit()) {
+            $cfg = $settings;
+            $cfg['weisrc_pano']['title'] = trim($_GPC['title']);
+            $cfg['weisrc_pano']['bg'] = trim($_GPC['bg']);
+            $cfg['weisrc_pano']['share_title'] = trim($_GPC['share_title']);
+            $cfg['weisrc_pano']['share_image'] = trim($_GPC['share_image']);
+            $cfg['weisrc_pano']['share_cancel'] = trim($_GPC['share_cancel']);
+            $cfg['weisrc_pano']['share_desc'] = trim($_GPC['share_desc']);
+            $cfg['weisrc_pano']['share_url'] = trim($_GPC['share_url']);
+
+            if ($this->saveSettings($cfg)) {
+                message('保存成功', 'refresh');
+            }
+        }
+        include $this->template('setting');
     }
 }

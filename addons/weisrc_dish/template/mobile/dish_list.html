@@ -311,6 +311,8 @@
                 } else {
                     var totalprice = parseFloat(_q("#totalprice").value)+parseFloat(price);
                     var totalcount = parseInt(_q("#totalcount").value)+1;
+                    totalprice = totalprice.toFixed(1);
+
                     _q("#totalprice").value = totalprice;
                     _q("#totalpriceshow").innerHTML = totalprice;
                     _q("#totalcount").value = totalcount;
@@ -370,6 +372,8 @@
 
                 var totalprice = parseFloat(_q("#totalprice").value)-parseFloat(price);
                 var totalcount = parseInt(_q("#totalcount").value)-1;
+                totalprice = totalprice.toFixed(1);
+
                 _q("#totalprice").value = totalprice;
                 _q("#totalpriceshow").innerHTML = totalprice;
                 _q("#totalcount").value = totalcount;
@@ -513,11 +517,18 @@
                 if(childImg.nodeType == 3){
                     childImg = this.childNodes[1];
                 }
+
+                var dSpecialPrice = parentDl.getAttribute('dSpecialPrice');
+
+                if (dSpecialPrice != '') {
+                    dSpecialPrice = parentDl.getAttribute('dSpecialPrice') + '元/' + parentDl.getAttribute('dunitName');
+                }
+
                 popPic(childImg.src,
                         parentDl.getAttribute('dname'),
                         parentDl.getAttribute('dprice') + '元/' + parentDl.getAttribute('dunitName'),
                         parentDl.getAttribute('dIsSpecial'),
-                        parentDl.getAttribute('dSpecialPrice') + '元/' + parentDl.getAttribute('dunitName'),
+                        dSpecialPrice,
                         parentDl.getAttribute('dsubCount'),
                         parentDl.getAttribute('dtaste'),
                         parentDl.getAttribute('ddescribe'),
@@ -541,8 +552,8 @@
         }
             _tmpHtml = "<div class='content'>"+hotHtml+"<img src='"+imgUrl+"' alt='' title=''><h2>"+_title;
 
-             if (isSpecial == view_const_dish_SPECIAL_PRICE_YES
-                || isSpecial == view_const_dish_SPECIAL_PRICE_VIP) {
+
+             if (specialPrice != '') {
                  _tmpHtml += "<i>"+specialPrice+"</i><del>"+_price+"</del>";
              } else {
                  _tmpHtml += "<i>"+_price+"</i>";

@@ -7,12 +7,12 @@ load()->model('account');
 $account = account_fetch($acid);
 if($set && $set['isget']==1){
     $is_follow = false;
-    $userInfo = $this->getClientUserInfo("__article_Cookies_201520151012".$id);// 从cookie中取
-    if (empty($userInfo)) {//授权
+    $userInfo = $this->getClientUserInfo("__article_Cookies_201520151012".$id);// 浠巆ookie涓彇
+    if (empty($userInfo)) {//鎺堟潈
         $redirect_uri =$_W['siteroot'] . 'app' . str_replace('./', '/', $this->createMobileUrl('auth',array('id'=>$id),true));
-        $this->authorization_code($redirect_uri, "snsapi_userinfo", 1);//进行授权
+        $this->authorization_code($redirect_uri, "snsapi_userinfo", 1);//杩涜鎺堟潈
     }
-    if (!empty($userInfo) && !empty($userInfo['nickname'])) {//已关注过
+    if (!empty($userInfo) && !empty($userInfo['nickname'])) {//宸插叧娉ㄨ繃
         $is_follow = true;
     }
     $openid=$userInfo['openid'];

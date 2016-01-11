@@ -8,8 +8,8 @@
 <meta name="keywords" content="微楼盘,本地生活互动平台"/>
 <meta name="description" content=""/>
 <title>微楼盘-本地生活互动平台</title>
-<link href="../addons/amouse_house/ui/css/bootstrap.css?v=20150314" rel="stylesheet">
-<link href="../addons/amouse_house/ui/css/main.css?v=20150314" rel="stylesheet">
+<link href="{AMOUSE_HOUSE_RES}css/bootstrap.css?v=20150314" rel="stylesheet">
+<link href="{AMOUSE_HOUSE_RES}css/main.css?v=20150314" rel="stylesheet">
 <style type="text/css">
 body {
     background: white;
@@ -152,7 +152,7 @@ small, small em {
     line-height: 15px;
 }
 .dzhV2_box figure {
-    background: url("../addons/amouse_house/ui/images/bk_mem.jpg") no-repeat scroll 0 0 / 54px 54px transparent;
+    background: url("{AMOUSE_HOUSE_RES}images/bk_mem.jpg") no-repeat scroll 0 0 / 54px 54px transparent;
     display: inline-block;
     float: right;
     height: 54px;
@@ -263,7 +263,7 @@ a, a:hover {
     right: 10px;
     height: 18px;
     width: 18px;
-    background: url(../addons/amouse_house/ui/images/jiantou.png) no-repeat 0 0;
+    background: url({AMOUSE_HOUSE_RES}images/jiantou.png) no-repeat 0 0;
     background-size: 18px 18px;
 }
 .explist li {
@@ -358,7 +358,7 @@ a:link, a:visited {
                 <p style="font-size: 10px;line-height: 12px;color: slategray;">{php echo cutstr($flat['name'],30)} </p>
                 <p class="meta">
                 <span>
-                    <img style="width: 10px;height: 10px;margin: 0px;margin-top: 2px;"  src="../addons/amouse_house/ui/images/icon_1.png">
+                    <img style="width: 10px;height: 10px;margin: 0px;margin-top: 2px;"  src="{AMOUSE_HOUSE_RES}images/icon_1.png">
                     &nbsp;有 {php echo !empty($flat['readcount']) ? $flat['readcount'] : 0} 阅读
                 </span>
                     <span style="float: right;">{php echo date('Y-m-d',$flat['createtime'])}</span>
@@ -413,12 +413,12 @@ a:link, a:visited {
         <div class="panel-box" style="width: 100%;">
             <div class="page " data-index="0"  style="display:block;width: 100%;height: 30px;background: rgb(56, 173, 75);color: white; left: 0px; transition: 0ms; -webkit-transition: 0ms; -webkit-transform: translate(0px, 0px) translateZ(0px);">
                 <a class="easycall-item" href="{php echo $this->createMobileUrl('index',array('type'=>'0','wxid'=>$wxid),true)}">
-                    <div class="title" style="color: white;border-right: 1px solid white;font-size: 14px;line-height: 30px;{if $_GPC['type']=='0'}background: rgb(60,120,0);{/if}">出租
+                    <div class="title" style="color: white;border-right: 1px solid white;font-size: 14px;line-height: 30px;{if $_GPC['type']=='0'}background: rgb(60,120,0);{/if}">出售
                     </div>
                 </a>
                 <a class="easycall-item" href="{php echo $this->createMobileUrl('index',array('type'=>'1','wxid'=>$wxid),true)}">
                     <div class="title" style="color: white;border-right: 1px solid white;font-size: 14px;line-height: 30px;{if $_GPC['type']=='1'}background: rgb(60,120,0);{/if}">
-                        求租
+                        求购
                     </div>
                 </a>
                 <a class="easycall-item" href="{php echo $this->createMobileUrl('index',array('type'=>'2','wxid'=>$wxid),true)}">
@@ -436,17 +436,17 @@ a:link, a:visited {
                 <a
                         style="width: 33%;margin-top: -0px;border-bottom: 3px solid rgb(61, 120, 0);height: 46px;"
                         class="easycall-item" href="{php echo $this->createMobileUrl('new',array('a'=>'rent','openid'=>$openid),true)}">
-                    <img style="width: 30px;height: 30px;" class="icon" src="../addons/amouse_house/ui/images/zhaopin.png">
+                    <img style="width: 30px;height: 30px;" class="icon" src="{AMOUSE_HOUSE_RES}images/zhaopin.png">
                     <div class="title" style=" margin-top: -0px; ">发布租房</div>
                 </a>
                 <a style="width: 34%;margin-top: -0px;border-bottom: 3px solid rgb(91, 177, 0);height: 46px;"
                    class="easycall-item" href="{php echo $this->createMobileUrl('list',array('openid'=>$openid),true)}">
-                    <img style="width: 30px;height: 30px;" class="icon" src="../addons/amouse_house/ui/images/xinpan.png">
-                    <div class="title" style=" margin-top: -0px; ">新盘推荐</div>
+                    <img style="width: 30px;height: 30px;" class="icon" src="{AMOUSE_HOUSE_RES}images/xinpan.png">
+                    <div class="title" style=" margin-top: -0px; ">新盘认证</div>
                 </a>
                 <a style="width: 33%;margin-top: -0px;border-bottom: 3px solid rgb(61, 120, 0);height: 46px;"
                    class="easycall-item" href="{php echo $this->createMobileUrl('new',array('a'=>'house','openid'=>$openid),true)}">
-                    <img style="width: 30px;height: 30px;" class="icon" src="../addons/amouse_house/ui/images/zhaopin.png">
+                    <img style="width: 30px;height: 30px;" class="icon" src="{AMOUSE_HOUSE_RES}images/zhaopin.png">
                     <div class="title" style=" margin-top: -0px; ">发布二手房</div>
                 </a>
             </div>
@@ -457,7 +457,7 @@ a:link, a:visited {
     </div>
 </div>
 </body>
-<script src="../addons/amouse_house/ui/js/TouchSlide.1.1.js?v=20150313"></script>
+<script src="{AMOUSE_HOUSE_RES}js/TouchSlide.1.1.js?v=20150313"></script>
 <script type="text/javascript">
     TouchSlide({
         slideCell: "#focus",
@@ -469,7 +469,7 @@ a:link, a:visited {
         switchLoad: "_src"
     });
 </script>
-<script language="javascript" src="../addons/amouse_house/ui/js/jquery.js?v=20150314"></script>
+<script language="javascript" src="{AMOUSE_HOUSE_RES}js/jquery.js?v=20150314"></script>
 <script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
 {php $signPackage=$_W['account']['jssdkconfig'];}
 <script>

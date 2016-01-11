@@ -58,6 +58,7 @@
 					</div>
 					<div class=" col-xs-12 col-sm-2 col-lg-2">
 						<button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+						<button name="export" value="export" class="btn btn-default"><i class="fa fa-download"></i> 导出数据</button>
 					</div>
 				</div>
 				<div class="form-group">
@@ -128,7 +129,7 @@
 				</td>
 				<td>
 					<a href="{php echo $this->createWebUrl('order', array('op'=>'edit', 'id' => $row['id'], 'roomid' => $row['roomid'], 'hotelid' => $row['hotelid'])); }" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="bottom" title="编辑"><i class="fa fa-edit"></i></a>&nbsp;
-                    <a onclick="return confirm('此操作不可恢复，确认吗？');return false;" href="{php echo $this->createWebUrl('order', array('op'=>'delete', 'id' => $row['id'],'hotelid'=>$hotelid,'roomidid'=>$roomidid))}" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="bottom" title="删除"><i class="fa fa-times"></i></a>
+                    <a onclick="return !confirm('此操作不可恢复，取消删除吗?');return false;" href="{php echo $this->createWebUrl('order', array('op'=>'delete', 'id' => $row['id'],'hotelid'=>$hotelid,'roomidid'=>$roomidid))}" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="bottom" title="删除"><i class="fa fa-times"></i></a>
 				</td>
 			</tr>
 			{/loop}

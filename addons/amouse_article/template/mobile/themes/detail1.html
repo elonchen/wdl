@@ -111,14 +111,17 @@
             </div>
 
             <div class="rich_media_tool" id="js_toobar">
+                {if $detail['outLink']}
+                <a class="media_tool_meta meta_primary"  href="{$detail['outLink']}">阅读原文</a>
+                {/if}
                 <div class="media_tool_meta tips_global meta_primary">阅读
                     <span id="readNum">{$detail['clickNum']}</span>
                 </div>
 
-                <span class="media_tool_meta meta_primary tips_global meta_praise" id="like">
+               <!-- <span class="media_tool_meta meta_primary tips_global meta_praise" id="like">
                   <i class="icon_praise_gray"></i>
                   <span class="praise_num" id="likeNum">{$detail['zanNum']}</span>
-                </span>
+                </span>-->
 
                 <a id="" class="media_tool_meta tips_global meta_extra" href="{php echo $this->createMobileUrl('jubao')}">举报</a>
             </div>
@@ -268,7 +271,7 @@
                              class="shop-img" alt="公众号头像">
                     </div>
                     <div class="table-cell">
-                        <p class="shop-name">{$account['account']}</p>
+                        <p class="shop-name">{$account['name']}</p>
                     </div>
                 </div>
             </a>
@@ -318,7 +321,7 @@
         <div class="copyright">
             <div class="ft-links">
                 <!--<a href="http://wap.koudaitong.com/v2/showcase/homepage?kdt_id=54023" target="_blank">店铺主页</a>-->
-                <a href="tel:{$detail['tel']}" >一键拨号</a>
+                {if $detail['tel']}<a href="tel:{$detail['tel']}" >一键拨号</a>{/if}
                 <a href="javascript:;" class="js-open-follow">关注我们</a>
 
             </div>

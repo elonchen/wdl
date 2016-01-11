@@ -1,5 +1,5 @@
 <?php
-		global $_W, $_GPC;
+				global $_W, $_GPC;
 		$fee = intval($params['fee']);
 		pdo_update('jufeng_wcy_order', array('status' => 2), array('id' => $params['tid']));
 		if ($params['from'] == 'return') {

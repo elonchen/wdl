@@ -18,18 +18,17 @@ CREATE TABLE IF NOT EXISTS " . tablename('mon_house') . " (
 `rztime` 	int(10) DEFAULT 0,
 `kfs` varchar(100) NOT NULL,
 `cover_img` varchar(200) NOT NULL,
-  `overview_img` varchar(200) NOT NULL,
-  `intro_img` varchar(200) NOT NULL,
-  `intro` varchar(2000) DEFAULT NULL,
+`overview_img` varchar(200) NOT NULL,
+`intro_img` varchar(200) NOT NULL,
+`intro` varchar(1000) ,
 `order_title`  varchar(50) NOT NULL ,
 `order_remark` varchar(100) NOT NULL,
-
 `share_icon` varchar(200) NOT NULL,
-	`share_title` varchar(200) NOT NULL,
-	`share_content` varchar(500) NOT NULL,
-
- `createtime` int(10) DEFAULT 0,
-
+`share_title` varchar(200) NOT NULL,
+`share_content` varchar(500) NOT NULL,
+`dt_img` varchar(300),
+`dt_intro` varchar(2000) ,
+`createtime` int(10) DEFAULT 0,
  PRIMARY KEY (`id`),KEY `indx_weid` (`weid`),KEY `indx_rid` (`rid`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
@@ -111,6 +110,40 @@ CREATE TABLE IF NOT EXISTS " . tablename('mon_house_timage') . " (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
 pdo_query($sql);
+
+
+
+//1.4
+// 相册
+
+$sql = "
+CREATE TABLE IF NOT EXISTS " . tablename('mon_house_pic_type') . " (
+ `id` int(10) unsigned  AUTO_INCREMENT,
+ `hid` int(11) default 0 ,
+  `rid` int(11) default 0 ,
+ `pname` varchar(255) NOT NULL,
+ `sort` int(3) default 0,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
+pdo_query($sql);
+
+
+// 相册图片
+
+$sql = "
+CREATE TABLE IF NOT EXISTS " . tablename('mon_house_pic_image') . " (
+ `id` int(10) unsigned  AUTO_INCREMENT,
+ `hid` int(11) default 0 ,
+ `pid` int(11) default 0 ,
+`pre_img` varchar(255) NOT NULL,
+`img` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
+pdo_query($sql);
+
+
 
 
 

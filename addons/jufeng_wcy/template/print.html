@@ -1,5 +1,4 @@
-{template 'header'}
-
+{template 'common/header'}
 <ul class="nav nav-tabs">
 	<li {if $operation == 'post' && empty($id)}class="active"{/if}><a href="{php echo $this->createWebUrl('print', array('op' => 'post'))}">
     添加打印机
@@ -39,7 +38,8 @@
                     <label class="col-xs-12 col-sm-3 col-md-2 control-label">打印机key</label>
                     <div class="col-sm-9">
                         <input type="text" name="key" class="form-control" value="{$print['key']}" />
-                        <span class="help-block">在飞鹅官网绑定打印机后生成的key。</span>
+						<span class="help-block">在365官网绑定打印机后生成的key。</span>
+                        <!--这里改了<span class="help-block">在飞鹅官网绑定打印机后生成的key。</span> -->
                     </div></div>
                      <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-2 control-label">打印联数</label>
@@ -104,12 +104,7 @@
 						{$print['status']}
 					</td>
 				</tr>
-                <tr>
-					<td><input type="text" class="datepicker" id="datepicker_starttime" name="time" value="{$_GPC['time']}" readonly="readonly" />&nbsp;&nbsp;一日打印统计：</td>
-					<td>
-						{$print['number']}
-					</td>
-				</tr>
+				
                 <tr>
 				<td>
 					<input name="submit" type="submit" value="打印查询" class="btn btn-primary span3">
@@ -120,15 +115,10 @@
             <tr><td>
              状态码的返回有如下几种：
 					</td>
-					<td>1、{"status":"clientCode错误"}，表示查询错误。<br />2、{"status":"离线"}，表示打印机没有开机，或手机卡不能联网。<br />3、{"status":"在线,工作状态正常"}，表示打印机已联网且有纸。<br />4、{"status":"在线,工作状态不正常"}，表示打印机已开机，但没纸或不能正常打印。</td>
+					<td>1、{"status=1&result=online":"在线,工作状态正常"}。<br />2、{"status":"离线"}，表示打印机没有开机，或手机卡不能联网。<br />4、{"status":"在线,工作状态不正常"}，表示打印机已开机，但没纸或不能正常打印。</td>
 					
 				</tr>
-                 <tr><td>
-                 一日统计的返回解释：
-					</td>
-					<td>1、resultCode为0说明查询正确。<br />2、print表示查询日已打印的单数。<br />3、waiting表示查询日正在等待打印的单数。</td>
-					
-				</tr>
+	
 			</tbody>
 		</table>
 		</form>
@@ -214,5 +204,5 @@ yearOffset:0,
 
 {/if}
 
-{template 'common/footer'}
+{template 'footer'}
 

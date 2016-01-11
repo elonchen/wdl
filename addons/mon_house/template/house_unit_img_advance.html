@@ -153,7 +153,7 @@ $(function () {
 		var checkTid="{$tid}";
 
 
-		$.get('{php echo create_url('site/module/QueryTypes', array('name' => 'mon_house'));}',{"hid":hid},function(res){
+		$.get('{php echo $this->createWebUrl('QueryTypes'));}',{"hid":hid},function(res){
 
 			var opHtml="";
 			for(var i=0;i<res.length;i++){
@@ -304,7 +304,7 @@ $(function () {
 			var checkTid="{$tid}";
 
 
-			$.get('{php echo create_url('site/module/QueryTypes', array('name' => 'mon_house'));}',{"hid":hid},function(res){
+			$.get('{php echo $this->createWebUrl('QueryTypes');}',{"hid":hid},function(res){
 
 				var opHtml="";
 				for(var i=0;i<res.length;i++){

@@ -13,7 +13,7 @@
 	<div class="sold">
 		<span  class="price">
 			<span>￥{$item['marketprice']}</span> &nbsp;
-			<del>￥{$item['originalprice']}</del>
+			{if $item['originalprice'] != '0.00'}<del>￥{$item['originalprice']}</del>{/if}
 		</span>
 		<span class="soldnum text-right">已售{$item['sales']}件</span>
 	</div>

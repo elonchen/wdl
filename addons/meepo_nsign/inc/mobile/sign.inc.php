@@ -1,6 +1,8 @@
 <?php
 global $_GPC,$_W;
 checkauth();
+$sql = 'SELECT `status` FROM ' . tablename('mc_card') . " WHERE `uniacid` = :uniacid";
+$cardstatus = pdo_fetch($sql, array(':uniacid' => $_W['uniacid']));
 load()->model('mc');
 $id = $_GPC['id'];
 $rid = $_GPC['rid'];

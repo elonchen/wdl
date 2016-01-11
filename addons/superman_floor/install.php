@@ -2,9 +2,12 @@
 /**
  * 【超人】抢楼活动模块定义
  *
+ * @author 超人
+ * @url
  */
+$tablename = tablename('superman_floor_award');
 $sql =<<<EOF
-CREATE TABLE IF NOT EXISTS `ims_superman_floor_award` (
+CREATE TABLE IF NOT EXISTS {$tablename} (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `rid` int(10) unsigned NOT NULL DEFAULT '0',
   `floors` varchar(1000) NOT NULL DEFAULT '',
@@ -13,12 +16,18 @@ CREATE TABLE IF NOT EXISTS `ims_superman_floor_award` (
   `dateline` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `rid` (`rid`)
-)DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM CHARSET = utf8;
+EOF;
+pdo_run($sql);
 
-CREATE TABLE IF NOT EXISTS `ims_superman_floor_winner` (
+$tablename = tablename('superman_floor_winner');
+$sql =<<<EOF
+CREATE TABLE IF NOT EXISTS {$tablename} (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uniacid` int(10) unsigned NOT NULL DEFAULT '0',
   `rid` int(10) unsigned NOT NULL DEFAULT '0',
   `floor` int(4) unsigned NOT NULL DEFAULT '0',
+  `uid` int(4) unsigned NOT NULL DEFAULT '0',
   `openid` varchar(50) NOT NULL DEFAULT '0',
   `award_id` int(10) unsigned NOT NULL DEFAULT '0',
   `ip` char(15) NOT NULL DEFAULT '',
@@ -28,11 +37,16 @@ CREATE TABLE IF NOT EXISTS `ims_superman_floor_winner` (
   `qq` varchar(20) NOT NULL DEFAULT '',
   `dateline` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `rid_floor_UNIQUE` (`rid`,`floor`),
+  INDEX `indx_uniacid` (`uniacid`),
+  UNIQUE INDEX `rid_floor_UNIQUE` (`rid`,`floor`),
   KEY `rid` (`rid`)
-)DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM CHARSET = utf8;
+EOF;
+pdo_run($sql);
 
-CREATE TABLE IF NOT EXISTS `ims_superman_floor` (
+$tablename = tablename('superman_floor');
+$sql =<<<EOF
+CREATE TABLE IF NOT EXISTS {$tablename} (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `awardprompt` text NOT NULL DEFAULT '',
   `currentprompt` text NOT NULL DEFAULT '',
@@ -41,6 +55,6 @@ CREATE TABLE IF NOT EXISTS `ims_superman_floor` (
   `rid` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `rid` (`rid`)
-)DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM CHARSET = utf8;
 EOF;
 pdo_run($sql);

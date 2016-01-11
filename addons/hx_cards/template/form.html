@@ -104,6 +104,15 @@
           </div>
         </div>
         <div class="form-group">
+          <label class="col-xs-12 col-sm-3 col-md-2 control-label">每人每天分享最多增加抽奖次数</label>
+          <div class="col-sm-2">
+            <div class="input-group">
+              <input class="form-control" type="text" value="{$reply['sharenum']}" class="span2" name="sharenum">
+              <span class="input-group-addon">次</span>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
           <label class="col-xs-12 col-sm-3 col-md-2 control-label">转发赠送抽奖次数</label>
           <div class="col-sm-4">
             <div class="input-group">
@@ -152,6 +161,15 @@
             <div class="help-block">活动页面的备注</div>
           </div>
         </div>
+        <div class="form-group">
+            <label class="col-xs-12 col-sm-3 col-md-2 control-label">  强制关注</label>
+            <div class="col-sm-9 col-xs-12">
+              <label for="follow_1" class="radio-inline"><input type="radio" name="isfollow" id="follow_1" value="1" {if $reply['isfollow']==1}checked="checked"{/if}> 关注可玩</label>
+              <label for="follow_0" class="radio-inline"><input type="radio" name="isfollow" id="follow_0"  value="0" {if $reply['isfollow']==0}checked="checked"{/if}>任意可玩 </label>
+              <span class="help-block">是否只有关注用户可以玩,需要认证服务号</span>
+            </div>
+        </div>
+
       </div>
     </div>
   </div>

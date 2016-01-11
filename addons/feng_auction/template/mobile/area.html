@@ -57,11 +57,27 @@
                     });
                 });
             </script>
-            <div class="column">
-                <a href="{php echo $this->createMobileUrl('index')}" title="进行中的拍卖" class="entry-list">进行中的拍卖<span></span><b class="fr"></b></a>
-                <a href="{php echo $this->createMobileUrl('area')}" title="已完成的拍卖" class="ann-publicly">已完成的拍卖<span></span><b class="fl"></b><cite><em></em></cite></a>
+            <div class="column" style="position: absolute;">
+                <a href="javascript:;" title="进行中的拍卖" class="entry-list">进行中的拍卖<span></span><b class="fr"></b></a>
+                <div class="sort_list" id="sort_listnow" style="display: none;">
+                    <ul>
+                    	<li order="10"><a href="{php echo $this->createMobileUrl('index')}">所有进行中的拍卖<i></i></a></li>
+                    	{loop $category $row}
+                        <li order="10"><a href="{php echo $this->createMobileUrl('index')}&gid={$row['id']}">{$row['name']}<i></i></a></li>
+						{/loop}
+                    </ul>
+                </div>
+                <a href="javascript:;" title="已完成的拍卖" class="ann-publicly">已完成的拍卖<span></span><b class="fl"></b><cite id="biaoji"><em></em></cite></a>
+                <div class="sort_list" id="sort_listfin" style="display: none;">
+                    <ul>
+                    	<li order="10"><a href="{php echo $this->createMobileUrl('area')}">所有已完成的拍卖<i></i></a></li>
+                    	{loop $category $row}
+                        <li order="10"><a href="{php echo $this->createMobileUrl('area')}&gid={$row['id']}">{$row['name']}<i></i></a></li>
+						{/loop}
+                    </ul>
+                </div>
             </div>
-            <div class="goodList">
+            <div class="goodList" style="position: relative;top: 38px;">
             {loop $list $row}
             <ul id="21960">
                 <li><span class="gList_l fl"><a href="{php echo $this->createMobileUrl('details',array('id' => $row['id']))}"><img src="{$_W['attachurl']}{$row['picarr']}"></a></span>
@@ -83,6 +99,7 @@
             </div>
             <div class="load_more" id="btnLoadMore" style="display: none;"><aside class="more"><a href="javascript:void(0);" onclick="getMoreRecru(2)">查看更多</a></div>
         </div>
+        <div style="height: 60px;"></div>
     </div>
     <div class="footer" style="bottom: 0px;">
         <ul>
@@ -128,6 +145,20 @@ function getMoreRecru(page){
 }
 </script>
 <script type="text/javascript">
+$('.entry-list').click(function(){
+    $('.goodList').hide();
+    $('#sort_listfin').hide();
+    $('#biaoji').remove();
+    $('.entry-list .fr').after("<cite id='biaoji'><em></em></cite>");
+    $('#sort_listnow').show();
+});
+$('.ann-publicly').click(function(){
+    $('.goodList').hide();
+    $('#sort_listnow').hide();
+    $('#biaoji').remove();
+    $('.ann-publicly .fl').after("<cite id='biaoji'><em></em></cite>");
+    $('#sort_listfin').show();
+});
 	wx.ready(function (){
 	var shareData = {
 		title: "{$share_data['share_title']}",

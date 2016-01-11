@@ -135,7 +135,7 @@
         <div class="qiandaobanner">
             <a href="javascript:;">
                 {if !empty($_W['styles']['toppic']) && !empty($_W['styles']['status'])}
-                <img src="{php echo toimage($_W['styles']['toppic'])}"  style="max-height:200px;"/>
+                <img src="{php echo tomedia($_W['styles']['toppic'])}"  style="max-height:200px;"/>
                 {/if}
             </a>
         </div>
@@ -151,7 +151,7 @@
                 <li style="">
                     <a href="{$row['url']}">
                         {if !empty($row['thumb'])}
-                        <img src="{php echo toimage($row['thumb'])}" alt="{$row['name']}">
+                        <img src="{php echo tomedia($row['thumb'])}" alt="{$row['name']}">
                         {/if}
                         <p style="padding-top:5px; font-size:14px; font-weight:800;">{$row['name']}</p>
                         {if !empty($row['description'])}<p>{$row['description']}</p>{/if}
@@ -161,7 +161,7 @@
                     <p style='width:100%;border-top:1px solid #ccc;padding-top:8px;'>
                         <a href="{$row1['url']}">
                             {if !empty($row1['thumb'])}
-                            <img src="{php echo toimage($row1['thumb'])}" alt="{$row1['name']}" class='pull-left' style='width:40px;height:40px;'>{/if}
+                            <img src="{php echo tomedia($row1['thumb'])}" alt="{$row1['name']}" class='pull-left' style='width:40px;height:40px;'>{/if}
                     		<span class='pull-left' style="padding-top:2px;margin-left:10px;">
                     			<span style="font-weight:600;">{$row1['name']}</span>
 								{if !empty($row1['description'])}<br/>{$row1['description']}{/if}
@@ -184,7 +184,7 @@
                 <li style="">
                     <a href="{php echo $this->createMobileUrl('detail', array('id' => $row['id'], 'weid' => $_W['uniacid']))}">
                         {if !empty($row['thumb'])}
-                        <img src="{php echo toimage($row['thumb'])}" title="{$row['title']}">
+                        <img src="{php echo tomedia($row['thumb'])}" title="{$row['title']}">
                         {/if}
                         <p>{$row['title']}</p>
                     </a>

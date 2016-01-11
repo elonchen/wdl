@@ -150,20 +150,34 @@ class Feng_auctionModuleSite extends WeModuleSite {
 	}
 	public function payResult($params){
 		global $_W, $_GPC;
-
 		$uniacid=$_W['uniacid'];
 		$fee = intval($params['fee']);
 		$data = array('status' => $params['result'] == 'success' ? 1 : 0);
-		$paytype = array('credit' => '1', 'wechat' => '3', 'alipay' => '2');
+		$paytype = array('credit' => '1', 'wechat' => '3', 'alipay' => '2', 'delivery' => '10');
 		$data['paytype'] = $paytype[$params['type']];
 		if ($params['type'] == 'wechat') {
 			$data['transid'] = $params['tag']['transaction_id'];
 		}
+		$record = pdo_fetch("SELECT status FROM " . tablename('auction_recharge') . " WHERE ordersn ='{$params['tid']}'");
 		if ($params['from'] == 'return') {
-			$member = pdo_fetch("SELECT * FROM " . tablename('auction_member') . " WHERE from_user ='{$_W['fans']['from_user']}'");
-			$balance['balance'] = $fee + $member['balance'];
-			pdo_update('auction_member', $balance, array('id' => $member['id']));
-			pdo_update('auction_recharge', $data, array('ordersn' => $params['tid']));
+			if ($params['type'] !== 'delivery') {
+				if ($record['status']!=1) {
+					$member = pdo_fetch("SELECT * FROM " . tablename('auction_member') . " WHERE from_user ='{$_W['fans']['from_user']}'");
+					$balance['balance'] = $fee + $member['balance'];
+					pdo_update('auction_member', $balance, array('id' => $member['id']));
+					pdo_update('auction_recharge', $data, array('ordersn' => $params['tid']));
+
+					load()->model('account');
+					$sendinfo = '恭喜您充值成功：\n';
+					$sendinfo .= '充值金额：'.$fee.'元\n';
+					$sendinfo .= '你可以到交易记录查看更多信息！\n';
+					$send['msgtype'] = 'text';
+					$send['text'] = array('content' => urlencode($sendinfo));
+					$acc = WeAccount::create($_W['acid']);
+					$send['touser'] = trim($_W['fans']['from_user']);
+					$s_mess = $acc->sendCustomNotice($send);
+				}
+	        }
 			
 			if ($params['type'] == $credit) {
 				message('支付成功！', $this->createMobileUrl('profile'), 'success');
@@ -277,7 +291,80 @@ class Feng_auctionModuleSite extends WeModuleSite {
 	public function doWebwithdrawals() {
 		$this->__web(__FUNCTION__);
 	}
-
+	
+	public function doWebCategory() {
+		global $_GPC, $_W;
+		load()->func('tpl');
+		$operation = !empty($_GPC['op']) ? $_GPC['op'] : 'display';
+		if ($operation == 'display') {
+			if (!empty($_GPC['displayorder'])) {
+				foreach ($_GPC['displayorder'] as $id => $displayorder) {
+					pdo_update('auction_category', array('displayorder' => $displayorder), array('id' => $id));
+				}
+				message('分类排序更新成功！', $this->createWebUrl('category', array('op' => 'display')), 'success');
+			}
+			$children = array();
+			$category = pdo_fetchall("SELECT * FROM " . tablename('auction_category') . " WHERE weid = '{$_W['uniacid']}' ORDER BY parentid ASC, displayorder DESC");
+			foreach ($category as $index => $row) {
+				if (!empty($row['parentid'])) {
+					$children[$row['parentid']][] = $row;
+					unset($category[$index]);
+				}
+			}
+			include $this->template('category');
+		} elseif ($operation == 'post') {
+			$parentid = intval($_GPC['parentid']);
+			$id = intval($_GPC['id']);
+			if (!empty($id)) {
+				$category = pdo_fetch("SELECT * FROM " . tablename('auction_category') . " WHERE id = '$id'");
+			} else {
+				$category = array(
+					'displayorder' => 0,
+				);
+			}
+			if (!empty($parentid)) {
+				$parent = pdo_fetch("SELECT id, name FROM " . tablename('auction_category') . " WHERE id = '$parentid'");
+				if (empty($parent)) {
+					message('抱歉，上级分类不存在或是已经被删除！', $this->createWebUrl('post'), 'error');
+				}
+			}
+			if (checksubmit('submit')) {
+				if (empty($_GPC['catename'])) {
+					message('抱歉，请输入分类名称！');
+				}
+				$data = array(
+					'weid' => $_W['uniacid'],
+					'name' => $_GPC['catename'],
+					'enabled' => intval($_GPC['enabled']),
+					'displayorder' => intval($_GPC['displayorder']),
+					'isrecommand' => intval($_GPC['isrecommand']),
+					'description' => $_GPC['description'],
+					'parentid' => intval($parentid),
+					'thumb' => $_GPC['thumb']
+				);
+				if (!empty($id)) {
+					unset($data['parentid']);
+					pdo_update('auction_category', $data, array('id' => $id));
+					load()->func('file');
+					file_delete($_GPC['thumb_old']);
+				} else {
+					pdo_insert('auction_category', $data);
+					$id = pdo_insertid();
+				}
+				message('更新分类成功！', $this->createWebUrl('category', array('op' => 'display')), 'success');
+			}
+			include $this->template('category');
+		} elseif ($operation == 'delete') {
+			$id = intval($_GPC['id']);
+			$category = pdo_fetch("SELECT id, parentid FROM " . tablename('auction_category') . " WHERE id = '$id'");
+			if (empty($category)) {
+				message('抱歉，分类不存在或是已经被删除！', $this->createWebUrl('category', array('op' => 'display')), 'error');
+			}
+			pdo_delete('auction_category', array('id' => $id, 'parentid' => $id), 'OR');
+			message('分类删除成功！', $this->createWebUrl('category', array('op' => 'display')), 'success');
+		}
+	}
+	
 	public function __web($f_name){
 		global $_W,$_GPC;
 		checklogin();
@@ -288,7 +375,7 @@ class Feng_auctionModuleSite extends WeModuleSite {
 	
 	public function __mobile($f_name){
 		global $_W,$_GPC;
-		/*checkauth();*/
+		// checkauth();
 		$weid = $_W['uniacid'];
 		$share_data = $this->module['config'];
 		$to_url = "http://".$_SERVER[HTTP_HOST].$_SERVER[REQUEST_URI];
@@ -311,6 +398,15 @@ class Feng_auctionModuleSite extends WeModuleSite {
 					$data['q_uid']=$redata['nickname'];
 					$data['q_user']=$redata['from_user'];
 					pdo_update('auction_goodslist', $data, array('id' => $value['id']));
+					load()->model('account');
+					$sendinfo = '恭喜您拍得拍品：\n';
+					$sendinfo .= $goods['title'].'\n';
+					$sendinfo .= '请到我的拍品里查看！\n';
+					$send['msgtype'] = 'text';
+					$send['text'] = array('content' => urlencode($sendinfo));
+					$acc = WeAccount::create($_W['acid']);
+					$send['touser'] = trim($redata['from_user']);
+					$s_mess = $acc->sendCustomNotice($send);
 
 					$all_res = pdo_fetchall("SELECT * FROM ".tablename('auction_record')." WHERE uniacid = '{$weid}' and sid = '{$value['id']}' and bond > 0");
 					foreach ($all_res as $re_key => $re_value) {
@@ -333,5 +429,19 @@ class Feng_auctionModuleSite extends WeModuleSite {
 				}
 			}
 		}
+	}
+
+	public function getHomeTiles() {
+		global $_W;
+		$urls = array();
+		$weid=$_W['uniacid'];
+		$list = pdo_fetchall("SELECT * FROM ".tablename('auction_category')." WHERE weid=:weid and enabled=1 ", array(':weid'=>$weid));//pdo_fetchall- 按照 SQL 语句查询所有记录
+		if (!empty($list)) {
+			foreach ($list as $row) {
+				$urls[]=array('title'=>$row['name'],'url'=>$this->createMobileurl('index',array('gid'=>$row['id'])));
+			}
+		}
+		
+		return $urls;
 	}
 }

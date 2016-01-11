@@ -21,7 +21,7 @@
 				'	<td></td>'+
 				'	<td colspan="4">'+
 				'		<div><textarea  class="form-control" name="descriptions[]" onfocus="" onfocusout="" style="width:820px; height:35px; margin-bottom:10px;" placeholder="请认真填写描述信息"></textarea></div>'+
-				'		<div><textarea  class="form-control" name="options[]" onfocus="" onfocusout="" style="width:820px; height:35px;" placeholder="请认真填写扩展项信息，扩展项用回车/换行分开"></textarea><span class="help-block">请把扩展项信息控制在个18个字内，超出无法正常显示 </span></div>'+
+				'		<div><textarea  class="form-control" name="options[]" onfocus="" onfocusout="" style="width:820px; height:35px;" placeholder="请认真填写扩展项信息，扩展项用回车/换行分开"></textarea><span class="help-block">请把扩展项信息控制在个17个字内 </span></div>'+
 				'	</td>'+
 				'</tr>';
 		$('#form-items').append(html);
@@ -147,7 +147,7 @@
 								{loop $types $k $v}{if !empty($v)}<option {if $field['type'] == $k}selected{/if} value="{$k}">{$v}</option>{/if}{/loop}
 							</select>
 						</td>
-						<td  style="text-align:right;"><a onclick="$(this).parent().parent().next().remove();$(this).parent().parent().remove();" class="btn btn-small" title="删除"><i class="icon-remove"></i></a></td>
+						<td  style="text-align:left;"><a onclick="$(this).parent().parent().next().remove();$(this).parent().parent().remove();" class="btn btn-small" title="删除"><i class="fa fa-times">删除</i></a></td>
 					</tr>
 					<tr class="moresetting">
 						<td></td>
@@ -168,7 +168,7 @@
 								{loop $types $k $v}{if !empty($v)}<option {if $field['type'] == $k}selected{/if} value="{$k}">{$v}</option>{/if}{/loop}
 							</select>
 						</td>
-						<td  style="text-align:right;min-width:500px"><a onclick="$(this).parent().parent().next().remove();$(this).parent().parent().remove();" class="btn btn-small" title="删除"><i class="icon-remove"></i></a></td>
+						<td  style="text-align:left;min-width:500px"><a onclick="$(this).parent().parent().next().remove();$(this).parent().parent().remove();" class="btn btn-small" title="删除"><i class="fa fa-times">删除</i></a></td>
 					</tr>
 					<tr class="moresetting">
 						<td></td>

@@ -65,6 +65,14 @@
 
 
         <div class="form-group">
+            <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style='color:red'>*</span>动态篇介绍：</label>
+            <div class="col-sm-9 col-xs-12">
+                <textarea name="dt_intro" class="form-control span7 richtext" id="dt_intro" cols="70" >{$reply['dt_intro']}</textarea>
+            </div>
+        </div>
+
+
+        <div class="form-group">
             <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style='color:red'>*</span>预约报名标题：</label>
             <div class="col-sm-9 col-xs-12">
                 <input type="text" id="order_title" class="form-control span7"
@@ -236,6 +244,14 @@
             </div>
         </div>
 
+
+        <div class="form-group">
+            <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style='color:red'>*</span> 动态篇图片：</label>
+            <div class="col-sm-9 col-xs-12">
+                {php echo tpl_form_field_image('dt_img',$reply['dt_img']);}<span><font color="red">建议大小(750*584px)</font></span>
+            </div>
+        </div>
+
                 </div>
 
     </div>
@@ -328,6 +344,7 @@
     require(['jquery', 'util'], function($, u){
         $(function(){
             u.editor($('#intro')[0]);
+            u.editor($('#dt_intro')[0]);
 
         });
     });

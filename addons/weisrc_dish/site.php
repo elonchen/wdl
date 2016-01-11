@@ -1455,17 +1455,22 @@ class weisrc_dishModuleSite extends WeModuleSite
 
         if ($ordertype == 2) { //外卖
             $dispatchprice = $store['dispatchprice'];
-            $freeprice = $store['freeprice'];
-            if ($goodsprice > $freeprice) {
-                $dispatchprice = 0;
+            $freeprice = floatval($store['freeprice']);
+            if ($freeprice > 0.00) {
+                if ($goodsprice > $freeprice) {
+                    $dispatchprice = 0;
+                }
             }
         }
 
         $totalprice = $goodsprice + $dispatchprice;
 
-        if ($ordertype == 2 && !empty($store['sendingprice'])) {
-            if ($goodsprice < $store['sendingprice']) {
-                $this->showMessageAjax('您的购买金额达不到起送价格!', $this->msg_status_bad);
+        if ($ordertype == 2) {
+            $sendingprice = floatval($store['sendingprice']);
+            if ($sendingprice > 0.00) {
+                if ($goodsprice < $sendingprice) {
+                    $this->showMessageAjax('您的购买金额达不到起送价格!', $this->msg_status_bad);
+                }
             }
         }
 

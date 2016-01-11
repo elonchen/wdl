@@ -12,7 +12,7 @@ $articleid = $_GPC['articleid'];
 if($op == 'list') {
     $pindex= max(1, intval($_GPC['page']));
     $psize= 20; //每页显示
-    $condition = "WHERE weid = $weid";
+    $condition = "WHERE weid = $weid and aid=$articleid ";
     $status = $_GPC['status'];
     if(!empty($_GPC['keyword'])) {
         $condition .= " WHERE author LIKE '%".$_GPC['keyword']."%'";
@@ -39,7 +39,7 @@ if($op == 'list') {
         pdo_query($sqls);
         message('删除成功！', referer(), 'success');
     }
-    $id= intval($_GPC['articleid']);
+    $id= intval($_GPC['id']);
     $temp= pdo_delete("fineness_comment", array('id' => $id));
     message('删除数据成功！', $this->createWebUrl('comment', array('op' => 'list','articleid'=>$articleid)), 'success');
 }elseif($op=='vervify'){

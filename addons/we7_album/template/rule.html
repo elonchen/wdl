@@ -21,16 +21,16 @@
             {php $i = 0;}
             {loop $reply $li}
             <div class="reply-item">
-                <input type="hidden" name="albumid[]" value="{$row['albumid']}"/>
+                <input type="hidden" name="albumid[]" value="{$li['albumid']}"/>
                 <div class="col-sm-12 item-show {if $i < 1}item-list-first{/if}" id="item-show-{$li['id']}">
                     <div class="alert">
                         <div style="position:relative">
                             <div class="reply-news-list-cover">
-                                <img src="{php echo toimage($album[$row['albumid']]['thumb'])}"/>
+                                <img src="{php echo toimage($album[$li['albumid']]['thumb'])}"/>
                             </div>
                             <div class="reply-news-list-detail">
-                                <span class="help-block title"><strong>{$album[$row['albumid']]['title']}</strong></span>
-                                <span class="help-block content">{php echo cutstr($album[$row['albumid']]['content'], 30, '...')}</span>
+                                <span class="help-block title"><strong>{$album[$li['albumid']]['title']}</strong></span>
+                                <span class="help-block content">{php echo cutstr($album[$li['albumid']]['content'], 30, '...')}</span>
                                 <span class="help-block pull-right">
                                     <a href="javascript:;" onclick='albumHandler.doDeleteItem("item-show-{$li['id']}")'>删除</a> 
                                 </span>

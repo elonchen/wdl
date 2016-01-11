@@ -62,13 +62,22 @@ public function sendSelfFormatOrderInfo($device_no,$key,$times,$orderInfo){
 			return $this->sendSelfFormatMessage($selfMessage);
 }
 public function sendSelfFormatMessage($msgInfo){
+	/* 这里改了
 	$client = new HttpClient(FEIE_HOST,FEIE_PORT);
 	if(!$client->post('/FeieServer/printSelfFormatOrder',$msgInfo)){ //提交失败
 		return 'faild';
 	}
 	else{
 		return $client->getContent();
-	}
+	}*/
+	$client = new SoapClient("http://114.215.142.59:8080/kdtprint/services/printcenter?wsdl");
+	$client->soap_defencoding = 'UTF-8';  
+	$client->decode_utf8 = false;   
+	$client->xml_encoding = 'UTF-8'; 
+	$aryPara = array('deviceno'=> $msgInfo['clientCode'],'devicekey'=> $msgInfo['key'],'printid'=> strtotime("now"),'message'=> "^N".$msgInfo['printTimes']."\n".$msgInfo['printInfo']); 
+	$result = $client->addorder($aryPara);	
+	//var_dump($result); exit();
+	return $result;
 }
 public function queryOrderNumbersByTime($device_no,$date){
 		$msgInfo = array(
@@ -84,7 +93,8 @@ public function queryOrderNumbersByTime($device_no,$date){
 		return $result;
 	}
 }
-public function queryPrinterStatus($device_no){
+public function queryPrinterStatus($device_no,$device_key){
+	/*  这里改了
 	$client = new HttpClient(FEIE_HOST,FEIE_PORT);
 	if(!$client->get('/FeieServer/queryprinterstatus?clientCode='.$device_no)){ //请求失败
 		return 'faild';
@@ -92,7 +102,16 @@ public function queryPrinterStatus($device_no){
 	else{
 		$result = $client->getContent();
 		return $result;
-	}
+	} 
+	*/
+	$client = new SoapClient("http://114.215.142.59:8080/kdtprint/services/printcenter?wsdl");
+	$client->soap_defencoding = 'UTF-8';  
+	$client->decode_utf8 = false;   
+	$client->xml_encoding = 'UTF-8'; 
+	$aryPara = array('deviceno'=> $device_no,'devicekey'=> $device_key);  
+	$result = $client->getdevicestatus($aryPara);
+	$result = json_decode(json_encode( $result),true);
+	return $result;	
 }
 public function sendSMS($uid,$pwd,$mobile,$content,$time='',$mid='')
 {
@@ -193,6 +212,16 @@ public function postSMS($url,$data='')
 		pdo_delete('jufeng_wcy_cart', array('weid' => $_W['uniacid'], 'from_user' => $_W['fans']['from_user']));
 		message('清空菜单成功。', $this->createMobileUrl('list',array('pcate'=>$_GPC['pcate'],'ccate'=>$_GPC['ccate'])), 'success');
 	}
+	public function doMobileDetail() {
+		global $_W, $_GPC;
+			$foodsid = intval($_GPC['id']);
+		$foods = pdo_fetch("SELECT * FROM ".tablename('jufeng_wcy_foods')." WHERE id = :id", array(':id' => $foodsid));
+		$foodscart = pdo_fetch("SELECT total FROM ".tablename('jufeng_wcy_cart')." WHERE foodsid = '{$foodsid}' AND from_user = '{$_W['fans']['from_user']}'");
+		if (empty($foods)) {
+			message('抱歉，菜品不存在或是已经被删除！');
+		}
+		include $this->template('detail');
+	} 	
 	public function doMobilelistctr() {
 		include_once 'site/listctr.php';
 	}

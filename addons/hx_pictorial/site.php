@@ -16,12 +16,6 @@ class Hx_pictorialModuleSite extends WeModuleSite {
 		if (empty($huabao)) {
 			message('画报不存在或是已经被删除！');
 		}
-		if (!preg_match("/^http:\/\/[A-Za-z0-9]+\.[A-Za-z0-9]+[\/=\?%\-&_~`@[\]\':+!]*([^<>\"])*$/", $huabao['music'])){
-			$huabao['music'] = $_W['attachurl'] . $huabao['music'];
-		}
-		if (!preg_match("/^http:\/\/[A-Za-z0-9]+\.[A-Za-z0-9]+[\/=\?%\-&_~`@[\]\':+!]*([^<>\"])*$/", $huabao['loading'])){
-			$huabao['load'] = $_W['attachurl'] . $huabao['loading'];
-		}
 		$result['list'] = pdo_fetchall("SELECT * FROM ".tablename('hx_pictorial_photo')." WHERE pictorialid = :huabaoid ORDER BY displayorder DESC", array(':huabaoid' => $huabao['id']));
 		foreach ($result['list'] as &$photo) {
 			$photo['items'] = pdo_fetchall("SELECT * FROM ".tablename('hx_pictorial_item')." WHERE photoid = :photoid", array(':photoid' => $photo['id']));

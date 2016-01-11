@@ -22,6 +22,10 @@ function user_register($user) {
 	if(empty($user['status'])){
 		$user['status'] = 2;
 	}
+	$now = time();
+	if(empty($user['viptime'])){
+		$user['viptime'] = date("Y-m-d", $now + 7 * 24 * 3600);
+	}
 	$result = pdo_insert('users', $user);
 	if(!empty($result)) {
 		$user['uid'] = pdo_insertid();
@@ -89,6 +93,10 @@ function user_single($user_or_uid) {
 		$where .= ' AND `email`=:email';
 		$params[':email'] = $user['email'];
 	}
+	if(!empty($user['viptime'])) {
+		$where .= ' AND `viptime`=:viptime';
+		$params[':viptime'] = $user['viptime'];
+	}
 	if(!empty($user['status'])) {
 		$where .= " AND `status`=:status";
 		$params[':status'] = intval($user['status']);
@@ -130,6 +138,9 @@ function user_update($user) {
 	}
 	if(isset($user['remark'])) {
 		$record['remark'] = $user['remark'];
+	}
+	if(isset($user['viptime'])) {
+		$record['viptime'] = $user['viptime'];
 	}
 	if(isset($user['status'])) {
 		$status = intval($user['status']);

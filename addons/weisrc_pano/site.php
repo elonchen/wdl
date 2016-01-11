@@ -4,7 +4,7 @@
  *
  * www.weisrc.com
  *
- * 作者:微赞
+ * 作者:迷失卍国度
  *
  * qq : 15595755
  */
@@ -16,10 +16,61 @@ class weisrc_panoModuleSite extends WeModuleSite
         global $_W, $_GPC;
         $weid = $_W['uniacid'];
         $rid = intval($_GPC['rid']);
-
         $list = pdo_fetchall('select * from ' . tablename('weisrc_pano_reply') . ' where weid=:weid', array(':weid' => $weid));
 
+        $config = $this->module['config']['weisrc_pano'];
+        $title = $config['title'];
+        $bg = tomedia($config['bg']);
+        $share_image = tomedia($config['share_image']);
+        $share_title = empty($config['share_title']) ? $config['title'] : $config['share_title'];
+        $share_desc = empty($config['share_desc']) ? $config['title'] : $config['share_desc'];
+        $share_url = empty($setting['share_url']) ? $_W['siteroot'] . 'app/' . $this->createMobileUrl('index', array(), true) : $setting['share_url'];
         include $this->template('index');
+    }
+
+    public function doWebManage() {
+        global $_GPC, $_W;
+        load()->model('reply');
+        $pindex = max(1, intval($_GPC['page']));
+        $psize = 10;
+        $sql = "uniacid = :uniacid AND `module` = :module";
+        $params = array();
+        $params[':uniacid'] = $_W['uniacid'];
+        $params[':module'] = 'weisrc_pano';
+
+        if (isset($_GPC['keywords'])) {
+            $sql .= ' AND `name` LIKE :keywords';
+            $params[':keywords'] = "%{$_GPC['keywords']}%";
+        }
+
+        $list = reply_search($sql, $params, $pindex, $psize, $total);
+        $pager = pagination($total, $pindex, $psize);
+
+        if (!empty($list)) {
+            foreach ($list as &$item) {
+                $condition = "`rid`={$item['id']}";
+                $item['keywords'] = reply_keywords_search($condition);
+                $reply = pdo_fetch("SELECT * FROM " . tablename('weisrc_pano_reply') . " WHERE rid = :rid ", array(':rid' => $item['id']));
+                $item['dateline'] = date('Y-m-d H:i', $reply['dateline']);
+            }
+        }
+        include $this->template('manage');
+    }
+
+    public function doWebdelete() {
+        global $_GPC, $_W;
+        $rid = intval($_GPC['rid']);
+        $rule = pdo_fetch("SELECT id, module FROM " . tablename('rule') . " WHERE id = :id and uniacid=:uniacid", array(':id' => $rid, ':uniacid' => $_W['uniacid']));
+        if (empty($rule)) {
+            message('抱歉，要修改的规则不存在或是已经被删除！');
+        }
+        if (pdo_delete('rule', array('id' => $rid))) {
+            pdo_delete('rule_keyword', array('rid' => $rid));
+            //删除统计相关数据
+            pdo_delete('stat_rule', array('rid' => $rid));
+            pdo_delete('stat_keyword', array('rid' => $rid));
+        }
+        message('规则操作成功！', $this->createWebUrl('manage', array('op' => 'display')), 'success');
     }
 
     public function doMobileView()
@@ -29,10 +80,17 @@ class weisrc_panoModuleSite extends WeModuleSite
         $rid = intval($_GPC['rid']);
 
         $reply = pdo_fetch('select * from ' . tablename('weisrc_pano_reply') . ' where rid=:rid', array(':rid' => $rid));
+
+
+        $config = $this->module['config']['weisrc_pano'];
+        $share_image = tomedia($config['share_image']);
+        $share_title = empty($config['share_title']) ? $config['title'] : $config['share_title'];
+        $share_desc = empty($config['share_desc']) ? $config['title'] : $config['share_desc'];
+        $share_url = empty($setting['share_url']) ? $_W['siteroot'] . 'app/' . $this->createMobileUrl('view', array(), true) : $setting['share_url'];
         include $this->template('view');
     }
 
-    public function doMobileGetImageXml()
+    public function doMobilegetimagexml()
     {
         global $_GPC, $_W;
         header('Content-Type: text/xml;');

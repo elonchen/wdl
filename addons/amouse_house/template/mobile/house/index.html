@@ -3,13 +3,13 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>最新房产信息- {if empty($setting['copyright'])}{$_W['account']['name']} {else} {$setting['copyright']}{/if}-时尚生活互动平台</title>
-    <meta name="keywords" content="最新房产信息- {if empty($setting['copyright'])}{$_W['account']['name']} {else} {$setting['copyright']}{/if}-时尚生活互动平台"/>
+    <title>最新房产信息- {if empty($setting['copyright'])}{$_W['account']['name']} {else} {$setting['copyright']}{/if}</title>
+    <meta name="keywords" content="最新房产信息- {if empty($setting['copyright'])}{$_W['account']['name']} {else} {$setting['copyright']}{/if}"/>
     <meta name="description" content="找租房、求合租、转让店面、找转让、出售房产，赶紧上微房产吧"/>
-    <link href="../addons/amouse_house/ui/css/bootstrap.css?v=20150313" rel="stylesheet">
-    <link href="../addons/amouse_house/ui/css/main.css?v=20150313" rel="stylesheet">
-    <link rel="stylesheet" href="../addons/amouse_house/ui/css/wemedia_style.css"/>
-    <link href="../addons/amouse_house/ui/css/dialog.css?v=20150313" rel="stylesheet">
+    <link href="{AMOUSE_HOUSE_RES}css/bootstrap.css?v=20150313" rel="stylesheet">
+    <link href="{AMOUSE_HOUSE_RES}css/main.css?v=20150313" rel="stylesheet">
+    <link rel="stylesheet" href="{AMOUSE_HOUSE_RES}css/wemedia_style.css"/>
+    <link href="{AMOUSE_HOUSE_RES}css/dialog.css?v=20150313" rel="stylesheet">
     <style type="text/css">
         img {
             width: 100%;
@@ -45,8 +45,8 @@
 
 <body style="width:100%;margin: 0 auto;background: white;">
 <div class="container" style="width:100%;margin: 0 auto;background: white;">
-<link href="../addons/amouse_house/ui/css/jobhouse.css" rel="stylesheet">
-    <link rel="stylesheet" href="../addons/amouse_house/ui/css/house.css"/>
+<link href="{AMOUSE_HOUSE_RES}css/jobhouse.css" rel="stylesheet">
+    <link rel="stylesheet" href="{AMOUSE_HOUSE_RES}css/user.css"/>
 
 <style type="text/css">
 body {
@@ -102,7 +102,7 @@ body {
     width: 100%;
     height: 55px;
     line-height: 51px;
-    background: url('../addons/amouse_house/ui/images/house_header_bg.gif') repeat-x;
+    background: url('{AMOUSE_HOUSE_RES}images/house_header_bg.gif') repeat-x;
     background-size: contain;
     color: #ffffff;
     position: relative;
@@ -401,7 +401,7 @@ body {
     border-bottom: 1px solid #dadada;
 }
 .pop-box li.current {
-    background: url('../addons/amouse_house/ui/images/house_selected.jpg') no-repeat 98px 12px;
+    background: url('{AMOUSE_HOUSE_RES}images/house_selected.jpg') no-repeat 98px 12px;
     background-size: 15px;
 }
 .pop-box li.current a {
@@ -455,20 +455,25 @@ a:hover {
 }
 
 </style>
-<script src="../addons/amouse_house/ui/js/jquery.js?v=20150313" language="javascript"></script>
-<script src="../addons/amouse_house/ui/js/dialog_min.js?v=20150313" language="javascript"></script>
-<script src="../addons/amouse_house/ui/js/dialog_com.js?v=20150313" language="javascript"></script>
-<script src="../addons/amouse_house/ui/js/baiduposition.js"></script>
-<script src="../addons/amouse_house/ui/js/TouchSlide.1.1.js?v=20150313"></script>
+<script src="{AMOUSE_HOUSE_RES}js/jquery.js?v=20150313" language="javascript"></script>
+<script src="{AMOUSE_HOUSE_RES}js/dialog_min.js?v=20150313" language="javascript"></script>
+<script src="{AMOUSE_HOUSE_RES}js/dialog_com.js?v=20150313" language="javascript"></script>
+<script src="{AMOUSE_HOUSE_RES}js/baiduposition.js"></script>
+<script src="{AMOUSE_HOUSE_RES}js/TouchSlide.1.1.js?v=20150313"></script>
 <div class="app-view">
     <div class="app-page">
-   <!--<header class="app-head">
+    <header class="app-head">
         <div class="inner">
             <div class="city"><a onclick="positionSort();" style="color:black">{if $location_c!='返回'}{$location_c} ▼{else}返回{/if}</a></div>
-
+            <!--<div class="search">
+              <input type="text" name="searchs" id="searchs" placeholder="请在这里搜索~" value=""/>
+               <a class="btn">
+                   <input type="button" value="&nbsp;&nbsp;&nbsp;&nbsp;" onClick="baiduPosition('sort');" style="border:0;background-color:white;background-repeat:no-repeat;background-image:url(../addons/hc_weilive/style/images/iconfont-search.png); background-position:0,20px; padding-right:5px; padding-top:5px;"/>
+               </a>
+            </div>-->
             <h1 class="title sliding"></h1>
         </div>
-    </header>-->
+    </header>
 
  <section class="app-wrap">
     <div id="focus" class="focus">
@@ -609,17 +614,17 @@ a:hover {
             <a
                     style="width: 33%;margin-top: -0px;border-bottom: 3px solid rgb(61, 120, 0);height: 46px;"
                     class="easycall-item" href="{php echo $this->createMobileUrl('new',array('a'=>'rent','openid'=>$openid),true)}">
-                <img style="width: 30px;height: 30px;" class="icon" src="../addons/amouse_house/ui/images/zhaopin.png">
+                <img style="width: 30px;height: 30px;" class="icon" src="{AMOUSE_HOUSE_RES}images/zhaopin.png">
                 <div class="title" style=" margin-top: -0px; ">发布租房</div>
             </a>
             <a style="width: 34%;margin-top: -0px;border-bottom: 3px solid rgb(91, 177, 0);height: 46px;"
                class="easycall-item" href="{php echo $this->createMobileUrl('list',array('openid'=>$openid),true)}">
-                <img style="width: 30px;height: 30px;" class="icon" src="../addons/amouse_house/ui/images/xinpan.png">
+                <img style="width: 30px;height: 30px;" class="icon" src="{AMOUSE_HOUSE_RES}images/xinpan.png">
                 <div class="title" style=" margin-top: -0px; ">新盘推荐</div>
             </a>
             <a style="width: 33%;margin-top: -0px;border-bottom: 3px solid rgb(61, 120, 0);height: 46px;"
                class="easycall-item" href="{php echo $this->createMobileUrl('new',array('a'=>'house','openid'=>$openid),true)}">
-                <img style="width: 30px;height: 30px;" class="icon" src="../addons/amouse_house/ui/images/zhaopin.png">
+                <img style="width: 30px;height: 30px;" class="icon" src="{AMOUSE_HOUSE_RES}images/zhaopin.png">
                 <div class="title" style=" margin-top: -0px; ">发布二手房</div>
             </a>
         </div>
@@ -635,30 +640,38 @@ a:hover {
     </div>
 </body>
 
-{php echo register_jssdk(false);}
-<script type="text/javascript">
-    initShare();
-    function initShare(){
-        wx.ready(function () {
-            shareMeta = {
-                title : "找租房、求合租、转让店面、找转让、出售房产，赶紧上微房产吧",
-                desc : "找租房、求合租、转让店面、找转让、出售房产，赶紧上微房产吧",
-                imgUrl:"{php echo $_W['siteroot'];}addons/amouse_house/icon.jpg",
-                link :  "{$url}",
-                success: function(){
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+{php $signPackage=$_W['account']['jssdkconfig'];}
+<script>
+    wx.config({
+        debug: false,
+        appId: '<?php echo $signPackage["appId"];?>',
+        timestamp: <?php echo $signPackage["timestamp"];?>,
+        nonceStr: '<?php echo $signPackage["nonceStr"];?>',
+        signature: '<?php echo $signPackage["signature"];?>',
+        jsApiList: ['checkJsApi','onMenuShareTimeline','onMenuShareAppMessage','onMenuShareQQ','onMenuShareWeibo']
+    });
 
-                },
-                cancel: function(){
-                    // alert("分享失败，可能是网络问题，一会儿再试试？");
-                }
-            };
-            wx.onMenuShareTimeline(shareMeta);
-            wx.onMenuShareAppMessage(shareMeta);
-            wx.onMenuShareWeibo(shareMeta);
-            wx.onMenuShareQQ(shareMeta);
-            wx.onMenuShareQZone(shareMeta);
-        });
-    }
-
+    wx.ready(function () {
+        var shareData = {
+            title : "找租房、求合租、转让店面、找转让、出售房产，赶紧上微房产吧",
+            desc : "找租房、求合租、转让店面、找转让、出售房产，赶紧上微房产吧",
+            imgUrl:"{php echo $_W['siteroot'];}addons/amouse_house/icon.jpg",
+            link :  "{$url}",
+            trigger: function (res) {},
+            complete: function (res) {},
+            success: function (res) {
+            },
+            cancel: function (res) {
+            },
+            fail: function (res) {
+            }
+        };
+        wx.onMenuShareAppMessage(shareData);
+        wx.onMenuShareQQ(shareData);
+        wx.onMenuShareWeibo(shareData);
+        wx.onMenuShareTimeline(shareData);
+    });
 </script>
+
 </html>

@@ -10,6 +10,10 @@ class Mon_houseModuleSite extends WeModuleSite
     private $table_house_timg = "mon_house_timage";
     private $table_house_item="mon_house_item";
     private $table_house_order="mon_house_order";
+    private $table_house_pic ="mon_house_pic_type";
+    private $table_house_pic_img="mon_house_pic_image";
+
+
     public $weid;
     public function __construct() {
         global $_W;
@@ -256,9 +260,205 @@ class Mon_houseModuleSite extends WeModuleSite
 
         include $this->template("house_unit_img".$version);
 
-
     }
 
+    public function  doWebpicSetting()
+    {
+        global $_W, $_GPC;
+
+        $operation = !empty($_GPC['op']) ? $_GPC['op'] : 'display';
+
+        $hid = $_GPC['hid'];
+
+        $houses = pdo_fetchall("SELECT * FROM " . tablename($this->table_house) . " WHERE weid =:weid  ORDER BY createtime DESC, id DESC ", array(
+            ":weid" => $this->weid
+        ));
+
+        if (empty($hid)) {
+            $hid = $houses[0]["id"];
+        }
+
+
+        if ($operation == 'post') { // 添加
+            $id = intval($_GPC['id']);
+
+            if (!empty($id)) {
+                $item = pdo_fetch("SELECT * FROM " . tablename($this->table_house_pic) . " WHERE id = :id", array(
+                    ':id' => $id
+                ));
+                if (empty($item)) {
+                    message('抱歉，相册删除或不存在！', '', 'error');
+                }
+
+
+            }
+            if (checksubmit('submit')) {
+
+                if (empty($_GPC['hid'])) {
+                    message('请选择楼盘!');
+                }
+
+                if (empty($_GPC['pname'])) {
+                    message('相册名称!');
+                }
+
+
+                $data = array(
+                    'hid' => $hid,
+                    'pname' => $_GPC['pname'],
+                    'sort' => $_GPC['sort']
+                );
+                if (!empty($id)) {
+                    pdo_update($this->table_house_pic, $data, array(
+                        'id' => $id
+                    ));
+                } else {
+                    pdo_insert($this->table_house_pic, $data);
+                }
+
+                message('更新户型信息成功！', $this->createWebUrl('picSetting', array(
+                    'name' => 'monhouse',
+                    'op' => 'display',
+                    'hid' => $hid
+                )), 'success');
+            }
+        } elseif ($operation == 'display') {
+            $pindex = max(1, intval($_GPC['page']));
+
+            $psize = 20;
+
+            $list = pdo_fetchall("SELECT * FROM " . tablename($this->table_house_pic) . " WHERE hid =:hid  ORDER BY   sort asc LIMIT " . ($pindex - 1) * $psize . ',' . $psize, array(":hid" => $hid));
+            $total = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename($this->table_house_pic) . " WHERE hid =:hid", array(":hid" => $hid));
+            $pager = pagination($total, $pindex, $psize);
+        } elseif ($operation == 'delete') {
+            $id = intval($_GPC['id']);
+
+
+            pdo_delete($this->table_house_pic_img, array(
+                'pid' => $id
+            ));//删除用户表
+
+
+            pdo_delete($this->table_house_pic, array(
+                'id' => $id
+            ));//删除用户表
+
+
+            message('删除成功！', referer(), 'success');
+        }
+
+
+        $version = IMS_VERSION<0.6?'':'_advance';
+
+        include $this->template("house_pic".$version);
+    }
+
+     public function  doWebpicImgSetting() {
+         global $_W, $_GPC;
+
+         $operation = !empty($_GPC['op']) ? $_GPC['op'] : 'display';
+
+         $hid = $_GPC['hid'];
+         $pid=$_GPC['pid'];
+
+         $houses = pdo_fetchall("SELECT * FROM " . tablename($this->table_house) . " WHERE weid =:weid  ORDER BY createtime DESC, id DESC ", array(
+             ":weid" => $_W['weid']
+         ));
+
+         if (empty($hid)) {
+             $hid = $houses[0]["id"];
+         }
+
+         $house_pics=pdo_fetchall("SELECT * from ".tablename($this->table_house_pic)."  WHERE hid=:hid order by sort asc",array(":hid"=>$hid) );
+
+
+         if(empty($pid)){
+             $pid=$house_pics[0]["id"];
+
+         }
+
+
+         if ($operation == 'post') { // 添加
+             $id = intval($_GPC['id']);
+
+             if (!empty($id)) {
+                 $item = pdo_fetch("SELECT * FROM " . tablename($this->table_house_pic_img) . " WHERE id = :id", array(
+                     ':id' => $id
+                 ));
+                 if (empty($item)) {
+                     message('抱歉，相册图删除或不存在！', '', 'error');
+                 }
+
+
+             }
+             if (checksubmit('submit')) {
+
+
+                 if (empty($_GPC['hid'])) {
+                     message('请选择楼盘!');
+                 }
+
+
+                 if (empty($_GPC['pid'])) {
+                     message('请选择户型!');
+                 }
+
+
+                 $data = array(
+                     'hid' => $hid,
+                     'pid'=>$pid,
+                     'pre_img'=>$_GPC['pre_img'],
+                     'img'=>$_GPC['img']
+                 );
+
+
+                 if (!empty($id)) {
+                     pdo_update($this->table_house_pic_img, $data, array(
+                         'id' => $id
+                     ));
+                 } else {
+                     pdo_insert($this->table_house_pic_img, $data);
+                 }
+                 message('更新户型图信息成功！', $this->createWebUrl('picImgSetting', array(
+                     'name' => 'monhouse',
+                     'op' => 'display',
+                     'hid' => $hid,
+                     'pid'=>$pid
+                 )), 'success');
+             }
+         } elseif ($operation == 'display') {
+             $pindex = max(1, intval($_GPC['page']));
+
+             $psize = 20;
+
+             $list = pdo_fetchall("SELECT * FROM " . tablename($this->table_house_pic_img) . " WHERE hid =:hid  and pid=:pid ORDER BY   id desc LIMIT " . ($pindex - 1) * $psize . ',' . $psize, array(":hid" => $hid,":pid"=>$pid));
+
+
+             $total = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename($this->table_house_pic_img) . " WHERE hid =:hid and pid=:pid", array(":hid" => $hid,":pid"=>$pid));
+
+             $pager = pagination($total, $pindex, $psize);
+         } elseif ($operation == 'delete') {
+             $id = intval($_GPC['id']);
+
+
+             pdo_delete($this->table_house_pic_img, array(
+                 'id' => $id
+             ));//删除用户表
+
+
+             message('删除成功！', referer(), 'success');
+         }
+
+         $version = IMS_VERSION<0.6?'':'_advance';
+
+         if(IMS_VERSION>=0.6){
+
+             load()->func('tpl');
+         }
+
+         include $this->template("house_pic_img".$version);
+
+     }
     public function  doWebOrderManager(){
 
         global $_GPC,$_W;
@@ -313,6 +513,15 @@ class Mon_houseModuleSite extends WeModuleSite
         echo json_encode($house_types);
 
     }
+
+    public function  doWebQueryPics(){
+        global $_W,$_GPC;
+        $hid=$_GPC['hid'];
+        $house_types=pdo_fetchall("SELECT * from ".tablename($this->table_house_pic)."  WHERE hid=:hid order by sort asc",array(":hid"=>$hid) );
+        echo json_encode($house_types);
+
+    }
+
 
 
     public function  doWebOrderDowload(){
@@ -506,6 +715,13 @@ class Mon_houseModuleSite extends WeModuleSite
         return $house_imgs;
     }
 
+    public function findPicImgs($pid){
+        $house_imgs=pdo_fetchall("select * from ".tablename($this->table_house_pic_img)." where pid=:pid order by id desc",array(":pid"=>$pid));
+
+        return $house_imgs;
+    }
+
+
     /**
      * 预约报名
      */
@@ -610,6 +826,39 @@ class Mon_houseModuleSite extends WeModuleSite
 
 
         include $this->template("intro");
+
+    }
+
+    /**
+     * author:
+     * 介绍篇
+     */
+    public function  doMobiledt(){
+        global $_W, $_GPC;
+        $hid=$_GPC['hid'];
+
+        $house=$this->findHouse($hid);
+        if(empty($house)){
+            message("楼盘删除或不存在");
+        }
+
+        include $this->template("dt");
+
+    }
+
+    /**
+     * author: codeMonkey QQ:631872807
+     * 相册篇
+     */
+    public function  doMobilexc(){
+        global $_W, $_GPC;
+        $hid=$_GPC['hid'];
+        $house=$this->findHouse($hid);
+        if(empty($house)){
+            message("楼盘删除或不存在");
+        }
+        $house_pics=pdo_fetchall("select * from ".tablename($this->table_house_pic)." where hid=:hid order by sort asc",array(":hid"=>$hid));
+        include $this->template("xc");
 
     }
 

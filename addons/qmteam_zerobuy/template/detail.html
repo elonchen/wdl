@@ -1,5 +1,4 @@
 {template 'common/header'}
-<script type='text/javascript' src='resource/js/lib/jquery-1.11.1.min.js'></script>
 <style type="text/css">
 .red {float:left;color:red}
 .white{float:left;color:#fff}
@@ -8,48 +7,61 @@
 	color:#c40808;padding:2px 5px 1px 5px; border-radius:3px;z-index:1000;
 }
 .red { float:left;color:red}
-
 </style>
-<script>
-$(function(){
-$('.nav-tabs li').click(function(){
-  var i=$(this).index();
-  $(this).addClass('active');
-  $(this).siblings().removeClass('active');
-  $('.item').hide();
-  $('.item').eq(i).show();
-  })
-{if !empty($draw_info)}
-	$('.nav-tabs li').removeClass('active');
-	$('.nav-tabs li').eq(2).addClass('active');
-	$('.item').hide();
-	$('.item').eq(2).show();
-{else}
-	$('.draw_code').css('display','none');
-{/if}
 
-{if !empty($info)}
-	$('.nav-tabs li').removeClass('active');
-	$('.nav-tabs li').eq(0).addClass('active');
-	$('.item').hide();
-	$('.item').eq(0).show();
-{/if}
+<script language='javascript'>
+    require(['jquery'], function(jQuery){
 
-{if $act == 'edit'}
-$("input[name=starttime]").attr("disabled",true);
-$("input[name=endtime]").attr("disabled",true);
-$("input[name=submit]").click(function(){
-	$("input[name=starttime]").attr("disabled",false);
-	$("input[name=endtime]").attr("disabled",false);
-	});
-{/if} 
-});
+		jQuery(function(){
+				jQuery('.nav-tabs li').click(function(){
 
+					  var i=jQuery(this).index();
+					  jQuery(this).addClass('active');
+					  jQuery(this).siblings().removeClass('active');
+					  jQuery('.item').hide();
+					  jQuery('.item').eq(i).show();
+
+				  });
+
+
+				{if !empty($draw_info)}
+					jQuery('.nav-tabs li').removeClass('active');
+					jQuery('.nav-tabs li').eq(2).addClass('active');
+					jQuery('.item').hide();
+					jQuery('.item').eq(2).show();
+				{else}
+					jQuery('.draw_code').css('display','none');
+				{/if}
+
+
+				{if !empty($info)}
+					jQuery('.nav-tabs li').removeClass('active');
+					jQuery('.nav-tabs li').eq(0).addClass('active');
+					jQuery('.item').hide();
+					jQuery('.item').eq(0).show();
+				{/if}
+
+
+				{if $act == 'edit'}
+					jQuery("input[name=starttime]").attr("disabled",true);
+					jQuery("input[name=endtime]").attr("disabled",true);
+
+					jQuery("input[name=submit]").click(function(){
+
+						jQuery("input[name=starttime]").attr("disabled",false);
+						jQuery("input[name=endtime]").attr("disabled",false);
+
+					});
+				{/if} 
+
+			});
+    });
 </script>
+
 <ul class="nav nav-tabs">
-     <li ><a href="javascript:void">添加</a></li>
-     <li class="active"><a href="javascript:void">管理</a></li>
-	 <li class="draw_code"><a href="javascript:void">开奖</a></li>
+     <li ><a href="javascript:void(0)">添加</a></li>
+     <li class="active"><a href="javascript:void(0)">管理</a></li>
+	 <li class="draw_code"><a href="javascript:void(0)">开奖</a></li>
 </ul>
 <div class="main item" style="display:none;">
 	<form action="" method="post" class="form-horizontal form" enctype="multipart/form-data" id="form1">
@@ -87,7 +99,6 @@ $("input[name=submit]").click(function(){
 				<style>
 				.form-control[readonly],.form-control {
                   cursor:pointer;
-
                  }
 				</style>
                 <div class="form-group">
@@ -197,13 +208,6 @@ $("input[name=submit]").click(function(){
 		</div>
 	</form>
 </div>
-<script language='javascript'>
-    require(['jquery', 'util'], function($, u){
-		$(function(){
-			//u.editor($('.richtext')[0]);
-		});
-    });
 
-</script>
 
 {template 'common/footer'}

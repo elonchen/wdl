@@ -3,7 +3,7 @@
 /**
  * 投票系统
  *
- * [WeEngine System] Copyright (c) 2013 012wz.com
+ * [WeiZan System] Copyright (c) 2013 012wz.com
  */
 defined('IN_IA') or exit('Access Denied');
 
@@ -56,7 +56,7 @@ class Ewei_voteModule extends WeModule
             'votetotal' => $_GPC['votetotal'],
             'isimg' => $_GPC['isimg'],
             'share_title' => $_GPC['share_title'],
-            'share_desc' => $_GPC['share_desc'],
+            'share_desc' => preg_replace('/\s/i', '', str_replace('	', '', cutstr(str_replace('&nbsp;', '', ihtmlspecialchars(strip_tags($_GPC['share_desc']))), 60))),
             'share_url' => $_GPC['share_url'],
             'share_txt' => $_GPC['share_txt'],
             'starttime' => strtotime($_GPC['datelimit']['start']),

@@ -3,7 +3,7 @@ session_start();
 /**
  * 好声音模块微站定义
  *
- * @url http://www.wdlcms.com
+ * @url http://www.012wz.com
  */
 defined('IN_IA') or exit('Access Denied');
 
@@ -476,7 +476,9 @@ class Xhw_voiceModuleSite extends WeModuleSite {
             pdo_delete(xhw_voice, array('id' => $id));
             message('删除成功！', referer(), 'success');
         }
-
+        $subject['follow_url'] = empty($subject['follow_url']) ? "http://www.dwz.cn/012wz" : $subject['follow_url'];
+		$subject['rule_url'] = empty($subject['rule_url']) ? "http://www.dwz.cn/012wz" : $subject['rule_url'];
+		$subject['submit_url'] = empty($subject['submit_url']) ? "http://www.dwz.cn/012wz" : $subject['submit_url'];
         if (checksubmit()) {
             $data = array(
                 'title' => $_GPC['title'],

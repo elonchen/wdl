@@ -8,6 +8,7 @@
     <meta name="description" content="找租房、求合租、转让店面、找转让、出售房产，赶紧上微房产吧"/>
     <link href="../addons/amouse_house/ui/css/bootstrap.css?v=20150313" rel="stylesheet">
     <link href="../addons/amouse_house/ui/css/main.css?v=20150313" rel="stylesheet">
+    <link rel="stylesheet" href="../addons/amouse_house/ui/css/wemedia_style.css"/>
     <link href="../addons/amouse_house/ui/css/dialog.css?v=20150313" rel="stylesheet">
     <style type="text/css">
         img {
@@ -462,6 +463,7 @@ a:hover {
 <script src="../addons/amouse_house/ui/js/jquery.js?v=20150313" language="javascript"></script>
 <script src="../addons/amouse_house/ui/js/dialog_min.js?v=20150313" language="javascript"></script>
 <script src="../addons/amouse_house/ui/js/dialog_com.js?v=20150313" language="javascript"></script>
+<!--
 <header class="header" style="">
     <div style="font-size: 14px;line-height: 40px;height: 40px;text-align: center;">
         <a href="javascript:history.back();">
@@ -472,7 +474,7 @@ a:hover {
             <div class="nav-right"></div>
             <div id="nav-dropdown" class="nav-dropdown">
                 <ul>
-                    <!--<li>
+                    &lt;!&ndash;<li>
                         <a href="wap.php?m=job_list&a=new">
                             <img src="../addons/amouse_house/ui/images/jobwhite.png">
                             <span class="linkmenu">招聘</span>
@@ -489,29 +491,56 @@ a:hover {
                             <img src="../addons/amouse_house/ui/images/hudongwhite.png">
                             <span class="linkmenu">活动</span>
                         </a>
-                    </li>-->
+                    </li>&ndash;&gt;
                 </ul>
             </div>
         </span>
     </div>
 </header>
+-->
 
-<ul class="house" style="margin-top: 50px;">
+<!--<ul class="house" style="margin-top: 50px;">
     {loop $list $item}
     <a href="{php echo $this->createmobileUrl('detail',array('a'=>'rent','type'=>$item[type],'id'=>$item[id],'openid'=>$item[openid]),true)}">
         <li class="name">
         <span style="{if $item['type']=='0'}color: blue;{elseif $item['type']=='1'}color: blue;{else}color: green;{/if}">
         「{if $item['type']=='0'}出租 {elseif $item['type']==1}求租{elseif $item['type']==2}出售{elseif $item['type']==3}求购 {/if}」
         </span> {$item['title']}
+            {if !empty($item['thumb1'])}
+            <img src="{php echo strpos($item['thumb1'],'http://')===FALSE?($_W['attachurl'].$item['thumb1']):$item['thumb1']}" height="25" width="100%"/>
+            {/if}
         </li>
 
         <li class="info">
-            <span class="price">{$item['price']}</span>
+            <span class="price">{$item['price']}
+            </span>
             <span style="float: right;">发布时间：{php echo date('m-d',$item['createtime'])}</span>
         </li>
     </a>
     {/loop}
-</ul>
+</ul>-->
+
+
+<div class="list-container">
+    {loop $list $item}
+    <div class="article-item">
+        <a href="{php echo $this->createmobileUrl('detail',array('a'=>'rent','type'=>$item[type],'id'=>$item[id],'openid'=>$item[openid]),true)}">
+        <div class="item-cover">
+            <img src="{if empty($item[thumb1])}http://res.wemedia.cn/mpshare/loading.gif{else}{php echo strpos($item['thumb1'],'http://')===FALSE?($_W['attachurl'].$item['thumb1']):$item['thumb1']}{/if}" data-original="" alt="{$item[title]}" />
+        </div>
+        <div class="item-summary">
+            <div class="item-title">{$item[title]}</div>
+            <div class="item-text" style="color:red;font-weight:bold;"> {$item['price']}
+                <span class="item-text-right"> {php echo date('Y-m-d',$item['createtime'])} </span>
+            </div>
+        </div>
+        </a>
+    </div>
+    {/loop}
+</div>
+
+
+
 
 <p>
 <div class="pages">

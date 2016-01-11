@@ -4,10 +4,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
     <title>{if $title} {$title} {else}  {if !empty($set['copyright'])} {$set['copyright']} {else}{$_W['account']['name']}{/if} {/if} {if $_W['account']['siteinfo']['sitename']}{$_W['account']['siteinfo']['sitename']} {/if}</title>
-
     {php echo register_jssdk(false);}
 
-    <link rel="stylesheet" href="http://cdn.amazeui.org/amazeui/2.1.0/css/amazeui.css">
+    <link rel="stylesheet" href="{RES}css/amazeui.css">
     <link rel="stylesheet" href="{RES}css/base.css?v=1.0.0.0.1426903163" />
     <link rel="stylesheet" href="{RES}css/public.css?v=1.0.0.0.1426903163" />
 </head>
@@ -104,9 +103,9 @@
 </div>
 </body>
 <script src="//cdn.bootcss.com/jquery/1.9.0/jquery.min.js"></script>
-<script type="text/javascript"> !window.jQuery &&document.write('<script src=http://lib.sinaapp.com/js/jquery/1.7.2/jquery.min.js><\/script>');
-</script>
-<script src="http://cdn.amazeui.org/amazeui/2.1.0/js/amazeui.min.js?v=1.0.0.0.1426898548" type="text/javascript"></script>
+<script type="text/javascript"> !window.jQuery &&document.write('<script src={RES}js/jquery.min.js><\/script>');</script>
+
+<script src="{RES}js/amazeui.min.js?v=1.0.0.0.1426898548" type="text/javascript"></script>
 <script language='javascript'>
 
     wx.ready(function () {

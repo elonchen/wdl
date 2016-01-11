@@ -144,13 +144,18 @@ html,body {
 .question .option .text{position: relative;line-height: 40px;overflow: hidden;}
 .question .option .i{float: left;margin-left: 20px;}
 .question .option .otext{
-	margin-left: 45px;
+	padding-left: 45px;
 	overflow: hidden;
-	max-width: 260px;
+	max-width: 100%;
 	height: 40px;
 	text-align:left;
+	background: -webkit-gradient(linear, 0 0, 0 50%, from(#FAFAFA), to(#CFCFCF));
+	background: -moz-gradient(linear, 0 0, 0 50%, from(#FAFAFA), to(#CFCFCF));
+	border-radius:33px;
+
+
 }
-.question .option .oimg,.question .option .oimg-sel{position: absolute;top: 4px;left: 10px;width: 300px;}
+.question .option .oimg,.question .option .oimg-sel{position: absolute;top: 9px;left: 15px;}
 .question .option .oimg-sel{display: none;}
 .question .option-sel .oimg{display: none;}
 .question .option-sel .oimg-sel{display: block;}
@@ -180,6 +185,7 @@ html,body {
 }
 
 .tip{
+	margin-bottom:10px;
 	color: #FFF;
 	font-size: 12px;
 	margin-left: 20px;

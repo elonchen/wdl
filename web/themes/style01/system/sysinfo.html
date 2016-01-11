@@ -27,14 +27,15 @@
 		<table class="table table-hover">
 			<tr>
 				<th style="width:250px;">微动力程序版本</th>
-				<td>Weizan {php echo IMS_VERSION;} Release  {php echo IMS_RELEASE_DATE;} &nbsp; &nbsp; <a href="http://www.wdlcms.com" target="_blank">查看最新版本</a></td>
+				<td>WDL V4 Release  {php echo IMS_RELEASE_DATE;} &nbsp; &nbsp; <a href="http://www.wdlcms.com" target="_blank">查看最新版本</a></td>
 			</tr>
 			<tr>
 				<th>产品系列</th>
-				<td>{if IMS_FAMILY == 'ac'}
-						您的产品是开源版, 没有购买商业授权, 不能用于商业用途
+				<td>
+				{if (IMS_FAMILY == 'x') || (IMS_FAMILY == 's')}
+				您的产品是商业版WDL V4 &nbsp; &nbsp; <a href="{php echo url('cloud/upgrade');}">检查是否授权</a>
                   {else}
-						您的产品是商业版WDL{php echo IMS_VERSION;}&nbsp; &nbsp; <a href="{php echo url('cloud/upgrade');}">检查是否授权</a>
+				您的产品是开源版, 没有购买商业授权, 不能用于商业用途
 				{/if}
 				</td>
 			</tr>

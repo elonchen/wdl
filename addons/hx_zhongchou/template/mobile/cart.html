@@ -1,20 +1,31 @@
-{php $bootstrap_type = 3;}
+{php $title="我关注的项目";}
+{php $pagetitle="我的关注";}
 {template 'header'}
-{template 'common'}
-<script type="text/javascript" src="../addons/hx_zhongchou/images/jquery.gcjs.js"></script>
-<link type="text/css" rel="stylesheet" href="../addons/hx_zhongchou/images/style.css?{TIMESTAMP}">
 <style>
+.shopcart-main{margin:10px; -webkit-box-shadow:0 1px 2px 1px rgba(0,0,0,0.2); box-shadow:0 1px 2px 1px rgba(0,0,0,0.2); overflow:hidden; background:#FFF;}
+.shopcart-main1{margin:10px; -webkit-box-shadow:0 1px 2px 1px rgba(0,0,0,0.2); box-shadow:0 1px 2px 1px rgba(0,0,0,0.2); overflow:hidden; background:#ffffe1;}
+.shopcart-main .shopcart-hd{height:50px; line-height:50px; background:#f0f0f0; border-bottom:1px solid #cacaca; padding:0 10px;}
+.shopcart-main .shopcart-hd > span{font-size:15px; color:#504040; font-weight:bold;}
+.shopcart-main .shopcart-hd > a.pull-right{text-decoration:none; font-size:28px; color:#C9C9C9; margin-top:10px;}
+.shopcart-main .shopcart-item{height:120px; border-bottom:1px solid #f3f3f4; padding:10px; overflow:hidden;}
+.shopcart-main .shopcart-item img{width:80px; margin-right:10px; float:left;}
+.shopcart-main .shopcart-item .shopcart-item-detail{float:left; display:block; width:170px; overflow:hidden;}
+.shopcart-main .shopcart-item .name{color:#4d4f5d; font-weight:bold; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.shopcart-main .shopcart-item .price{color:#e9342a; font-size:14px; white-space:nowrap; text-overflow:ellipsis;}
+.shopcart-main .shopcart-item .input-group{width:130px; margin-top:5px;}
+.shopcart-main .shopcart-item .input-group .form-control{text-align:center;}
+.shopcart-main .shopcart-item .input-group .btn{background:#EEE;}
+.shopcart-main .shopcart-item .shopcart-item-remove{color:#d5a7a7;}
+.shopcart-main .store-total{height:38px; line-height:38px; padding:0 10px; color:#b9b9b9; font-weight:bold;}
+.shopcart-main .store-total span{color:#e9342a;}
+.shopcart-footer{width:100%; height:40px; line-height:40px; color:#FFF; padding:0 10px; background:#6d7081; position:fixed; bottom:45px; left:0; filter:alpha(opacity=95); opacity:.95; font-weight:bold;}
+.shopcart-footer .btn{margin-top:3px;}
 .shopcart-footer{margin-bottom:30px;}
 </style>
-<div class="head">
-	<a href="javascript:history.back();" class="bn pull-left"><i class="fa fa-angle-left"></i></a>
-	<span class="title">收藏夹</span>
-	<a href="javascript:void(0)" onclick="clearCart()" class="bn pull-right" style="font-size:18px;"><i class="fa fa-trash"></i> 清空</a>
-</div>
 <div class="shopcart-main img-rounded">
 	<div style='text-align:center;padding:50px 0 50px 0; {if count($list)>0}display:none{/if}' id='cartempty'>
 		<img src='../addons/hx_zhongchou/images/icon_cart_empty.png' /><br/><br/>
-		<span style='color:#adadad'>您的收藏夹空空如也，赶紧去添加几个吧~~</span>
+		<span style='color:#adadad'>您暂时没有关注的项目~~</span>
 	</div>
 	{loop $list $item}
 	{php $project = $this->getproject($item['projectid']);}

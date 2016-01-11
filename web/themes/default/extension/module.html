@@ -268,11 +268,11 @@ width: 15px;"/></i>
 				<div class="pull-right" style="width:230px;">
 					<div class="module-set">
 						<a href="{php echo url('extension/module/install')}m={{m.name.toLowerCase()}}">安装</a>
-						<a href="http://addons.wdlcms.com/web/index.php?c=store&a=author&do=application&id={{m.id}}" target="_blank">查看详情</a>
+						<a href="{ADDONS_URL}/web/index.php?c=store&a=author&do=application&id={{m.id}}" target="_blank">查看详情</a>
 						&nbsp;
 					</div>
 				</div>
-				<img class="media-object img-rounded gray" ng-src="http://addons.wdlcms.com/resource/attachment/{{m.thumb}}" onerror="this.src='../web/resource/images/nopic-small.jpg'">
+				<img class="media-object img-rounded gray" ng-src="{ADDONS_URL}/resource/attachment/{{m.thumb}}" onerror="this.src='../web/resource/images/nopic-small.jpg'">
 				<div class="media-body">
 					<h4 class="media-heading">
 						{{m.title}}<small>（标识：{{m.name}}&nbsp;&nbsp;&nbsp;版本：{{m.version}}&nbsp;&nbsp;&nbsp;作者：{{m.author}}）</small>

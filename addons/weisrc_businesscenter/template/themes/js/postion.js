@@ -37,9 +37,10 @@ $(function() {
             $("#curlng").val(locLng);
 
             isposition = $("#isposition").val();
+            cid = $("#cid").val();
             cururl = $("#cururl").val();
             if (isposition == 0) {
-                var url = cururl + '&lat=' + locLat + '&lng=' + locLng;
+                var url = cururl + '&lat=' + locLat + '&lng=' + locLng + '&cid=' + cid;
                 window.location = url;
             }
         } else {

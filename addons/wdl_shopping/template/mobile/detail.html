@@ -68,7 +68,7 @@
         <div class="detail-group text-center" style="line-height:20px;font-weight:bold;">{$goods['title']}</div>
         <div class="detail-group" style='margin-top:10px;'>
 			<span class="col-xs-8" style="width:100%;">
-				{if $marketprice==$originalprice}
+				{if $marketprice==$originalprice || $originalprice == '0.00'}
 				现价 : ¥ <span id='marketprice' class="text-danger" style="font-size:18px; font-weight:bold;">{$marketprice}</span> {if !empty($goods['unit'])}元&nbsp;/ {$goods['unit']}{/if}
 				{else}
 		   	 	现价 : ¥ <span class="text-danger" id='marketprice' style="font-size:18px; font-weight:bold;">{$marketprice} 元&nbsp;/ {$goods['unit']}</span> <span
@@ -216,6 +216,7 @@
             if (mb > stock && stock != -1) {
                 mb = stock;
             }
+            mb = mb == 0? s1tock : mb;
             var num = parseInt(total.val());
             if (num > mb && mb > 0) {
                 tip("您最多可购买 " + mb + " 件!", true);

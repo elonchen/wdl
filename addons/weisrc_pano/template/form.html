@@ -1,20 +1,29 @@
 <!--360全景-->
-<!--作者:微赞-->
+<!--作者:迷失卍国度-->
 <!--qq : 15595755-->
 <input type="hidden" name="reply_id" value="{$reply['id']}" />
+{if !empty($reply)}
+<div class="panel panel-default account">
+    <div class="panel-body">
+        <p style="margin: 0px"><strong>全景链接： </strong> <a href="javascript:;" title="点击复制Token">{php echo $_W['siteroot'] .'app/index.php?i='.$_W['uniacid'].'&rid='.$reply['rid'].'&c=entry&do=view&m=weisrc_pano'}</a></p>
+    </div>
+</div>
+{/if}
 <div class="panel panel-default">
+    <script>
+        require(['jquery', 'util'], function($, u){
+            $('.account p a').each(function(){
+                u.clip(this, $(this).text());
+            });
+        });
+    </script>
     <div class="panel-heading">
-        360全景
+        360全景{if !empty($reply)}
+        <a class="btn btn-default btn-sm" href="{php echo $_W['siteroot'] .'app/index.php?i='.$_W['uniacid'].'&rid='.$reply['rid'].'&c=entry&do=view&m=weisrc_pano'}" target="_blank"><i class="fa fa-camera-retro"></i> 预览</a>
+        {/if}
     </div>
     <div class="panel-body">
-        {if !empty($reply)}
-        <div class="form-group">
-            <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span> VIEW</label>
-            <div class="col-sm-9 col-xs-12">
-                <a class="btn btn-default btn-sm" href="{php echo $this->createMobileurl('view', array('op' => 'view', 'rid' => $reply['rid']), true)}" target="_blank"><i class="fa fa-camera-retro"></i> 预览</a>
-            </div>
-        </div>
-        {/if}
+
         <div class="form-group">
             <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span> 标题</label>
             <div class="col-sm-9 col-xs-12">
@@ -36,10 +45,21 @@
             </div>
         </div>
         <div class="form-group">
+            <label class="col-xs-12 col-sm-3 col-md-2 control-label">类型</label>
+            <div class="col-sm-9">
+                <label class="radio-inline">
+                    <input type="radio" name="type" value="-1" {if $reply['type']==-1}checked{/if}>自定义
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" name="type" value="1" {if empty($reply) || $reply['type']!=-1}checked{/if}>内置案例
+                </label>
+            </div>
+        </div>
+        <div class="form-group" style="{if $reply['type']==-1}display:none;{/if}" id="selcase">
             <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span> 展示案例</label>
             <div class="col-sm-9 col-xs-12">
-                <select id="casetype" name="casetype" onchange="return changeType(this.value);" class="location form-control">
-                    <option value=-1 {if empty($reply['type'])}selected{/if}>自定义</option>
+                <!--<select id="casetype" name="casetype" onchange="return changeType(this.value);" class="location form-control">-->
+                <select id="casetype" name="casetype" class="location form-control">
                     <option value=1 {if $reply['type']==1}selected{/if}>案例1——巴西里约热内卢</option>
                     <option value=2 {if $reply['type']==2}selected{/if}>案例2——曼德拉的房间</option>
                     <option value=3 {if $reply['type']==3}selected{/if}>案例3——李嘉诚办公室</option>
@@ -49,10 +69,9 @@
         </div>
     </div>
 </div>
-
 <div class="panel panel-default" id="piclist" style="{if $reply['type']!=-1}display:none;{/if}">
     <div class="panel-heading">
-        360全景自定义图片
+        自定义全景图片
     </div>
     <div class="panel-body">
         <div class="form-group">
@@ -95,12 +114,17 @@
 </div>
 
 <script type="text/javascript">
-    function changeType(value) {
-        var type = value;
-        if (type == -1) {
-            $("#piclist").show();
-        } else {
-            $("#piclist").hide();
-        }
-    }
+    $(function () {
+        $(":radio[name='type']").click(function () {
+            var $this = $(this);
+            if($(this).val() == -1){
+                $("#piclist").slideDown(600);
+                $("#selcase").slideUp(600);
+
+            } else {
+                $("#selcase").slideDown(600);
+                $("#piclist").slideUp(600);
+            }
+        });
+    });
 </script>

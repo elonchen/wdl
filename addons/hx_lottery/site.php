@@ -25,6 +25,7 @@ class Hx_lotteryModuleSite extends WeModuleSite {
 
 	public function doWebAwardlist(){
 		global $_GPC, $_W;
+		load()->model('mc');
 		$reply_id = intval($_GPC['reply_id']);
 		$pindex = max(1, intval($_GPC['page']));
 		$psize = 20;
@@ -61,7 +62,7 @@ class Hx_lotteryModuleSite extends WeModuleSite {
 		if ($reply['reg'] == 1) {
 			$profile = mc_fetch($_W['member']['uid']);
 			if (empty($profile['mobile']) || empty($profile['realname'])) {
-				message('您的资料尚未录入，请填写资料后继续',$this->createMobileUrl('infos'),'success');
+				message('您的资料尚未录入，请填写资料后继续',$this->createMobileUrl('infos',array('reply_id'=>$reply_id)),'success');
 			}
 		}
 		$uid = $_W['member']['uid'];
@@ -76,6 +77,7 @@ class Hx_lotteryModuleSite extends WeModuleSite {
 
 	public function doMobileInfos() {
 		global $_GPC, $_W;
+		$reply_id = $_GPC['reply_id'];
 		$profile = mc_fetch($_W['member']['uid']);
 		if (checksubmit('submit')) {
 			if (!empty($_GPC)) {
@@ -88,7 +90,7 @@ class Hx_lotteryModuleSite extends WeModuleSite {
 				$data['realname'] = $_GPC['realname'];
 				$data['mobile'] = $_GPC['mobile'];
 				$result = mc_update($_W['member']['uid'], $data);
-				message('资料更新成功', $this->createMobileUrl('myaward'), 'success');
+				message('资料更新成功', $this->createMobileUrl('myaward',array('reply_id'=>$reply_id)), 'success');
 			}
 		}
 		include $this->template('infos');
@@ -105,24 +107,22 @@ class Hx_lotteryModuleSite extends WeModuleSite {
 		$share_from = isset($_GPC['share_from']) ? $share_from : $_W['openid'];
 		//$reply['link'] = !isset($reply['share_url']) ? $_W['siteroot'].'app/index.php?i='.$_W['uniacid'].'&c=entry&id='.$id.'&do=detail&m=hx_lottery' : $reply['share_url'];
 		if (!empty($reply)) {	
-			if (empty($_W['fans']['from_user'])) {
+			if (empty($_W['fans']['follow'])) {
 				$errorCode = 10999;
 				$errorMsg = '亲，抽奖需要您先关注我们的平台哦～';
 			}else{
 				$from_user = $_W['fans']['from_user'];
-				$fans = pdo_fetch("SELECT fanid,uid FROM ". tablename('mc_mapping_fans') ." WHERE `openid`='$from_user' LIMIT 1");
-				$uid = '0';
-				if ($fans['uid'] != '0') {
-					$uid = $fans['uid'];
-				}else{
-					$uid = mc_update($uid, array('email' => md5($from_user).'@012wz.com'));
-					if (!empty($fans['fanid']) && !empty($uid)) {
-						pdo_update('mc_mapping_fans', array('uid' => $uid), array('fanid' => $fans['fanid']));
-					}
-				}
+				$uid = $_W['member']['uid'];
+				$year = date("Y");
+				$month = date("m");
+				$day = date("d");
+				$dayBegin = mktime(0,0,0,$month,$day,$year);//当天开始时间戳
+				$dayEnd = mktime(23,59,59,$month,$day,$year);//当天结束时间戳
 				$profile = mc_fetch($uid);
 				$sharenum = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename($this->table_share) . " WHERE reply_id = '{$id}' AND share_from = '{$_W['openid']}'");
 				$addplaytime = floor($sharenum/$reply['zfcs']) * $reply['zjcs'];
+				$today_share = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename($this->table_share) . " WHERE reply_id = '{$id}' AND share_from = '{$_W['openid']}' and share_time >= $dayBegin and share_time <= $dayEnd");
+				$dayaddplaytime = floor($today_share/$reply['zfcs']) * $reply['zjcs'];
 				$awardnum = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename($this->table_award) . " WHERE reply_id = '{$id}' AND uid = '{$uid}'");
 				$awardfans = pdo_fetch("SELECT * FROM " . tablename($this->table_fans) . " WHERE reply_id = '{$id}' AND uid = '{$uid}'");
 				$t = mktime(0, 0, 0, date("m",time()), date("d",time()), date("y",time()));
@@ -160,12 +160,23 @@ class Hx_lotteryModuleSite extends WeModuleSite {
 				}elseif ($awardnum >= $reply['awardnum']) {
 					$errorCode = 1;
 					$errorMsg = '亲，本次抽奖活动最多允许中奖'.$reply['awardnum'].'次，您已经中奖'.$awardnum.'次';
-				}elseif ($addplaytime + $awardfans['totalnum'] >= $reply['playnum']) {
+				}elseif ($awardfans['totalnum'] - $addplaytime >= $reply['playnum']) {
 					$errorCode = 1;
-					$errorMsg = '亲，本次抽奖活动最多允许参加'.$reply['playnum'].'次，您已经参加'.$awardfans['totalnum'].'次';
-				}elseif ($awardfans['todaynum'] >= $reply['dayplaynum']) {
+					$errorMsg = '亲，本次抽奖活动最多允许参加'.$reply['playnum'].'次，您已经参加'.$awardfans['totalnum'].'次,分享增加'.$addplaytime.'次';
+				}elseif ($awardfans['todaynum'] - $dayaddplaytime >= $reply['dayplaynum']) {
 					$errorCode = 1;
-					$errorMsg = '亲，本次抽奖活动每天最多允许参加'.$reply['dayplaynum'].'次，您今天已经参加'.$awardfans['todaynum'].'次';
+					if ($dayaddplaytime != 0) {
+						$errorMsg = '亲，本次抽奖活动每天可参加'.$reply['dayplaynum'].'次，您今天已经参加'.$awardfans['todaynum'].'次，分享增加'.$dayaddplaytime.'次';
+					}else{
+						$errorMsg = '亲，本次抽奖活动每天可参加'.$reply['dayplaynum'].'次，您今天已经参加'.$awardfans['todaynum'].'次，分享给好友可以增加抽奖次数哦';
+					}
+				}elseif ($awardfans['todaynum'] + $dayaddplaytime >= $reply['daytotalnum']) {
+					$errorCode = 1;
+					if ($dayaddplaytime != 0) {
+						$errorMsg = '亲，本次抽奖活动每天最多允许参加'.$reply['dayplaynum'].'次，您今天已经参加'.$awardfans['todaynum'].'次，分享增加'.$dayaddplaytime.'次';
+					}else{
+						$errorMsg = '亲，本次抽奖活动每天最多允许参加'.$reply['dayplaynum'].'次，您今天已经参加'.$awardfans['todaynum'].'次，分享给好友可以增加抽奖次数哦';
+					}
 				}else{
 					$errorCode = 0;
 					$errorMsg = '';
@@ -265,12 +276,23 @@ class Hx_lotteryModuleSite extends WeModuleSite {
 				if ($fans['uid'] != '0') {
 					$uid = $fans['uid'];
 				}else{
-					$uid = mc_update($uid, array('email' => md5($from_user).'@012wz.com'));
+					$uid = mc_update($uid, array('email' => md5($from_user).'@we7.cc'));
 					if (!empty($fans['fanid']) && !empty($uid)) {
 						pdo_update('mc_mapping_fans', array('uid' => $uid), array('fanid' => $fans['fanid']));
 					}
 				}
+				$year = date("Y");
+				$month = date("m");
+				$day = date("d");
+				$dayBegin = mktime(0,0,0,$month,$day,$year);//当天开始时间戳
+				$dayEnd = mktime(23,59,59,$month,$day,$year);//当天结束时间戳
 				$profile = mc_fetch($uid);
+				$sharenum = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename($this->table_share) . " WHERE reply_id = '{$id}' AND share_from = '{$_W['openid']}'");
+				
+				$today_share = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename($this->table_share) . " WHERE reply_id = '{$id}' AND share_from = '{$_W['openid']}' and share_time >= $dayBegin and share_time <= $dayEnd");
+				$dayaddplaytime = floor($today_share/$reply['zfcs']) * $reply['zjcs'];
+				
+				$addplaytime = floor($sharenum/$reply['zfcs']) * $reply['zjcs'];
 				$awardnum = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename($this->table_award) . " WHERE reply_id = '{$id}' AND uid = '{$uid}'");
 				$awardfans = pdo_fetch("SELECT * FROM " . tablename($this->table_fans) . " WHERE reply_id = '{$id}' AND uid = '{$uid}'");
 				$t = mktime(0, 0, 0, date("m",time()), date("d",time()), date("y",time()));
@@ -303,9 +325,11 @@ class Hx_lotteryModuleSite extends WeModuleSite {
 					$errorCode = 1;
 				}elseif ($awardnum >= $reply['awardnum']) {
 					$errorCode = 1;
-				}elseif ($awardfans['totalnum'] >= $reply['playnum']) {
+				}elseif ($awardfans['totalnum'] - $addplaytime >= $reply['playnum']) {
 					$errorCode = 1;
-				}elseif ($awardfans['todaynum'] >= $reply['dayplaynum']) {
+				}elseif ($awardfans['todaynum'] - $dayaddplaytime >= $reply['dayplaynum']) {
+					$errorCode = 1;
+				}elseif ($awardfans['todaynum'] + $dayaddplaytime >= $reply['daytotalnum']) {
 					$errorCode = 1;
 				}else{
 					mc_credit_update($uid,$reply['need_type'],'-'.$reply['need_num'],array('1','幸运大抽奖 消耗 '.$this->getcreditname($reply['need_type']).'：'.$reply['need_num']));
@@ -319,7 +343,6 @@ class Hx_lotteryModuleSite extends WeModuleSite {
 					$rate = $reply['rate'];
 					$prizes = iunserializer($reply['prizes']);
 					$p_num = $prizes['p1_num'] + $prizes['p2_num'] + $prizes['p3_num'] + $prizes['p4_num'];
-					empty($p_num) && $p_num = 1;                                  
 					$arr['p1'] = round(100 * $rate * $prizes['p1_num']/$p_num);
 					$arr['p2'] = round(100 * $rate * $prizes['p2_num']/$p_num);
 					$arr['p3'] = round(100 * $rate * $prizes['p3_num']/$p_num);
@@ -366,6 +389,8 @@ class Hx_lotteryModuleSite extends WeModuleSite {
 								if(is_error($ret)) {//领取错误做等值处理
 									$remsg = ' 由于'.$ret['message'].' 奖品转换为等值'.$this->getcreditname($coupon['credittype']).':'.$coupon['credit'];
 									mc_credit_update($uid,$coupon['credittype'],$coupon['credit'],array('1','幸运大抽奖 等价 '.$this->getcreditname($coupon['credittype']).'：'.$coupon['credit'].'原因：'.$ret['message']));
+								}else{
+									$remsg = $coupon['title'];
 								}
 								$detail_url = $_W['siteroot'].'app/index.php?i='.$_W['uniacid'].'&c=activity&a=coupon&do=mine';
 								$awarddata = array(
@@ -389,6 +414,8 @@ class Hx_lotteryModuleSite extends WeModuleSite {
 								if(is_error($ret)) {//领取错误做等值处理
 									$remsg = ' 由于'.$ret['message'].' 奖品转换为等值'.$this->getcreditname($token['credittype']).':'.$token['credit'];
 									mc_credit_update($uid,$token['credittype'],$token['credit'],array('1','幸运大抽奖 等价 '.$this->getcreditname($token['credittype']).'：'.$token['credit'].'原因：'.$ret['message']));
+								}else{
+									$remsg = $token['title'];
 								}
 								$detail_url = $_W['siteroot'].'app/index.php?i='.$_W['uniacid'].'&c=activity&a=token&do=mine';
 								$awarddata = array(
@@ -412,6 +439,8 @@ class Hx_lotteryModuleSite extends WeModuleSite {
 								if(is_error($ret)) {//领取错误做等值处理
 									$remsg = ' 由于'.$ret['message'].' 奖品转换为等值'.$this->getcreditname($goods['credittype']).':'.$goods['credit'];
 									mc_credit_update($uid,$goods['credittype'],$goods['credit'],array('1','幸运大抽奖 等价 '.$this->getcreditname($goods['credittype']).'：'.$goods['credit'].'原因：'.$ret['message']));
+								}else{
+									$remsg = $goods['title'];
 								}
 								$detail_url = $_W['siteroot'].'app/index.php?i='.$_W['uniacid'].'&c=activity&a=goods&do=mine';
 								$awarddata = array(
@@ -464,6 +493,8 @@ class Hx_lotteryModuleSite extends WeModuleSite {
 								if(is_error($ret)) {//领取错误做等值处理
 									$remsg = ' 由于'.$ret['message'].' 奖品转换为等值'.$this->getcreditname($coupon['credittype']).':'.$coupon['credit'];
 									mc_credit_update($uid,$coupon['credittype'],$coupon['credit'],array('1','幸运大抽奖 等价 '.$this->getcreditname($coupon['credittype']).'：'.$coupon['credit'].'原因：'.$ret['message']));
+								}else{
+									$remsg = $coupon['title'];
 								}
 								$detail_url = $_W['siteroot'].'app/index.php?i='.$_W['uniacid'].'&c=activity&a=coupon&do=mine';
 								$awarddata = array(
@@ -487,6 +518,8 @@ class Hx_lotteryModuleSite extends WeModuleSite {
 								if(is_error($ret)) {//领取错误做等值处理
 									$remsg = ' 由于'.$ret['message'].' 奖品转换为等值'.$this->getcreditname($token['credittype']).':'.$token['credit'];
 									mc_credit_update($uid,$token['credittype'],$token['credit'],array('1','幸运大抽奖 等价 '.$this->getcreditname($token['credittype']).'：'.$token['credit'].'原因：'.$ret['message']));
+								}else{
+									$remsg = $token['title'];
 								}
 								$detail_url = $_W['siteroot'].'app/index.php?i='.$_W['uniacid'].'&c=activity&a=token&do=mine';
 								$awarddata = array(
@@ -510,6 +543,8 @@ class Hx_lotteryModuleSite extends WeModuleSite {
 								if(is_error($ret)) {//领取错误做等值处理
 									$remsg = ' 由于'.$ret['message'].' 奖品转换为等值'.$this->getcreditname($goods['credittype']).':'.$goods['credit'];
 									mc_credit_update($uid,$goods['credittype'],$goods['credit'],array('1','幸运大抽奖 等价 '.$this->getcreditname($goods['credittype']).'：'.$goods['credit'].'原因：'.$ret['message']));
+								}else{
+									$remsg = $goods['title'];
 								}
 								$detail_url = $_W['siteroot'].'app/index.php?i='.$_W['uniacid'].'&c=activity&a=goods&do=mine';
 								$awarddata = array(
@@ -563,6 +598,8 @@ class Hx_lotteryModuleSite extends WeModuleSite {
 								if(is_error($ret)) {//领取错误做等值处理
 									$remsg = ' 由于'.$ret['message'].' 奖品转换为等值'.$this->getcreditname($coupon['credittype']).':'.$coupon['credit'];
 									mc_credit_update($uid,$coupon['credittype'],$coupon['credit'],array('1','幸运大抽奖 等价 '.$this->getcreditname($coupon['credittype']).'：'.$coupon['credit'].'原因：'.$ret['message']));
+								}else{
+									$remsg = $coupon['title'];
 								}
 								$detail_url = $_W['siteroot'].'app/index.php?i='.$_W['uniacid'].'&c=activity&a=coupon&do=mine';
 								$awarddata = array(
@@ -586,6 +623,8 @@ class Hx_lotteryModuleSite extends WeModuleSite {
 								if(is_error($ret)) {//领取错误做等值处理
 									$remsg = ' 由于'.$ret['message'].' 奖品转换为等值'.$this->getcreditname($token['credittype']).':'.$token['credit'];
 									mc_credit_update($uid,$token['credittype'],$token['credit'],array('1','幸运大抽奖 等价 '.$this->getcreditname($token['credittype']).'：'.$token['credit'].'原因：'.$ret['message']));
+								}else{
+									$remsg = $token['title'];
 								}
 								$detail_url = $_W['siteroot'].'app/index.php?i='.$_W['uniacid'].'&c=activity&a=token&do=mine';
 								$awarddata = array(
@@ -609,6 +648,8 @@ class Hx_lotteryModuleSite extends WeModuleSite {
 								if(is_error($ret)) {//领取错误做等值处理
 									$remsg = ' 由于'.$ret['message'].' 奖品转换为等值'.$this->getcreditname($goods['credittype']).':'.$goods['credit'];
 									mc_credit_update($uid,$goods['credittype'],$goods['credit'],array('1','幸运大抽奖 等价 '.$this->getcreditname($goods['credittype']).'：'.$goods['credit'].'原因：'.$ret['message']));
+								}else{
+									$remsg = $goods['title'];
 								}
 								$detail_url = $_W['siteroot'].'app/index.php?i='.$_W['uniacid'].'&c=activity&a=goods&do=mine';
 								$awarddata = array(
@@ -662,6 +703,8 @@ class Hx_lotteryModuleSite extends WeModuleSite {
 								if(is_error($ret)) {//领取错误做等值处理
 									$remsg = ' 由于'.$ret['message'].' 奖品转换为等值'.$this->getcreditname($coupon['credittype']).':'.$coupon['credit'];
 									mc_credit_update($uid,$coupon['credittype'],$coupon['credit'],array('1','幸运大抽奖 等价 '.$this->getcreditname($coupon['credittype']).'：'.$coupon['credit'].'原因：'.$ret['message']));
+								}else{
+									$remsg = $coupon['title'];
 								}
 								$detail_url = $_W['siteroot'].'app/index.php?i='.$_W['uniacid'].'&c=activity&a=coupon&do=mine';
 								$awarddata = array(
@@ -685,6 +728,8 @@ class Hx_lotteryModuleSite extends WeModuleSite {
 								if(is_error($ret)) {//领取错误做等值处理
 									$remsg = ' 由于'.$ret['message'].' 奖品转换为等值'.$this->getcreditname($token['credittype']).':'.$token['credit'];
 									mc_credit_update($uid,$token['credittype'],$token['credit'],array('1','幸运大抽奖 等价 '.$this->getcreditname($token['credittype']).'：'.$token['credit'].'原因：'.$ret['message']));
+								}else{
+									$remsg = $token['title'];
 								}
 								$detail_url = $_W['siteroot'].'app/index.php?i='.$_W['uniacid'].'&c=activity&a=token&do=mine';
 								$awarddata = array(
@@ -708,6 +753,8 @@ class Hx_lotteryModuleSite extends WeModuleSite {
 								if(is_error($ret)) {//领取错误做等值处理
 									$remsg = ' 由于'.$ret['message'].' 奖品转换为等值'.$this->getcreditname($goods['credittype']).':'.$goods['credit'];
 									mc_credit_update($uid,$goods['credittype'],$goods['credit'],array('1','幸运大抽奖 等价 '.$this->getcreditname($goods['credittype']).'：'.$goods['credit'].'原因：'.$ret['message']));
+								}else{
+									$remsg = $goods['title'];
 								}
 								$detail_url = $_W['siteroot'].'app/index.php?i='.$_W['uniacid'].'&c=activity&a=goods&do=mine';
 								$awarddata = array(

@@ -1,63 +1,34 @@
-{template 'dianjiaheader'}
+{template 'common/header'}
 <link type="text/css" rel="stylesheet" href="../addons/jufeng_wcy/images/common.css">
 <link type="text/css" rel="stylesheet" href="http://cdn.staticfile.org/fancybox/2.1.5/jquery.fancybox.min.css">
 <script type="text/javascript" src="http://cdn.staticfile.org/fancybox/2.1.5/jquery.fancybox.min.js"></script>
 <script type="text/javascript">
-	$(document).ready(function() {
-		$('.fancybox').fancybox();
-		$('.fancybox-skin').css("padding","0");
-			wx.config({
-    debug: true,
-    appId: "{$_W['account']['key']}",
-    timestamp: 1420774989,
-    nonceStr: "fghssdtdgf",
-    signature: '{$signature}',
-    jsApiList: [
-	'openLocation',
-    'getLocation'
-      // 所有要调用的 API 都要加到这个列表中
-    ]
-  });
-  wx.ready(function(){
+//jssdkconfig.debug = true;
+require(['jquery'], function($){
+               wx.ready(function(){
 wx.getLocation({
     success: function (res) {
         var latitude = res.latitude; // 纬度，浮点数，范围为90 ~ -90
         var longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180。
         var speed = res.speed; // 速度，以米/每秒计
         var accuracy = res.accuracy; // 位置精度
+		$.getJSON("{php echo $this->createMobileUrl('dianjia',array('op'=>'locate'))}", {'loc_x' : res.latitude, 'loc_y' : res.longitude}, function(s){
+			if (s.message == 'refresh') {
+				location.href = "{php echo $this->createMobileUrl('dianjia')}";
+			} 
+		});//getJSON
     }
 });
+             });
 });
-  wx.error(function(res){
-
-    alert("error");
-
-});
-
+	$(document).ready(function() {
+		$('.fancybox').fancybox();
+		$('.fancybox-skin').css("padding","0");
 	});
-	var map = new BMap.Map("allmap");
-	var point = new BMap.Point(116.331398,39.897445);
-	map.centerAndZoom(point,12);
-
-	var geolocation = new BMap.Geolocation();
-	geolocation.getCurrentPosition(function(r){
-		if(this.getStatus() == BMAP_STATUS_SUCCESS){
-			var mk = new BMap.Marker(r.point);
-			map.addOverlay(mk);
-			map.panTo(r.point);
-			$.getJSON("{php echo $this->createMobileUrl('dianjia',array('op'=>'locate'))}", {'loc_x' : r.point.lat, 'loc_y' : r.point.lng});
-		}
-		else {
-			alert('failed'+this.getStatus());
-		}        
-	},{enableHighAccuracy: true});
 </script>
 
 	<div class="menu-list">
     <div class="panel panel-default" style="margin-top:10px;margin-bottom:0;padding-bottom:10px;">
-						<div class="panel-heading">
-							<h4 class="panel-title">选择分类</h4>
-						</div>
     <a class="btn {if $_GPC['typeid'] == 0}btn-success{else}btn-default{/if}" style="margin: 5px 0 3px 5px;" href="{php echo $this->createMobileUrl('dianjia', array('typeid' =>0,'order' =>$_GPC['order']))}" role="button">全部分类</a>
     {loop $shoptype $item}
     <a class="btn {if $item['id'] == $_GPC['typeid']}btn-success{else}btn-default{/if}" style="margin: 5px 0 3px 5px;" href="{php echo $this->createMobileUrl('dianjia', array('order' =>$_GPC['order'],'typeid' =>$item['id']))}" role="button">{$item['name']}</a>
@@ -71,13 +42,13 @@ wx.getLocation({
                      <div><span class="label label-default">休息中</span></div>
                       {/if}
                        <div>&nbsp;&nbsp;</div>
-                    <div><button type="button" class="btn btn-sm btn-info" onclick="javascript:document.location.href='http://apis.map.qq.com/uri/v1/geocoder?coord={$item['loc_x']},{$item['loc_y']}';"><i class="glyphicon glyphicon-map-marker"></i>&nbsp;{$item['dist']}</button></div>
+                    <div><button type="button" class="btn btn-sm btn-default" onClick="javascript:document.location.href='http://apis.map.qq.com/uri/v1/geocoder?coord={$item['loc_x']},{$item['loc_y']}';"><i class="glyphicon glyphicon-map-marker"></i>&nbsp;{$item['dist']}</button></div>
                     
 			</div>
 				 <a href="{php echo $this->createMobileUrl('list',array('pcate'=>$item['id']))}">
 				<div class="pull-left menu-pic">
 					{if $item['thumb']}<img src="{$_W['attachurl']}{$item['thumb']}" class="img-rounded">
-                    {else}<img src="{$_W['attachurl']}/headimg_{$_W['weid']}.jpg" class="img-rounded">
+                    {else}<img src="{$_W['attachurl']}/headimg_{$_W['uniacid']}.jpg" class="img-rounded">
                     {/if}
 				</div>
 				<div class="pull-left menu-detail">
@@ -114,4 +85,4 @@ wx.getLocation({
       </div>
     </div>
 {php $footer_off = 0;}
-{template 'footer'}
+{template 'common/footer'}

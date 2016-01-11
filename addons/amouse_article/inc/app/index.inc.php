@@ -7,8 +7,6 @@
  */
 global $_W, $_GPC;
 $weid=$_W['uniacid'];
-$set=  pdo_fetch("SELECT * FROM ".tablename('fineness_sysset')." WHERE weid=:weid limit 1", array(':weid' =>$weid));
-
 $cid = intval($_GPC['cid']);
 if(empty($cid)){
     $cid = pdo_fetchcolumn("SELECT id FROM " . tablename('fineness_article_category') . " where parentid=0 and uniacid=$weid limit 1");
@@ -25,7 +23,7 @@ if (!empty($category['thumb'])) {
 }
 $result = pdo_fetchall("SELECT * FROM " . tablename('fineness_article_category') . " WHERE uniacid =$weid AND parentid = $cid ORDER BY displayorder ASC, id ASC ");
 if ($cid > 0) {
-   // $sql = "SELECT id FROM " . tablename('fineness_article_category') . " WHERE uniacid =$weid AND parentid = $cid ORDER BY createtime ASC limit 1";
+    $sql = "SELECT id FROM " . tablename('fineness_article_category') . " WHERE uniacid =$weid AND parentid = $cid ORDER BY createtime ASC limit 1";
     /*$defaultid = pdo_fetchcolumn($sql);
     var_dump($defaultid);
     if ($defaultid) {*/

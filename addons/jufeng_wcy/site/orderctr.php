@@ -40,32 +40,43 @@
 		$printtime = $printrow['printtime'];
         define('FEIE_HOST','115.28.225.82');
         define('FEIE_PORT',80);
-		$orderInfo  = '<CB>'.$pcate2[0]['name'].'</CB><BR>';
-		$orderInfo .= '--------------------------------<BR>';
-		$orderInfo .= '--订餐号：'.$item0['ordersn'].'<BR>';
-		$orderInfo .= '联系电话：'.$item0['mobile'].'<BR>';
-		$orderInfo .= '送餐时间：'.$item0['time'].'<BR>';
-		$orderInfo .= '送餐地址：'.$item0['address'].'<BR>';
+		//以下更改打印格式
+		$orderInfo  = '^B2'.$pcate2[0]['name'].'\n';
+		$orderInfo .= '--------------------------------\n';
+		$orderInfo .= '--订餐号：'.$item0['ordersn'].'\n';
+		$orderInfo .= '联系电话：'.$item0['mobile'].'\n';
+		$orderInfo .= '送餐时间：'.$item0['time'].'\n';
+		$orderInfo .= '送餐地址：'.$item0['address'].'\n';
 		if($item0['paytype'] == 1){
-		$orderInfo .= '支付方式：在线支付<BR>';
+		$orderInfo .= '支付方式：在线支付\n';
 		}
 		else if($item0['paytype'] == 2){
-		$orderInfo .= '支付方式：餐到付款<BR>';
+		$orderInfo .= '支付方式：餐到付款\n';
 		}
 		if($item0['other']){
-		$orderInfo .= '----备注：'.$item0['other'].'<BR>';
+		$orderInfo .= '----备注：'.$item0['other'].'\n';
 		}
-		$orderInfo .= '--------------------------------<BR>';
+		$orderInfo .= '--------------------------------\n';
 		foreach ($foods as $row) {
 								if($row['preprice']){$rowprice = $row['preprice'];}else{$rowprice = $row['oriprice'];}
-		$orderInfo .= $row['title'].'　X '.$foodsid[$row['id']]['total'].$row['unit'].'    '.$foodsid[$row['id']]['total']*$rowprice.'元<BR>';
+		$orderInfo .= $row['title'].'　X '.$foodsid[$row['id']]['total'].$row['unit'].'    '.$foodsid[$row['id']]['total']*$rowprice.'元\n';
 							}
-		$orderInfo .= '合计：'.$item0['price'].'元<BR>';	
+		$orderInfo .= '合计：'.$item0['price'].'元\n';	
 		if($printrow['qr']){	
 		$orderInfo .= '----------请扫描二维码----------';
-		$orderInfo .= '<QR>'.$printrow['qr'].'</QR>';
-		$orderInfo .= '<BR>';
+		
+		//二维码
+		$myurl_length=strlen($printrow['qr']);       //获取二维码链接长度 
+		$ascii_length=chr($myurl_length);       //把长度数字转换为 ASCII 码 
+		$orderInfo=$orderInfo."\n"; 
+		$orderInfo=$orderInfo."^Q"; 
+		$orderInfo=$orderInfo.$ascii_length; 
+		$orderInfo=$orderInfo.$printrow['qr'];        // ^Q$ascii_length$my_qrcode 
+		
+		//$orderInfo .= '<QR>'.$printrow['qr'].'</QR>';
+		$orderInfo .= '\n';
 		}
+		//以上更改打印格式 end
 $msgJSON = $this->sendSelfFormatOrderInfo($deviceno,$key,$printtime,$orderInfo);
 							}}
 				message('订单转为已确认！请按时派送。', $this->createMobileUrl('orderctr', array('pcate'=>$_GPC['pcate'],'ccate'=>$_GPC['ccate'])), 'success');

@@ -275,15 +275,22 @@ function ext_module_clean($modulename, $isCleanRule = false) {
 
 
 function ext_module_manifest_validate() {
-	$xsd = <<<TPL
+	if(strcasecmp(ADDONS_URL,'http://addons.weizancms.com')==0) {
+			$xsd = <<<TPL
 <?xml version="1.0" encoding="utf-8"?>
-<xs:schema xmlns="http://www.wdlcms.com" targetNamespace="http://www.wdlcms.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+<xs:schema xmlns='http://www.012wz.com' targetNamespace='http://www.012wz.com' xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
 	<xs:element name="entry">
 		<xs:complexType>
 			<xs:attribute name="title" type="xs:string" />
 			<xs:attribute name="do" type="xs:string" />
 			<xs:attribute name="direct" type="xs:boolean" />
 			<xs:attribute name="state" type="xs:string" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="dl">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string" />
+			<xs:attribute name="value" type="xs:string" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="message">
@@ -401,6 +408,26 @@ function ext_module_manifest_validate() {
 						</xs:all>
 					</xs:complexType>
 				</xs:element>
+				<xs:element name="permissions" minOccurs="0" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="entry" minOccurs="0" maxOccurs="unbounded" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="crons" minOccurs="0" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="item" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="dl" minOccurs="0" maxOccurs="unbounded" />
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
 				<xs:element name="install" type="xs:string" minOccurs="0" maxOccurs="1" />
 				<xs:element name="uninstall" type="xs:string" minOccurs="0" maxOccurs="1" />
 				<xs:element name="upgrade" type="xs:string" minOccurs="0" maxOccurs="1" />
@@ -410,6 +437,331 @@ function ext_module_manifest_validate() {
 	</xs:element>
 </xs:schema>
 TPL;
+	}else if(strcasecmp(ADDONS_URL,'http://v2.addons.we7.cc')==0) {
+			$xsd = <<<TPL
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns='http://www.we7.cc' targetNamespace='http://www.we7.cc' xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+	<xs:element name="entry">
+		<xs:complexType>
+			<xs:attribute name="title" type="xs:string" />
+			<xs:attribute name="do" type="xs:string" />
+			<xs:attribute name="direct" type="xs:boolean" />
+			<xs:attribute name="state" type="xs:string" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="dl">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string" />
+			<xs:attribute name="value" type="xs:string" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="message">
+		<xs:complexType>
+			<xs:attribute name="type" type="xs:string" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="manifest">
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="application" minOccurs="1" maxOccurs="1">
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1" />
+							<xs:element name="identifie" type="xs:string"  minOccurs="1" maxOccurs="1" />
+							<xs:element name="version" type="xs:string"  minOccurs="1" maxOccurs="1" />
+							<xs:element name="type" type="xs:string"  minOccurs="1" maxOccurs="1" />
+							<xs:element name="ability" type="xs:string"  minOccurs="1" maxOccurs="1" />
+							<xs:element name="description" type="xs:string"  minOccurs="1" maxOccurs="1" />
+							<xs:element name="author" type="xs:string"  minOccurs="1" maxOccurs="1" />
+							<xs:element name="url" type="xs:string"  minOccurs="1" maxOccurs="1" />
+						</xs:all>
+						<xs:attribute name="setting" type="xs:boolean" />
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="platform" minOccurs="0" maxOccurs="1">
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="subscribes" minOccurs="0" maxOccurs="1">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="message" minOccurs="0" maxOccurs="unbounded" />
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="handles" minOccurs="0" maxOccurs="1">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="message" minOccurs="0" maxOccurs="unbounded" />
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="rule" minOccurs="0" maxOccurs="1">
+								<xs:complexType>
+									<xs:attribute name="embed" type="xs:boolean" />
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="card" minOccurs="0" maxOccurs="1">
+								<xs:complexType>
+									<xs:attribute name="embed" type="xs:boolean" />
+								</xs:complexType>
+							</xs:element>
+						</xs:all>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="bindings" minOccurs="0" maxOccurs="1">
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="cover" minOccurs="0" maxOccurs="1">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="entry" minOccurs="0" maxOccurs="unbounded" />
+									</xs:sequence>
+									<xs:attribute name="call" type="xs:string" />
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="rule" minOccurs="0" maxOccurs="1">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="entry" minOccurs="0" maxOccurs="unbounded" />
+									</xs:sequence>
+									<xs:attribute name="call" type="xs:string" />
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="menu" minOccurs="0" maxOccurs="1">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="entry" minOccurs="0" maxOccurs="unbounded" />
+									</xs:sequence>
+									<xs:attribute name="call" type="xs:string" />
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="home" minOccurs="0" maxOccurs="1">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="entry" minOccurs="0" maxOccurs="unbounded" />
+									</xs:sequence>
+									<xs:attribute name="call" type="xs:string" />
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="profile" minOccurs="0" maxOccurs="1">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="entry" minOccurs="0" maxOccurs="unbounded" />
+									</xs:sequence>
+									<xs:attribute name="call" type="xs:string" />
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="shortcut" minOccurs="0" maxOccurs="1">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="entry" minOccurs="0" maxOccurs="unbounded" />
+									</xs:sequence>
+									<xs:attribute name="call" type="xs:string" />
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="function" minOccurs="0" maxOccurs="1">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="entry" minOccurs="0" maxOccurs="unbounded" />
+									</xs:sequence>
+									<xs:attribute name="call" type="xs:string" />
+								</xs:complexType>
+							</xs:element>
+						</xs:all>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="permissions" minOccurs="0" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="entry" minOccurs="0" maxOccurs="unbounded" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="crons" minOccurs="0" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="item" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="dl" minOccurs="0" maxOccurs="unbounded" />
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="install" type="xs:string" minOccurs="0" maxOccurs="1" />
+				<xs:element name="uninstall" type="xs:string" minOccurs="0" maxOccurs="1" />
+				<xs:element name="upgrade" type="xs:string" minOccurs="0" maxOccurs="1" />
+			</xs:all>
+			<xs:attribute name="versionCode" type="xs:string" />
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
+TPL;
+	}else{
+	$xsd = <<<TPL
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns='http://www.wdlcms.com' targetNamespace='http://www.wdlcms.com' xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+	<xs:element name="entry">
+		<xs:complexType>
+			<xs:attribute name="title" type="xs:string" />
+			<xs:attribute name="do" type="xs:string" />
+			<xs:attribute name="direct" type="xs:boolean" />
+			<xs:attribute name="state" type="xs:string" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="dl">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string" />
+			<xs:attribute name="value" type="xs:string" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="message">
+		<xs:complexType>
+			<xs:attribute name="type" type="xs:string" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="manifest">
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="application" minOccurs="1" maxOccurs="1">
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1" />
+							<xs:element name="identifie" type="xs:string"  minOccurs="1" maxOccurs="1" />
+							<xs:element name="version" type="xs:string"  minOccurs="1" maxOccurs="1" />
+							<xs:element name="type" type="xs:string"  minOccurs="1" maxOccurs="1" />
+							<xs:element name="ability" type="xs:string"  minOccurs="1" maxOccurs="1" />
+							<xs:element name="description" type="xs:string"  minOccurs="1" maxOccurs="1" />
+							<xs:element name="author" type="xs:string"  minOccurs="1" maxOccurs="1" />
+							<xs:element name="url" type="xs:string"  minOccurs="1" maxOccurs="1" />
+						</xs:all>
+						<xs:attribute name="setting" type="xs:boolean" />
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="platform" minOccurs="0" maxOccurs="1">
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="subscribes" minOccurs="0" maxOccurs="1">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="message" minOccurs="0" maxOccurs="unbounded" />
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="handles" minOccurs="0" maxOccurs="1">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="message" minOccurs="0" maxOccurs="unbounded" />
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="rule" minOccurs="0" maxOccurs="1">
+								<xs:complexType>
+									<xs:attribute name="embed" type="xs:boolean" />
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="card" minOccurs="0" maxOccurs="1">
+								<xs:complexType>
+									<xs:attribute name="embed" type="xs:boolean" />
+								</xs:complexType>
+							</xs:element>
+						</xs:all>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="bindings" minOccurs="0" maxOccurs="1">
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="cover" minOccurs="0" maxOccurs="1">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="entry" minOccurs="0" maxOccurs="unbounded" />
+									</xs:sequence>
+									<xs:attribute name="call" type="xs:string" />
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="rule" minOccurs="0" maxOccurs="1">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="entry" minOccurs="0" maxOccurs="unbounded" />
+									</xs:sequence>
+									<xs:attribute name="call" type="xs:string" />
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="menu" minOccurs="0" maxOccurs="1">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="entry" minOccurs="0" maxOccurs="unbounded" />
+									</xs:sequence>
+									<xs:attribute name="call" type="xs:string" />
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="home" minOccurs="0" maxOccurs="1">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="entry" minOccurs="0" maxOccurs="unbounded" />
+									</xs:sequence>
+									<xs:attribute name="call" type="xs:string" />
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="profile" minOccurs="0" maxOccurs="1">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="entry" minOccurs="0" maxOccurs="unbounded" />
+									</xs:sequence>
+									<xs:attribute name="call" type="xs:string" />
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="shortcut" minOccurs="0" maxOccurs="1">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="entry" minOccurs="0" maxOccurs="unbounded" />
+									</xs:sequence>
+									<xs:attribute name="call" type="xs:string" />
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="function" minOccurs="0" maxOccurs="1">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="entry" minOccurs="0" maxOccurs="unbounded" />
+									</xs:sequence>
+									<xs:attribute name="call" type="xs:string" />
+								</xs:complexType>
+							</xs:element>
+						</xs:all>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="permissions" minOccurs="0" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="entry" minOccurs="0" maxOccurs="unbounded" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="crons" minOccurs="0" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="item" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="dl" minOccurs="0" maxOccurs="unbounded" />
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="install" type="xs:string" minOccurs="0" maxOccurs="1" />
+				<xs:element name="uninstall" type="xs:string" minOccurs="0" maxOccurs="1" />
+				<xs:element name="upgrade" type="xs:string" minOccurs="0" maxOccurs="1" />
+			</xs:all>
+			<xs:attribute name="versionCode" type="xs:string" />
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
+TPL;
+	}
 	return trim($xsd);
 }
 

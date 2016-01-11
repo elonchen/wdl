@@ -1,6 +1,6 @@
 <?php 
 /**
- * [Weizan System] Copyright (c) 2014 wdlcms.COM
+ * [Weizan System] Copyright (c) 2014 WDLCMS.COM
  * Weizan is NOT a free software, it under the license terms, visited http://www.wdlcms.com/ for more details.
  */
 
@@ -8,7 +8,7 @@ if(empty($_W['isfounder'])) {
 	message('访问非法.');
 }
 $do = in_array($do, array('profile', 'device', 'callback', 'appstore', 'buyversion')) ? $do : 'profile';
-$authurl = 'http://addons.wdlcms.com/web/index.php?c=auth&a=passwort';
+$authurl = ADDONS_URL. '/web/index.php?c=auth&a=passwort';
 
 $auth = array();
 $auth['key'] = '';

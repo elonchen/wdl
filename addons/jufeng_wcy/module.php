@@ -18,7 +18,9 @@ class jufeng_wcyModule extends WeModule {
 				'title' => $_GPC['title'],
 				'description' => $_GPC['description'],
 				'picurl' => $_GPC['thumb-old'],
-				'url' => create_url('mobile/module/list', array('name' => 'shopping', 'weid' => $_W['weid'])),
+
+				'url' => create_url('mobile/module/list', array('name' => 'jufeng_wcy', 'weid' => $_W['weid'])),
+
 			);
 			if (!empty($_GPC['thumb'])) {
 
@@ -39,7 +41,9 @@ class jufeng_wcyModule extends WeModule {
 		global $_GPC, $_W;
 		if(checksubmit()) {
 			$cfg = array(
-				'wcymodel' => $_GPC['wcymodel'],
+
+				'jufeng_wcymodel' => $_GPC['jufeng_wcymodel'],
+
 				'noticeemail' => $_GPC['noticeemail'],
 			);
 			if($this->saveSettings($cfg)) {

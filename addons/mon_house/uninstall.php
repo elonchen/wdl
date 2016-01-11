@@ -7,7 +7,10 @@ pdo_query("DROP TABLE IF EXISTS".tablename('mon_house_timage').";");
 pdo_query("DROP TABLE IF EXISTS".tablename('mon_house_order').";");
 pdo_query("DROP TABLE IF EXISTS".tablename('mon_house_agent').";");
 
- 
+
+pdo_query("DROP TABLE IF EXISTS".tablename('mon_house_pic_type').";");
+
+pdo_query("DROP TABLE IF EXISTS".tablename('mon_house_pic_image').";");
  
  
  

@@ -5,12 +5,12 @@ session_start();
  *
  */
 defined('IN_IA') or exit('Access Denied');
-include_once IA_ROOT . '/addons/xhw_picvote/model.php';
+
 class xhw_picvoteModuleSite extends WeModuleSite {
 	 public function Checkedservername()
     {
-
-    }
+        
+    }	
 	 public function Checkeduseragent()
     {
         $useragent = addslashes($_SERVER['HTTP_USER_AGENT']);
@@ -18,23 +18,22 @@ class xhw_picvoteModuleSite extends WeModuleSite {
          message('非法访问，请通过微信打开！');
          die();
         }
-    }
+    }    
 	 public function doCheckedMobile($id)
     {
         global $_GPC, $_W;
 		$openid=$_W['fans']['from_user'];
-		$subject = pdo_fetch("SELECT * FROM ".tablename(xhw_picvote_setting)." WHERE weid = '{$_W['uniacid']}' ORDER BY id DESC LIMIT 1");
 		$sql="SELECT * FROM ".tablename(xhw_picvote)." WHERE weid = '{$_W['uniacid']}' AND id = '$id'";
-		$data = pdo_fetch($sql);
-		$follow_url=$data['follow_url'];
+		$arr = pdo_fetch($sql);
+		$follow_url=$arr['follow_url'];
 		if(empty($openid)){
-			echo "<script>alert('请仔细阅读活动说明');location.href='".$follow_url."';</script>";
+			echo "<script>alert('请阅读投票方式,快速为我投票');location.href='".$follow_url."';</script>";     
 			die();
-		}elseif(!$subject['followpass']){
+		}else{
 			$sql="SELECT * FROM ".tablename(mc_mapping_fans)." WHERE openid = '$openid'";
 			$arr = pdo_fetch($sql);
 			if($arr['follow']!='1'){
-			echo "<script>alert('请仔细阅读活动说明');location.href='".$follow_url."';</script>";
+			echo "<script>alert('请阅读投票方式,快速为我投票');location.href='".$follow_url."';</script>";       
 			die();
 			}
 		}
@@ -44,11 +43,10 @@ class xhw_picvoteModuleSite extends WeModuleSite {
 	    $this->Checkedservername();
 	    $this->Checkeduseragent();
 		$pindex = max(1, intval($_GPC['page']));
-		$id=$_GPC['id'];
+		$id=$_GPC['id'];	
         $sql="SELECT * FROM ".tablename(xhw_picvote)." WHERE weid = '{$_W['uniacid']}' AND id = '$id'";
 		$arr = pdo_fetchall($sql);
 		$logo=$arr['0']['logo'];
-		$viewnum = $arr[0]['viewnum'];
 		$photo="attachment/".$arr['0']['photo'];
 		$share_title=$arr['0']['share_title'];
 		$share_desc=$arr['0']['share_desc'];
@@ -60,7 +58,6 @@ class xhw_picvoteModuleSite extends WeModuleSite {
 		$adimglink=explode("|",$arr['0']['adimglink']);
 		$bnum=$arr['0']['bnum'];
 		$hot=$arr['0']['hot'];
-		$rule = $arr[0]['rule'];
 		if($arr['0']['starttime']-time()>0){
 			$time=$arr['0']['starttime']-time();
 		}elseif($arr['0']['endtime']-time()>0){
@@ -68,8 +65,7 @@ class xhw_picvoteModuleSite extends WeModuleSite {
 		}else{
 			$time=0;
 			$url=$this->createmobileUrl('top',array('do'=>'top', 'id'=>$id));
-			//echo "<script>alert('活动已经结束啦，来看看排名吧');location.href='$url';</script>";
-			message("活动已经结束啦，来看看排名吧",$url,'info');
+			echo "<script>alert('活动已经结束啦，来看看排名吧');location.href='$url';</script>"; 
             die;
 		}
 		$psize = $arr['0']['anum'];
@@ -86,7 +82,7 @@ class xhw_picvoteModuleSite extends WeModuleSite {
 		$sql="SELECT * FROM ".tablename(xhw_picvote_reg)." WHERE $condition ORDER BY $paixu LIMIT ".($pindex - 1) * $psize.','.$psize;
 		$list = pdo_fetchall($sql);
 		$total= pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename(xhw_picvote_reg)." WHERE $condition");
-		$pager = pagination($total, $pindex, $psize);
+		$pager = pagination($total, $pindex, $psize);	
 		$pageend=ceil($total/$psize);
 		if($total/$psize!=0 && $total>=$psize){
 			$pageend++;
@@ -95,9 +91,6 @@ class xhw_picvoteModuleSite extends WeModuleSite {
 		$toplist = pdo_fetchall($sql);
 		$lognum= pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename(xhw_picvote_log)." WHERE rid='$id'");
 
-		//增加浏览次数
-		pdo_query("UPDATE ".tablename('xhw_picvote')." set viewnum = viewnum + 1 WHERE weid = '{$_W['uniacid']}' AND id = '$id'");
-		$viewnum++ ;
 		include $this->template('index');
 	}
 
@@ -113,7 +106,7 @@ class xhw_picvoteModuleSite extends WeModuleSite {
 		}
 		if (!is_numeric($id)) {
 		$link=$this->createmobileUrl('index',array('do'=>'index', 'id'=>$rid));
-		echo "<script>alert('找不到您搜索的人，请重新搜索该用户ID或名字');location.href='$link';</script>";
+		echo "<script>alert('找不到您搜索的人，请重新搜索该用户ID或名字');location.href='$link';</script>"; 
 		die();
 		}
 	    if($isappinstalled=="0"){
@@ -121,7 +114,7 @@ class xhw_picvoteModuleSite extends WeModuleSite {
 	    		if($_SESSION['time'.$id]<=time()){
 		    		session_destroy();
 		    		$_SESSION['time'.$id]=mktime(0, 0, 0, date('m'), date('d') + 1, date('Y'));
-			    	$arr=pdo_fetchall("SELECT * FROM ".tablename(xhw_picvote_reg)." WHERE id = '{$id}'");
+			    	$arr=pdo_fetchall("SELECT * FROM ".tablename(xhw_picvote_reg)." WHERE id = '{$id}'"); 
 					$sharenum=intval($arr[0]['sharenum']);
 					$sharenum=$sharenum+1;
 					$data = array('sharenum'=>$sharenum);
@@ -129,7 +122,7 @@ class xhw_picvoteModuleSite extends WeModuleSite {
 	    		}
 	    	}else{
 	    		$_SESSION['time'.$id]=mktime(0, 0, 0, date('m'), date('d') + 1, date('Y'));
-	    		$arr=pdo_fetchall("SELECT * FROM ".tablename(xhw_picvote_reg)." WHERE id = '{$id}'");
+	    		$arr=pdo_fetchall("SELECT * FROM ".tablename(xhw_picvote_reg)." WHERE id = '{$id}'"); 
 				$sharenum=intval($arr[0]['sharenum']);
 				$sharenum=$sharenum+1;
 				$data = array('sharenum'=>$sharenum);
@@ -144,7 +137,7 @@ class xhw_picvoteModuleSite extends WeModuleSite {
 		$arr = pdo_fetchall($sql);
 		if (!$arr) {
 		$link=$this->createmobileUrl('index',array('do'=>'index', 'id'=>$_GPC['rid']));
-		echo "<script>alert('您访问的照片不存在');location.href='$link';</script>";
+		echo "<script>alert('您访问的照片不存在');location.href='$link';</script>"; 
 		die();
 		}
 		$title= $arr[0]['title'];
@@ -157,14 +150,13 @@ class xhw_picvoteModuleSite extends WeModuleSite {
 		$img=explode("|",$arr[0]['img']);
 		if($arr[0]['pass']=='0'){
 	    $link=$this->createmobileUrl('index',array('do'=>'index', 'id'=>$rid));
-		echo "<script>alert('该照片还在审核中');location.href='$link';</script>";
+		echo "<script>alert('该照片还在审核中');location.href='$link';</script>"; 
 		die();
 		}
         $sql="SELECT * FROM ".tablename(xhw_picvote)." WHERE weid = '{$_W['uniacid']}' AND id = '$rid'";
 		$arr = pdo_fetchall($sql);
 		$logo=$arr['0']['logo'];
 		$rule_url=$arr['0']['rule_url'];
-		$follow_url=$arr['0']['follow_url'];
 		$submit_url=$arr['0']['submit_url'];
 		$title_a=$arr['0']['title'];
 		$cnzz=$arr['0']['cnzz'];
@@ -184,7 +176,7 @@ class xhw_picvoteModuleSite extends WeModuleSite {
 	    $this->Checkedservername();
 	    $this->Checkeduseragent();
 		$pindex = max(1, intval($_GPC['page']));
-		$id=$_GPC['id'];
+		$id=$_GPC['id'];	
 		$psize = 1000;
 		$pxid = ($pindex - 1) * $psize;
 		$condition = "weid = '{$_W['uniacid']}' AND rid = '$id' AND pass='1'";
@@ -203,24 +195,11 @@ class xhw_picvoteModuleSite extends WeModuleSite {
 		$cnzz=$arr['0']['cnzz'];
 		$adimg=explode("|",$arr['0']['adimg']);
 		$adimglink=explode("|",$arr['0']['adimglink']);
-		$total= pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename(xhw_picvote_reg)." WHERE $condition");
-		$lognum= pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename(xhw_picvote_log)." WHERE rid='$id'");
-		$viewnum = $arr[0]['viewnum'];
 		if($arr['0']['endtime']-time()>0){
 			$time=$arr['0']['endtime']-time();
 		}else{$time=0;}
 		include $this->template('top');
 	}
-
-	public function doMobileRul() {
-	    global $_W,$_GPC;
-		$rule = $arr[0]['rule'];
-		include $this->template('rule');
-	}
-
-
-
-
 	public function doMobileMy() {
 	    global $_W,$_GPC;
 	    $this->Checkedservername();
@@ -245,7 +224,7 @@ class xhw_picvoteModuleSite extends WeModuleSite {
 			    	$sql="SELECT * FROM ".tablename(mc_mapping_fans)." WHERE openid = '$openid'";
 					$arr = pdo_fetch($sql);
 					if($arr['follow']!='1'){
-					$this->doCheckedMobile($id);
+					$this->doCheckedMobile($id);     
 					die();
 					}
 	    		}
@@ -258,7 +237,7 @@ class xhw_picvoteModuleSite extends WeModuleSite {
 		$condition = "openid = '$openid' AND rid = '$id'";
 		$sql="SELECT * FROM ".tablename(xhw_picvote_reg)." WHERE $condition ORDER BY -num LIMIT 0 , 30";
 		$list = pdo_fetchall($sql);
-		$nickname=$list['0']['nickname'];
+		$nickname=$list['0']['nickname'];	
 		$num=pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename(xhw_picvote_reg)." WHERE $condition");
         $sql="SELECT * FROM ".tablename(xhw_picvote)." WHERE weid = '{$_W['uniacid']}' AND id = '$id'";
 		$arr = pdo_fetchall($sql);
@@ -281,26 +260,6 @@ class xhw_picvoteModuleSite extends WeModuleSite {
 		$wx = $weixin->get_sign();
 		$weixin->get_code($link);
 	}
-	public function doChecked($id)
-    {
-        global $_GPC, $_W;
-		$openid=$_W['fans']['from_user'];
-		$subject = pdo_fetch("SELECT * FROM ".tablename(xhw_picvote_setting)." WHERE weid = '{$_W['uniacid']}' ORDER BY id DESC LIMIT 1");
-		$sql="SELECT * FROM ".tablename(xhw_picvote)." WHERE weid = '{$_W['uniacid']}' AND id = '$id'";
-		$arr = pdo_fetch($sql);
-		$follow_url=$arr['follow_url'];
-		if(empty($openid)){
-			echo "1";
-			die();
-		}elseif(!$subject['followpass']){
-			$sql="SELECT * FROM ".tablename(mc_mapping_fans)." WHERE openid = '$openid'";
-			$arr = pdo_fetch($sql);
-			if($arr['follow']!='1'){
-			echo "1";
-			die();
-			}
-		}
-    }
 	public function doMobilelogpost() {
 	    global $_W,$_GPC;
 	    $this->Checkedservername();
@@ -328,20 +287,15 @@ class xhw_picvoteModuleSite extends WeModuleSite {
 			    	$sql="SELECT * FROM ".tablename(mc_mapping_fans)." WHERE openid = '$openid'";
 					$arr = pdo_fetch($sql);
 					if($arr['follow']!='1'){
-					$this->doChecked($rid);
+					$this->doCheckedMobile($rid);  
 					die();
 					}
 	    		}
 	    	}
-	    	if(empty($openid)){$this->doChecked($rid);}
+	    	if(empty($openid)){$this->doCheckedMobile($rid);}
 		}else{
-			$this->doChecked($rid);
+			$this->doCheckedMobile($rid);
 			$openid=$_W['fans']['from_user'];
-		}
-		if(empty($openid)){
-			$url=$this->createmobileUrl('index',array('do'=>'index', 'id'=>$id));
-			echo "<script>location.href='$url';</script>";
-            die;
 		}
 		$id=$_GPC['id'];
 		$sql="SELECT * FROM ".tablename(xhw_picvote)." WHERE weid = '{$_W['uniacid']}' AND id = '$rid'";
@@ -382,12 +336,12 @@ class xhw_picvoteModuleSite extends WeModuleSite {
 				'ip' => $_W['clientip'],
 				'time' => time()
 			);
-			$arr=pdo_fetchall("SELECT * FROM ".tablename(xhw_picvote_reg)." WHERE id = '{$id}' AND pass = '1'");
+			$arr=pdo_fetchall("SELECT * FROM ".tablename(xhw_picvote_reg)." WHERE id = '{$id}' AND pass = '1'"); 
 			if (empty($arr)) {
 			echo "<script>alert('还未审核通过，禁止投票！');location.href='$url';</script>"; 
 			die();
 			}
-			pdo_insert(xhw_picvote_log, $data);
+			pdo_insert(xhw_picvote_log, $data);	
 			$num=intval($arr[0]['num']);
 			$num=$num+1;
 			$data = array('num'=>$num);
@@ -422,7 +376,7 @@ class xhw_picvoteModuleSite extends WeModuleSite {
 			    	$sql="SELECT * FROM ".tablename(mc_mapping_fans)." WHERE openid = '$openid'";
 					$arr = pdo_fetch($sql);
 					if($arr['follow']!='1'){
-					$this->doCheckedMobile($id);
+					$this->doCheckedMobile($id);      
 					die();
 					}
 	    		}
@@ -464,25 +418,18 @@ class xhw_picvoteModuleSite extends WeModuleSite {
 		load()->func('file');
 		$arr = pdo_fetchall($sql);
 		$pass = pdo_fetchcolumn("SELECT pass FROM ".tablename(xhw_picvote)." WHERE weid = '{$_W['uniacid']}' AND id = '$id'");
-		//if($arr[0]['pass'] && $pass!=1)
-		if($arr[0]['pass'] == 1 && $pass = 1)
-		{echo "<textarea><img src='../addons/xhw_picvote/template/mobile/skpicture/3.jpg'/></textarea>";  die();}//已审核禁止上传
+		if($arr[0]['pass'] && $pass!=1){echo "<textarea><img src='../addons/xhw_picvote/template/mobile/skpicture/3.jpg'/></textarea>";  die();}//已审核禁止上传
 		$img = $arr[0]['img'];
 		$imgnum = pdo_fetchcolumn("SELECT imgnum FROM ".tablename(xhw_picvote)." WHERE weid = '{$_W['uniacid']}' AND id = '$id'");
-		//if(count(explode("|",$img))>$imgnum){
-		if(!empty($img) && count(explode("|",$img))>=$imgnum){
+		if(count(explode("|",$img))>$imgnum){
 			echo "<textarea><img src='../addons/xhw_picvote/template/mobile/skpicture/2.jpg'/></textarea>";  die();
 		}
 		$uptypes=array('image/jpg','image/jpeg','image/png','image/pjpeg','image/gif','image/bmp','image/x-png');
 		mkdirs("../attachment/xhw_picvote/".date("Y/m/d"));
-		$destination_folder="../attachment/xhw_picvote/".date("Y/m/d")."/";
+		$destination_folder="../attachment/xhw_picvote/".date("Y/m/d")."/"; 
 		if ($_SERVER['REQUEST_METHOD'] == 'POST')
 		{
 		    $file = $_FILES["upfile"];
-			if($file['type']!='image/jpeg'&&$file['type']!='image/jpg'&&$file['type']!='image/png'){
-				echo $file['type'];
-				die;
-			}
 		    if(!file_exists($destination_folder))
 		    {
 		        mkdir($destination_folder);
@@ -491,26 +438,22 @@ class xhw_picvoteModuleSite extends WeModuleSite {
 		    $pinfo=pathinfo($file["name"]);
 		    $ftype=$pinfo['extension'];
 		    $destination = $destination_folder.time().rand(1,1000).".".$ftype;
-			//echo $file["size"];die;
 		    if($file["size"]>30000000){
-		    	$percent = 0.3;
+		    	$percent = 0.3;  
 		    }elseif ($file["size"]>10000000) {
-		    	$percent = 0.4;
+		    	$percent = 0.4; 
 		    }elseif ($file["size"]>5000000) {
-		    	$percent = 0.6;
+		    	$percent = 0.6; 
 		    }else{
-		    	$percent = 0.8;
+		    	$percent = 0.8; 
 		    }
-			if($file["size"]>200000){
-		    	$percent = round(sqrt(200000/$file["size"]),1);
-		    }
-			list($width, $height) = getimagesize($filename);
+			list($width, $height) = getimagesize($filename); 
 			$newwidth = $width * $percent;
 			$newheight = $height * $percent;
 			$src_im = imagecreatefromjpeg($filename);
 			$dst_im = imagecreatetruecolor($newwidth, $newheight);
 			imagecopyresized($dst_im, $src_im, 0, 0, 0, 0, $newwidth, $newheight, $width, $height);
-			imagejpeg($dst_im, $destination);
+			imagejpeg($dst_im, $destination); 
 			imagedestroy($dst_im);
 			imagedestroy($src_im);
 			$picurl=$destination;
@@ -532,7 +475,7 @@ class xhw_picvoteModuleSite extends WeModuleSite {
             	$data['weid'] = $weid;
                 pdo_insert(xhw_picvote_reg, $data);
             }
-			echo "<textarea><img src='$picurl'/></textarea>";
+			echo "<textarea><img src='$picurl'/></textarea>";     
 		}
 	}
 	public function doMobilepost() {
@@ -545,63 +488,36 @@ class xhw_picvoteModuleSite extends WeModuleSite {
 			$pass = pdo_fetchcolumn("SELECT pass FROM ".tablename(xhw_picvote)." WHERE weid = '{$_W['uniacid']}' AND id = '$id'");
 			if($arr[0]['pass']){
 				if($pass!=1){
-					//echo "<script>alert('您的投稿已经通过审核，请勿修改');location.href='".$this->createmobileUrl('item',array('do'=>'item','id'=>$arr[0]['id']))."';</script>";
-					message("您的投稿已经通过审核，请勿修改",$this->createmobileUrl('item',array('do'=>'item','id'=>$arr[0]['id'])),'success');
+					echo "<script>alert('您的投稿已经通过审核，请勿修改');location.href='".$this->createmobileUrl('item',array('do'=>'item','id'=>$arr[0]['id']))."';</script>";     
 			        die();
 				}
-			}
+			}			    
             $title=$_GPC['title'];
 			$phone=$_GPC['phone'];
 			$nickname=$_GPC['nickname'];
 			if(empty($title) || empty($phone) || empty($nickname)){
-			//echo "<script>alert('简介标题、昵称和手机号不能为空，请重新填写');location.href='".$this->createmobileUrl('reg',array('do'=>'reg','id'=>$id))."';</script>";
-			message("简介标题、昵称和手机号不能为空，请重新填写",$this->createmobileUrl('reg',array('do'=>'reg','id'=>$id)),'error');
+			echo "<script>alert('简介标题、昵称和手机号不能为空，请重新填写');location.href='".$this->createmobileUrl('reg',array('do'=>'reg','id'=>$id))."';</script>";     
 			die();
 			}
 			$openid=$_W['fans']['from_user'];
-			if($arr[0]['avatar']){
-				/*
-				$img = substr($arr[0]['img'],3);
-				$thumb1 = explode('/',$arr[0]['img']);
-				$newimg = $thumb1[0].'/'.$thumb1[1].'/'.$thumb1[2].'/'.$thumb1[3].'/'.$thumb1[4].'/'.$thumb1[5].'/s_'.$thumb1[6];
-				$name = IA_ROOT.'/'.$img;
-				$srcinfo = getimagesize($name);
-				$width = 320/$srcinfo[0];
-				$thumb = explode('/',$img);
-				$newname = IA_ROOT.'/' .$thumb[0].'/'.$thumb[1].'/'.$thumb[2].'/'.$thumb[3].'/'.$thumb[4].'/s_'.$thumb[5];
-				if($width<1){
-					$res = img2thumb($name, $newname,320,400,0,$width);
-				}else{
-					$res = img2thumb($name, $newname,320,400,0);
-				}
-				*/
-			}
+			
 			if (!empty($arr[0]['id'])) {
 				$data = array('title'=>$title,'phone'=>$phone,'pass'=>$pass,'nickname'=>$nickname,'time'=>time());
-				/*if($res){
-					$data['avatar'] = $newimg;
-					$data['img'] = $newimg;
-				}*/
                 pdo_update('xhw_picvote_reg', $data, array('rid' => $id ,'openid' => $openid ));
             }
             else {
             	$data = array('weid'=>$weid,'rid'=>$id,'title'=>$title,'openid'=>$openid,'phone'=>$phone,'pass'=>$pass,'nickname'=>$nickname,'time'=>time());
-				/*if($res){
-					$data['avatar'] = $newimg;
-					$data['img'] = $newimg;
-				}*/
                 pdo_insert(xhw_picvote_reg, $data);
             }
             if($pass!=1){
-				message("感谢您的参与，我们会尽快完成审核",$this->createmobileUrl('index',array('do'=>'index','id'=>$id,'rid'=>$arr[0]['rid'])),'success');
+           		echo "<script>alert('感谢您的参与，我们会尽快完成审核');location.href='".$this->createmobileUrl('index',array('do'=>'index','id'=>$id))."';</script>";     
 				die();
             }else{
-            	//echo "<script>alert('感谢您的投稿');location.href='".$this->createmobileUrl('item',array('do'=>'item','id'=>$arr[0]['id']))."';</script>";
-				message("感谢您的投稿",$this->createmobileUrl('item',array('do'=>'item','id'=>$arr[0]['id'],'rid'=>$arr[0]['rid'])),'success');
+            	echo "<script>alert('感谢您的投稿');location.href='".$this->createmobileUrl('item',array('do'=>'item','id'=>$arr[0]['id']))."';</script>";     
 				die();
             }
-
-	}
+		    
+	}	
 	public function doMobileShare() {
 	    $this->Checkeduseragent();
 	    global $_W,$_GPC;
@@ -619,7 +535,7 @@ class xhw_picvoteModuleSite extends WeModuleSite {
 	public function dowebproject() {
 	    global $_W,$_GPC;
 	    $this->Checkedservername();
-		$pindex = max(1, intval($_GPC['page']));
+		$pindex = max(1, intval($_GPC['page']));		
 		$psize = 10;
 		$condition = "weid = '{$_W['uniacid']}'";
 		if (!empty($_GPC['keywords'])) {
@@ -649,6 +565,10 @@ class xhw_picvoteModuleSite extends WeModuleSite {
 			pdo_delete(xhw_picvote, array('id' => $id));
 			message('删除成功！', referer(), 'success');
 		}
+		$subject['follow_url'] = empty($subject['follow_url']) ? "http://www.dwz.cn/012wz" : $subject['follow_url'];
+		$subject['rule_url'] = empty($subject['rule_url']) ? "http://www.dwz.cn/012wz" : $subject['rule_url'];
+		$subject['submit_url'] = empty($subject['submit_url']) ? "http://www.dwz.cn/012wz" : $subject['submit_url'];
+
 
 		if (checksubmit()) {
 			$imgnum=$_GPC['imgnum'];
@@ -665,8 +585,6 @@ class xhw_picvoteModuleSite extends WeModuleSite {
 				'follow_url' => $_GPC['follow_url'],
 				'rule_url' => $_GPC['rule_url'],
 				'submit_url' => $_GPC['submit_url'],
-				'bgcolor' => $_GPC['bgcolor'],
-				'rule' => $_GPC['rule'],
 				'imgnum' => $imgnum,
 				'mynum' => $_GPC['mynum'],
 				'anum' => $_GPC['anum'],
@@ -732,12 +650,12 @@ class xhw_picvoteModuleSite extends WeModuleSite {
 	public function dowebvote() {
 	    global $_W,$_GPC;
 	    $this->Checkedservername();
-		$pindex = max(1, intval($_GPC['page']));
+		$pindex = max(1, intval($_GPC['page']));		
 		$psize = 10;
 		if($_GPC['id']==""){
 		$condition = "weid = '{$_W['uniacid']}' AND pass='1'";
 		}else{
-		$condition = "weid = '{$_W['uniacid']}' AND pass='1' AND rid='{$_GPC['id']}'";
+		$condition = "weid = '{$_W['uniacid']}' AND pass='1' AND rid='{$_GPC['id']}'";			
 		}
 		if (!empty($_GPC['keywords'])) {
 			$condition .= " AND id = '{$_GPC['keywords']}'";
@@ -745,7 +663,7 @@ class xhw_picvoteModuleSite extends WeModuleSite {
 		$sql="SELECT * FROM ".tablename(xhw_picvote_reg)." WHERE $condition ORDER BY -num LIMIT ".($pindex - 1) * $psize.','.$psize;//按大小排序
 		$list = pdo_fetchall($sql);
 		$total = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename(xhw_picvote_reg)." WHERE $condition");
-		$pager = pagination($total, $pindex, $psize);
+		$pager = pagination($total, $pindex, $psize);		
 		$host=$_W['config']['db']['host'];
 	    $username=$_W['config']['db']['username'];
 	    $password=$_W['config']['db']['password'];
@@ -756,12 +674,12 @@ class xhw_picvoteModuleSite extends WeModuleSite {
 	public function dowebvoice() {
 	    global $_W,$_GPC;
 	    $this->Checkedservername();
-		$pindex = max(1, intval($_GPC['page']));
+		$pindex = max(1, intval($_GPC['page']));		
 		$psize = 10;
 		if($_GPC['id']==""){
 		$condition = "weid = '{$_W['uniacid']}' AND pass='0'";
 		}else{
-		$condition = "weid = '{$_W['uniacid']}' AND pass='0' AND rid='{$_GPC['id']}'";
+		$condition = "weid = '{$_W['uniacid']}' AND pass='0' AND rid='{$_GPC['id']}'";			
 		}
 		if (!empty($_GPC['keywords'])) {
 			$condition .= " AND id = '{$_GPC['keywords']}'";
@@ -769,7 +687,7 @@ class xhw_picvoteModuleSite extends WeModuleSite {
 		$sql="SELECT * FROM ".tablename(xhw_picvote_reg)." WHERE $condition ORDER BY -id LIMIT ".($pindex - 1) * $psize.','.$psize;
 		$list = pdo_fetchall($sql);
 		$total = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename(xhw_picvote_reg)." WHERE $condition");
-		$pager = pagination($total, $pindex, $psize);
+		$pager = pagination($total, $pindex, $psize);		
 
 
 		include $this->template('voice');
@@ -777,12 +695,12 @@ class xhw_picvoteModuleSite extends WeModuleSite {
 	public function doweblog() {
 	    global $_W,$_GPC;
 	    $this->Checkedservername();
-		$pindex = max(1, intval($_GPC['page']));
+		$pindex = max(1, intval($_GPC['page']));		
 		$psize = 10;
 		if($_GPC['numid']){
-		$condition = "rid='{$_GPC['id']}' AND numid='{$_GPC['numid']}'";
+		$condition = "rid='{$_GPC['id']}' AND numid='{$_GPC['numid']}'";	
 		}elseif($_GPC['openid']){
-		$condition = "rid='{$_GPC['id']}' AND openid='{$_GPC['openid']}'";
+		$condition = "rid='{$_GPC['id']}' AND openid='{$_GPC['openid']}'";	
 		}else{$condition = "rid='{$_GPC['id']}'";}
 		if ($_GPC['op']=='delete') {
 			pdo_delete(xhw_picvote_log, array('rid' => $_GPC['id']));
@@ -791,7 +709,7 @@ class xhw_picvoteModuleSite extends WeModuleSite {
 		$sql="SELECT * FROM ".tablename(xhw_picvote_log)." WHERE $condition ORDER BY -id LIMIT ".($pindex - 1) * $psize.','.$psize;//按大小排序
 		$list = pdo_fetchall($sql);
 		$total = pdo_fetchcolumn('SELECT COUNT(*) FROM ' . tablename(xhw_picvote_log)." WHERE $condition");
-		$pager = pagination($total, $pindex, $psize);
+		$pager = pagination($total, $pindex, $psize);		
 
 		include $this->template('log');
 	}
@@ -808,7 +726,7 @@ class xhw_picvoteModuleSite extends WeModuleSite {
 			);
 			if(empty($subject)){
 				$data['weid'] = $weid;
-				pdo_insert(xhw_picvote_setting, $data);
+				pdo_insert(xhw_picvote_setting, $data);	
 			}else{
               pdo_update(xhw_picvote_setting, $data, array('weid' => $weid));
 			}
@@ -836,7 +754,7 @@ class xhw_picvoteModuleSite extends WeModuleSite {
 			$img=explode("|",$data);
 			pdo_update(xhw_picvote_reg,array('avatar' => $img['0'],'img' => $data), array('id' => $id));
 			$url=$_W['siteroot'].$this->createwebUrl('post',array('do'=>'post', 'id'=>$id, 'rid'=>$_GPC['rid']));
-			echo "<script>alert('照片删除成功');location.href='$url';</script>";
+			echo "<script>alert('照片删除成功');location.href='$url';</script>"; 
         	die;
 		}
 		if($id){
@@ -864,11 +782,11 @@ class xhw_picvoteModuleSite extends WeModuleSite {
 			pdo_update(xhw_picvote_reg, array('pass' => '1','rid' => $rid), array('id' => $id));
 			message('审核通过！', referer(), 'success');
 		}
-
+		
 		if (checksubmit()) {
 		$photo=$_GPC['photo'];
 		//$imgs=$subject['img'];
-		for ($i=0; $i <count($photo) ; $i++) {
+		for ($i=0; $i <count($photo) ; $i++) { 
 			if(empty($imgs)){
 				$imgs=$photo[$i];
 			}elseif(strpos($imgs, $photo[$i]) == false){

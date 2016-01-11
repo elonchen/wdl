@@ -39,6 +39,7 @@ if ($do == 'edit') {
 		$record['salt'] = $user['salt'];
 		$record['groupid'] = intval($_GPC['groupid']);
 		$record['remark'] = $_GPC['remark'];
+		$record['viptime'] = $_GPC['viptime'];
 		user_update($record);
 		
 		if (!empty($_GPC['birth'])) {

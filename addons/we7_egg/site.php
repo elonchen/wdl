@@ -281,7 +281,7 @@ class We7_eggModuleSite extends WeModuleSite {
 			'award' => (empty($awardid) ? '未中' : '中') . '奖奖励积分',
 			'description' => (empty($awardid) ? $egg['misscredit'] : $egg['hitcredit']),
 			'credit' => (empty($awardid) ? $egg['misscredit'] : $egg['hitcredit']),
-			'createtime' => strtotime(date('Y-m-d')),
+			'createtime' => strtotime(date('Y-m-d H:i:s')),
 			'status' => 2
 		);
 

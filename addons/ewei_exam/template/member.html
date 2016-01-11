@@ -61,19 +61,33 @@
             <tbody>
                 {loop $list $item}
                 <tr>
-					<td class="with-checkbox"><input type="checkbox" name="check" value="{$item['id']}"></td>
+					<td class="with-checkbox">
+                        <input type="checkbox" name="check" value="{$item['id']}">
+                    </td>
                     <td>{$item['id']}</td>
-                    <td>{$item['username']}</td>
+                    <td>
+                        {if $item['username'] != ''}
+                        {$item['username']}
+                        {else}
+                        <span class='label label-danger'>未完善</span>
+                        {/if}
+                    </td>
                     {if $this->_set_info['login_flag'] == 1}
                     <td>{$item['userid']}</td>
                     {/if}
-                    <td>{$item['mobile']}</td>
+                    <td>
+                        {if $item['mobile'] != ''}
+                        {$item['mobile']}
+                        {else}
+                        <span class='label label-danger'>未完善</span>
+                        {/if}
+                    </td>
                     <td>{php echo date('Y-m-d H:i',$item['createtime'])}</td>
                     <td>
-                         {if $item['status']==1}
+                        {if $item['status'] > 0}
                         <span class='label label-success'>启用</span>
                         {else}
-                        <span class='label label-default'>禁用</span>
+                        <span class='label label-danger'>禁用</span>
                         {/if}
                     </td>
                     <td> 

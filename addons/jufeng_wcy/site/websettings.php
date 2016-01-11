@@ -19,13 +19,6 @@ global $_GPC, $_W;
 					}
 					else if($_GPC['op'] == "transfer" && checksubmit('token')){
 						$sql = "
-						INSERT INTO ".tablename('jufeng_wcy_sms')."(id,weid,email,emailpsw,smtp,smsnum,smspsw,smstest) SELECT id,weid,email,emailpsw,smtp,smsnum,smspsw,smstest FROM ".tablename('wcy_sms').";
-						INSERT INTO ".tablename('jufeng_wcy_category')."(id,weid,name,parentid,displayorder,enabled,sendprice,total,shouji,email,typeid,thumb,description,time1,time2,time3,time4) SELECT id,weid,name,parentid,displayorder,enabled,sendprice,total,shouji,email,typeid,thumb,description,time1,time2,time3,time4 FROM ".tablename('wcy_category').";
-                        INSERT INTO ".tablename('jufeng_wcy_order')."(id,weid,from_user,mobile,address,ordersn,price,status,paytype,other,time,createtime) SELECT id,weid,from_user,mobile,address,ordersn,price,status,paytype,other,time,createtime FROM ".tablename('wcy_order').";
-						INSERT INTO ".tablename('jufeng_wcy_shoptype')." SELECT * FROM ".tablename('wcy_shoptype').";
-						INSERT INTO ".tablename('jufeng_wcy_foods')." SELECT * FROM ".tablename('wcy_foods').";
-						INSERT INTO ".tablename('jufeng_wcy_order_foods')." SELECT * FROM ".tablename('wcy_order_foods').";
-						INSERT INTO ".tablename('jufeng_wcy_print')."(id,weid,deviceno,key,printtime,qr) SELECT id,weid,deviceno,key,printtime,qr FROM ".tablename('wcy_category').";
                         ";
 pdo_query($sql);
 						message('数据迁移完成。', $this->createWebUrl('settings', array('op' => 'transfer')), 'success');
